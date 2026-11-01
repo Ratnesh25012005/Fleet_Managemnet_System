@@ -115,7 +115,12 @@ public class CustomerSideBarController extends Controller {
                 if (CustomerServiceController.instance != null) {
                     CustomerServiceController.instance.showProfilePage();
                 } else {
-                    SceneManager.switchScene("PersonalInfoPage.fxml");
+                    SceneManager.switchScene("customerServicePage.fxml");
+                    Platform.runLater(() -> {
+                        if (CustomerServiceController.instance != null) {
+                            CustomerServiceController.instance.showProfilePage();
+                        }
+                    });
                 }
             });
         }
@@ -123,17 +128,44 @@ public class CustomerSideBarController extends Controller {
             item2.setOnMouseClicked(event -> SceneManager.switchScene("messagePage.fxml"));
         }
         if (item3 != null) {
-            item3.setOnMouseClicked(event -> SceneManager.switchScene("addBankCardPage.fxml"));
+            item3.setOnMouseClicked(event -> {
+                if (CustomerServiceController.instance != null) {
+                    CustomerServiceController.instance.showWalletPage();
+                } else {
+                    SceneManager.switchScene("customerServicePage.fxml");
+                    Platform.runLater(() -> {
+                        if (CustomerServiceController.instance != null) {
+                            CustomerServiceController.instance.showWalletPage();
+                        }
+                    });
+                }
+            });
         }
         if (item4 != null) {
-            item4.setOnMouseClicked(event -> SceneManager.switchScene("showOrderComponent.fxml"));
+            item4.setOnMouseClicked(event -> {
+                if (CustomerServiceController.instance != null) {
+                    CustomerServiceController.instance.showOrderPage();
+                } else {
+                    SceneManager.switchScene("customerServicePage.fxml");
+                    Platform.runLater(() -> {
+                        if (CustomerServiceController.instance != null) {
+                            CustomerServiceController.instance.showOrderPage();
+                        }
+                    });
+                }
+            });
         }
         if (item5 != null) {
             item5.setOnMouseClicked(event -> {
                 if (CustomerServiceController.instance != null) {
                     CustomerServiceController.instance.showSettingPage();
                 } else {
-                    SceneManager.switchScene("SettingPage.fxml");
+                    SceneManager.switchScene("customerServicePage.fxml");
+                    Platform.runLater(() -> {
+                        if (CustomerServiceController.instance != null) {
+                            CustomerServiceController.instance.showSettingPage();
+                        }
+                    });
                 }
             });
         }
@@ -152,4 +184,3 @@ public class CustomerSideBarController extends Controller {
         SceneManager.switchScene("loginPage.fxml");
     }
 }
-

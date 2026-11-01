@@ -91,10 +91,13 @@ public class DriverMainPageController extends Controller {
     @FXML
     public void initialize() {
         driverMainPageInstance = this;
-        if (optionPane != null) {
-            optionPane.setVisible(false);
-        }
+        showWorkplace();
         populateActiveTrip();
+    }
+
+    public void showWorkplace() {
+        if (optionPane != null) optionPane.setVisible(false);
+        if (workplacePane != null) workplacePane.setVisible(true);
     }
 
     public void showSettingsView(String fxmlName) {

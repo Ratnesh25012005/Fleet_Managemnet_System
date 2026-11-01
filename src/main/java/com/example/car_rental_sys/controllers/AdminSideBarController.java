@@ -4,6 +4,7 @@ import com.example.car_rental_sys.model.User;
 import com.example.car_rental_sys.service.AuthService;
 import com.example.car_rental_sys.service.ServiceFactory;
 import com.example.car_rental_sys.util.SceneManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.image.ImageView;
@@ -86,39 +87,89 @@ public class AdminSideBarController extends Controller {
     }
 
     private void attachNavigationHandlers() {
-        if (item1 != null) {
-            item1.setOnMouseClicked(event -> {
-                if (AdminServiceController.instance != null) {
-                    AdminServiceController.instance.showProfilePage();
-                } else {
-                    SceneManager.switchScene("adminServicePage.fxml");
-                }
-            });
-        }
-        if (item2 != null) {
-            item2.setOnMouseClicked(event -> SceneManager.switchScene("messagePage.fxml"));
-        }
-        if (item3 != null) {
-            item3.setOnMouseClicked(event -> SceneManager.switchScene("adminServicePage.fxml"));
-        }
-        if (item4 != null) {
-            item4.setOnMouseClicked(event -> SceneManager.switchScene("AdminVehiclePage.fxml"));
-        }
-        if (item5 != null) {
-            item5.setOnMouseClicked(event -> SceneManager.switchScene("showOrderComponent.fxml"));
-        }
-        if (item6 != null) {
-            item6.setOnMouseClicked(event -> {
-                if (AdminServiceController.instance != null) {
-                    AdminServiceController.instance.showSettingPage();
-                } else {
-                    SceneManager.switchScene("adminServicePage.fxml");
-                }
-            });
-        }
-        if (item7 != null) {
-            item7.setOnMouseClicked(event -> handleLogout());
-        }
+        // item1: Profile
+        Runnable openProfile = () -> {
+            if (AdminServiceController.instance != null) {
+                AdminServiceController.instance.showProfilePage();
+            } else {
+                SceneManager.switchScene("adminServicePage.fxml");
+                Platform.runLater(() -> {
+                    if (AdminServiceController.instance != null) {
+                        AdminServiceController.instance.showProfilePage();
+                    }
+                });
+            }
+        };
+        if (item1 != null) item1.setOnMouseClicked(e -> openProfile.run());
+        if (imgIcon1 != null) imgIcon1.setOnMouseClicked(e -> openProfile.run());
+
+        // item2: Message
+        Runnable openMessage = () -> SceneManager.switchScene("messagePage.fxml");
+        if (item2 != null) item2.setOnMouseClicked(e -> openMessage.run());
+        if (imgIcon2 != null) imgIcon2.setOnMouseClicked(e -> openMessage.run());
+
+        // item3: Dashboard
+        Runnable openDashboard = () -> {
+            if (AdminServiceController.instance != null) {
+                AdminServiceController.instance.showDashboardPage();
+            } else {
+                SceneManager.switchScene("adminServicePage.fxml");
+            }
+        };
+        if (item3 != null) item3.setOnMouseClicked(e -> openDashboard.run());
+        if (imgIcon3 != null) imgIcon3.setOnMouseClicked(e -> openDashboard.run());
+
+        // item4: Cars (AdminVehiclePage)
+        Runnable openCars = () -> {
+            if (AdminServiceController.instance != null) {
+                AdminServiceController.instance.showVehiclePage();
+            } else {
+                SceneManager.switchScene("adminServicePage.fxml");
+                Platform.runLater(() -> {
+                    if (AdminServiceController.instance != null) {
+                        AdminServiceController.instance.showVehiclePage();
+                    }
+                });
+            }
+        };
+        if (item4 != null) item4.setOnMouseClicked(e -> openCars.run());
+        if (imgIcon4 != null) imgIcon4.setOnMouseClicked(e -> openCars.run());
+
+        // item5: History (Orders)
+        Runnable openOrders = () -> {
+            if (AdminServiceController.instance != null) {
+                AdminServiceController.instance.showOrderPage();
+            } else {
+                SceneManager.switchScene("adminServicePage.fxml");
+                Platform.runLater(() -> {
+                    if (AdminServiceController.instance != null) {
+                        AdminServiceController.instance.showOrderPage();
+                    }
+                });
+            }
+        };
+        if (item5 != null) item5.setOnMouseClicked(e -> openOrders.run());
+        if (imgIcon5 != null) imgIcon5.setOnMouseClicked(e -> openOrders.run());
+
+        // item6: Setting
+        Runnable openSettings = () -> {
+            if (AdminServiceController.instance != null) {
+                AdminServiceController.instance.showSettingPage();
+            } else {
+                SceneManager.switchScene("adminServicePage.fxml");
+                Platform.runLater(() -> {
+                    if (AdminServiceController.instance != null) {
+                        AdminServiceController.instance.showSettingPage();
+                    }
+                });
+            }
+        };
+        if (item6 != null) item6.setOnMouseClicked(e -> openSettings.run());
+        if (imgIcon6 != null) imgIcon6.setOnMouseClicked(e -> openSettings.run());
+
+        // item7: Logout
+        if (item7 != null) item7.setOnMouseClicked(e -> handleLogout());
+        if (imgIcon7 != null) imgIcon7.setOnMouseClicked(e -> handleLogout());
     }
 
     private void handleLogout() {
@@ -126,4 +177,3 @@ public class AdminSideBarController extends Controller {
         SceneManager.switchScene("loginPage.fxml");
     }
 }
-

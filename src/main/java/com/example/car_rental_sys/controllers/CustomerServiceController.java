@@ -41,43 +41,85 @@ public class CustomerServiceController extends Controller {
     @FXML
     public void initialize() {
         instance = this;
-        if (hugeContainer != null) {
-            hugeContainer.setVisible(false);
-        }
-
-        loadSubComponent(centerContainer, "showOrderComponent.fxml");
-        loadSubComponent(rightContainer, "OrderDetailsComponent.fxml");
+        showOrderPage();
     }
 
-    public void showSettingsPanel(String fxmlName) {
+    public void showOrderPage() {
+        if (hugeContainer != null) hugeContainer.setVisible(false);
+        if (centerContainer != null) {
+            centerContainer.setVisible(true);
+            loadSubComponent(centerContainer, "showOrderComponent.fxml");
+        }
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubComponent(rightContainer, "OrderDetailsComponent.fxml");
+        }
+    }
+
+    public void showOrderDetails() {
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubComponent(rightContainer, "OrderDetailsComponent.fxml");
+        }
+    }
+
+    public void showTrackOrder() {
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubComponent(rightContainer, "TrackOrderComponent.fxml");
+        }
+    }
+
+    public void closeTrackOrder() {
+        showOrderDetails();
+    }
+
+    public void showWalletPage() {
+        if (hugeContainer != null) hugeContainer.setVisible(false);
+        if (centerContainer != null) {
+            centerContainer.setVisible(true);
+            loadSubComponent(centerContainer, "BillingComponent.fxml");
+        }
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubComponent(rightContainer, "BillingSideBar.fxml");
+        }
+    }
+
+    private void initHugeSettingsContainer() {
         if (centerContainer != null) centerContainer.setVisible(false);
         if (rightContainer != null) rightContainer.setVisible(false);
         if (hugeContainer != null) {
             hugeContainer.setVisible(true);
-            if (settingMainPanel != null) {
-                loadSubComponent(settingMainPanel, fxmlName);
+            hugeContainer.getChildren().clear();
+            if (middlePanel != null && settingMainPanel != null) {
+                hugeContainer.getChildren().addAll(middlePanel, settingMainPanel);
             }
         }
     }
 
     public void showSettingPage() {
-        showSettingsPanel("SettingPage.fxml");
-        loadSubComponent(middlePanel, "MiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubComponent(middlePanel, "MiddleBar.fxml");
+        if (settingMainPanel != null) loadSubComponent(settingMainPanel, "SettingPage.fxml");
     }
 
     public void showAccSecurity() {
-        showSettingsPanel("AccountSecurityPage.fxml");
-        loadSubComponent(middlePanel, "MiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubComponent(middlePanel, "MiddleBar.fxml");
+        if (settingMainPanel != null) loadSubComponent(settingMainPanel, "AccountSecurityPage.fxml");
     }
 
     public void showPasswordPage() {
-        showSettingsPanel("PasswordPage.fxml");
-        loadSubComponent(middlePanel, "MiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubComponent(middlePanel, "MiddleBar.fxml");
+        if (settingMainPanel != null) loadSubComponent(settingMainPanel, "PasswordPage.fxml");
     }
 
     public void showProfilePage() {
-        showSettingsPanel("PersonalInfoPage.fxml");
-        loadSubComponent(middlePanel, "InfoMiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubComponent(middlePanel, "InfoMiddleBar.fxml");
+        if (settingMainPanel != null) loadSubComponent(settingMainPanel, "PersonalInfoPage.fxml");
     }
 
     private void loadSubComponent(Pane container, String fxmlName) {
@@ -93,4 +135,3 @@ public class CustomerServiceController extends Controller {
         }
     }
 }
-
