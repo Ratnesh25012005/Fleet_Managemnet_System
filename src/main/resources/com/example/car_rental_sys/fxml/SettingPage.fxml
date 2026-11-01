@@ -5,7 +5,7 @@
 <?import javafx.scene.shape.*?>
 <?import javafx.scene.text.*?>
 
-<Pane fx:id="settingPane" prefHeight="700.0" prefWidth="820.0" style="-fx-background-color: white;" stylesheets="@../style/settingComponentLight.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.car_rental_sys.controllers.SettingPageController">
+<Pane fx:id="settingPane" prefHeight="700.0" prefWidth="820.0" style="-fx-background-color: transparent;" stylesheets="@../style/settingComponentLight.css" xmlns="http://javafx.com/javafx/11.0.2" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.car_rental_sys.controllers.SettingPageController">
    <Pane fx:id="switchPaneOne" layoutX="70.0" layoutY="87.0" prefHeight="16.0" prefWidth="30.0" />
    <Label layoutX="57.0" layoutY="115.0" styleClass="lblSecSettingText" text="Allow others to search yourself." textFill="#86909c">
       <font>

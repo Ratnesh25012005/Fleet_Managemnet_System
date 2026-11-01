@@ -107,6 +107,6 @@ public class PaySuccessPageController extends Controller {
     }
 
     private void goToOrders() {
-        Platform.runLater(() -> SceneManager.switchScene("showOrderComponent.fxml"));
+        Platform.runLater(() -> SceneManager.switchScene("customerServicePage.fxml"));
     }
 }
