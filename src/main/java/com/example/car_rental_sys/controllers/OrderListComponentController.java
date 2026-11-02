@@ -138,11 +138,12 @@ public class OrderListComponentController extends Controller {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
         for (Order o : displayedOrders) {
-            String dateStr = o.getOrderDate() != null ? o.getOrderDate().format(formatter) : "2026-11-01";
-            int amount = o.getTotalAmount() != null ? o.getTotalAmount().intValue() : 250;
+            String dateStr = o.getCreatedAt() != null ? o.getCreatedAt().format(formatter)
+                    : (o.getStartDate() != null ? o.getStartDate().format(formatter) : "2026-11-01");
+            int amount = o.getTotalPrice() != null ? o.getTotalPrice().intValue() : 250;
             int statusInt = mapOrderStatusToInt(o.getStatus());
-            String carName = (o.getVehicle() != null && o.getVehicle().getModel() != null)
-                    ? o.getVehicle().getModel().replace("_", " ")
+            String carName = (o.getVehicleModel() != null && !o.getVehicleModel().isBlank())
+                    ? o.getVehicleModel().replace("_", " ")
                     : "Vehicle #" + o.getVehicleId();
 
             UIOrderRow row = new UIOrderRow(o.getOrderId(), carName, dateStr, amount, statusInt);

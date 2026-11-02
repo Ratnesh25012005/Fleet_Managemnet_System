@@ -52,7 +52,7 @@ public class DataTools {
             msg.setReceiverId(userId);
             msg.setSubject("Rental Confirmation");
             msg.setContent(message);
-            msg.setStatus("SENT");
+            msg.setIsRead(false);
             DAOFactory.getInstance().getMessageDAO().save(msg);
         } catch (Exception ignored) {
         }
@@ -64,7 +64,7 @@ public class DataTools {
             Review review = new Review();
             review.setOrderId(orderId > 0 ? orderId : 1);
             review.setRating(rating);
-            review.setComment(commentText);
+            review.setCommentText(commentText);
             reviewDao.save(review);
             return true;
         } catch (Exception e) {
@@ -87,7 +87,7 @@ public class DataTools {
                         String.valueOf(o.getOrderId()),
                         String.valueOf(o.getVehicleId()),
                         String.valueOf(o.getCustomerId()),
-                        o.getTotalAmount() != null ? o.getTotalAmount().toPlainString() : "250",
+                        o.getTotalPrice() != null ? o.getTotalPrice().toPlainString() : "250",
                         o.getStatus() != null ? o.getStatus().name() : "CONFIRMED"
                 };
             }
@@ -110,3 +110,4 @@ public class DataTools {
         return 1;
     }
 }
+

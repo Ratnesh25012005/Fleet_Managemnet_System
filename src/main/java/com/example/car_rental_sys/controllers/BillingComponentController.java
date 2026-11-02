@@ -110,7 +110,7 @@ public class BillingComponentController extends Controller {
                 User user = ServiceFactory.getInstance().getAuthService().getCurrentUser();
                 int customerId = (user != null) ? user.getUserId() : 1;
 
-                List<Payment> payments = DAOFactory.getInstance().getPaymentDAO().findByCustomerId(customerId);
+                List<Payment> payments = DAOFactory.getInstance().getPaymentDAO().findAll();
                 Platform.runLater(() -> {
                     allPayments = payments;
                     displayedPayments = new ArrayList<>(payments);
@@ -135,10 +135,10 @@ public class BillingComponentController extends Controller {
         DateTimeFormatter timeFmt = DateTimeFormatter.ofPattern("HH:mm:ss");
 
         for (Payment p : displayedPayments) {
-            String dateStr = p.getPaymentDate() != null ? p.getPaymentDate().format(dateFmt) : "2026-11-01";
-            String timeStr = p.getPaymentDate() != null ? p.getPaymentDate().format(timeFmt) : "10:30:00";
+            String dateStr = p.getPaidAt() != null ? p.getPaidAt().format(dateFmt) : "2026-11-01";
+            String timeStr = p.getPaidAt() != null ? p.getPaidAt().format(timeFmt) : "10:30:00";
             int amount = p.getAmount() != null ? p.getAmount().intValue() : 250;
-            int status = (p.getStatus() == PaymentStatus.COMPLETED) ? 5 : ((p.getStatus() == PaymentStatus.FAILED) ? -1 : 0);
+            int status = (p.getPaymentStatus() == PaymentStatus.SUCCESS) ? 5 : ((p.getPaymentStatus() == PaymentStatus.FAILED) ? -1 : 0);
 
             UICusBillRow row = new UICusBillRow("rental", dateStr, timeStr, amount, status);
             billTableBox.getChildren().add(row);
@@ -168,7 +168,7 @@ public class BillingComponentController extends Controller {
     private void billCompleteBtnClicked(MouseEvent event) {
         setFocusBtn(billCompleteBtn);
         displayedPayments = allPayments.stream()
-                .filter(p -> p.getStatus() == PaymentStatus.COMPLETED)
+                .filter(p -> p.getPaymentStatus() == PaymentStatus.SUCCESS)
                 .toList();
         renderBillRows();
     }
@@ -177,7 +177,7 @@ public class BillingComponentController extends Controller {
     private void billPendingBtnClicked(MouseEvent event) {
         setFocusBtn(billPendingBtn);
         displayedPayments = allPayments.stream()
-                .filter(p -> p.getStatus() == PaymentStatus.PENDING)
+                .filter(p -> p.getPaymentStatus() == PaymentStatus.PENDING)
                 .toList();
         renderBillRows();
     }
@@ -186,7 +186,7 @@ public class BillingComponentController extends Controller {
     private void billCancelBtnClicked(MouseEvent event) {
         setFocusBtn(billCancelBtn);
         displayedPayments = allPayments.stream()
-                .filter(p -> p.getStatus() == PaymentStatus.FAILED || p.getStatus() == PaymentStatus.REFUNDED)
+                .filter(p -> p.getPaymentStatus() == PaymentStatus.FAILED || p.getPaymentStatus() == PaymentStatus.REFUNDED)
                 .toList();
         renderBillRows();
     }

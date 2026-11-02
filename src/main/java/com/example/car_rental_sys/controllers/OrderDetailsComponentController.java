@@ -23,6 +23,7 @@ import java.util.Optional;
  */
 public class OrderDetailsComponentController extends Controller {
 
+    public static OrderDetailsComponentController instance;
     private static Order selectedOrder;
 
     @FXML
@@ -95,8 +96,19 @@ public class OrderDetailsComponentController extends Controller {
 
     @FXML
     public void initialize() {
+        instance = this;
         populateOrderData();
         attachButtonEvents();
+    }
+
+    public void updateOrderDetails(com.example.car_rental_sys.ui_components.UIOrderRow row) {
+        if (row == null) return;
+        if (orderNum != null) orderNum.setText(String.format("%09d", row.getOrderID()));
+        if (orderDate != null) orderDate.setText(row.getOrderDate());
+        if (carName != null) carName.setText(row.getName());
+        if (carPrice != null) carPrice.setText(row.getOrderAmount());
+        if (totalAmount != null) totalAmount.setText(row.getOrderAmount());
+        if (carImg != null && row.imgCar != null) carImg.setImage(row.imgCar);
     }
 
     private void populateOrderData() {
