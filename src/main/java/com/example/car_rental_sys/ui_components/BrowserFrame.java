@@ -4,7 +4,6 @@ import com.example.car_rental_sys.StatusContainer;
 import com.example.car_rental_sys.ToolsLib.ImageTools;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.application.Platform;
-import javafx.concurrent.Worker;
 import javafx.scene.Cursor;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
@@ -18,7 +17,6 @@ import javafx.scene.web.WebView;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
-import netscape.javascript.JSObject;
 
 import java.io.File;
 import java.net.URL;
@@ -44,30 +42,21 @@ public class BrowserFrame {
         this.width = width;
         this.height = height;
         this.url = url;
+        try {
+            stage.initStyle(StageStyle.UNDECORATED);
+        } catch (Exception ignored) {}
+        stage.setResizable(false);
     }
 
     private void initBrowser() {
         WebEngine engine = webView.getEngine();
         engine.setJavaScriptEnabled(true);
 
-        // Alert listener fallback for selection events
+        // Alert listener for selection and bridge events
         engine.setOnAlert(event -> {
             String message = event.getData();
             if (message != null && !message.isBlank()) {
                 callBack(message);
-            }
-        });
-
-        // Bridge setup on page load
-        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-            if (newState == Worker.State.SUCCEEDED) {
-                try {
-                    JSObject win = (JSObject) engine.executeScript("window");
-                    if (win != null) {
-                        win.setMember("java", new JavaBridge());
-                    }
-                } catch (Exception ignored) {
-                }
             }
         });
 
@@ -105,19 +94,18 @@ public class BrowserFrame {
     }
 
     private void initStage() {
-        BorderPane browserContainer = new BorderPane(webView);
-        browserContainer.setPrefSize(width, height);
-        browserContainer.setLayoutX(0);
-        browserContainer.setLayoutY(30);
+        if (stage.getScene() == null) {
+            BorderPane browserContainer = new BorderPane(webView);
+            browserContainer.setPrefSize(width, height);
+            browserContainer.setLayoutX(0);
+            browserContainer.setLayoutY(30);
 
-        Pane root = new Pane();
-        root.getChildren().addAll(browserContainer, getCaptionBar(), getCloseButton());
+            Pane root = new Pane();
+            root.getChildren().addAll(browserContainer, getCaptionBar(), getCloseButton());
 
-        Scene scene = new Scene(root, this.width, this.height + 30);
-
-        stage.setResizable(false);
-        stage.initStyle(StageStyle.UNDECORATED);
-        stage.setScene(scene);
+            Scene scene = new Scene(root, this.width, this.height + 30);
+            stage.setScene(scene);
+        }
 
         // Center on primary stage if available
         Stage owner = SceneManager.getPrimaryStage();
@@ -174,31 +162,39 @@ public class BrowserFrame {
 
     protected void callBack(String message) {
         if (callBackFunc != null) {
-            callBackFunc.apply(message);
+            Platform.runLater(() -> callBackFunc.apply(message));
         }
-        Platform.runLater(() -> stage.close());
+        Platform.runLater(() -> {
+            try {
+                stage.close();
+            } catch (Exception ignored) {}
+        });
     }
 
     public void show() {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::show);
+            return;
+        }
         initBrowser();
         initStage();
         stage.show();
     }
 
     public void setModality() {
-        stage.initModality(Modality.APPLICATION_MODAL);
-        Stage owner = SceneManager.getPrimaryStage();
-        if (owner != null) {
-            stage.initOwner(owner);
-        }
+        setModality(Modality.APPLICATION_MODAL);
     }
 
     public void setModality(Modality modal) {
-        stage.initModality(modal);
-        Stage owner = SceneManager.getPrimaryStage();
-        if (owner != null) {
-            stage.initOwner(owner);
-        }
+        try {
+            stage.initModality(modal);
+        } catch (Exception ignored) {}
+        try {
+            Stage owner = SceneManager.getPrimaryStage();
+            if (owner != null && owner.isShowing()) {
+                stage.initOwner(owner);
+            }
+        } catch (Exception ignored) {}
     }
 
     public void setFunction(Function<String, Void> func) {
@@ -224,3 +220,4 @@ public class BrowserFrame {
         }
     }
 }
+

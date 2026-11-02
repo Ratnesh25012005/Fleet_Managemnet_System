@@ -37,3 +37,4 @@ public class BrowserModal extends BrowserFrame {
         super.setFunction(func);
     }
 }
+
