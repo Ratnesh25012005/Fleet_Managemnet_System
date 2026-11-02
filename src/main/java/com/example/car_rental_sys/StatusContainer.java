@@ -20,8 +20,8 @@ public class StatusContainer {
 
     public static String pickDateTime = null;
     public static String returnDateTime = null;
-    public static long pickUpTimeStamp = 0;
-    public static long returnTimeStamp = 0;
+    public static long pickUpTimeStamp = System.currentTimeMillis() + 3600_000L;
+    public static long returnTimeStamp = System.currentTimeMillis() + 48L * 3600_000L;
 
     public static String carDetailsEntrance = "catalog";
     public static String loginEntrance = "mainPage";
@@ -31,6 +31,7 @@ public class StatusContainer {
 
     public static User currentUser = null;
     public static Vehicle currentVehicle = null;
+    public static int currentCarID = 1;
     public static Order currentOrder = null;
     public static int currentOrderID = 1;
 

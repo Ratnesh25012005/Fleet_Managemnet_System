@@ -90,7 +90,7 @@ public class CarsListController extends Controller {
             String price = (v.getDailyRate() != null) ? v.getDailyRate().toPlainString() : "850";
             String transmission = (v.getTransmission() != null) ? v.getTransmission().name() : "Automatic";
 
-            CarCard card = new CarCard(modelKey, seats, price, transmission, gradients[0], gradients[1]);
+            CarCard card = new CarCard(v, modelKey, seats, price, transmission, gradients[0], gradients[1]);
             flowPane.getChildren().add(card);
         }
     }
@@ -98,21 +98,30 @@ public class CarsListController extends Controller {
     private void renderDefaultCards() {
         flowPane.getChildren().clear();
         String[][] defaultModels = {
-                {"Huracan_EVI", "2", "1200", "Automatic"},
-                {"Porsche_718", "2", "850", "Automatic"},
-                {"Ferrari_488", "2", "1500", "Automatic"},
-                {"McLaren_720S", "2", "1400", "Automatic"},
-                {"BMW_M4", "4", "600", "Automatic"},
-                {"Mercedes_AMG_GT", "2", "1100", "Automatic"},
-                {"Audi_R8", "2", "1300", "Automatic"},
-                {"Aston_Martin_Vantage", "2", "1350", "Automatic"},
-                {"Ford_Mustang_GT", "4", "450", "Automatic"},
-                {"Nissan_GTR", "4", "900", "Automatic"}
+                {"Huracan_EVI", "2", "350", "Automatic"},
+                {"Porsche_718", "2", "250", "Automatic"},
+                {"Ferrari_488", "2", "450", "Automatic"},
+                {"McLaren_720S", "2", "420", "Automatic"},
+                {"BMW_M4", "4", "180", "Automatic"},
+                {"Mercedes_AMG_GT", "2", "320", "Automatic"},
+                {"Audi_R8", "2", "380", "Automatic"},
+                {"Aston_Martin_Vantage", "2", "390", "Automatic"},
+                {"Ford_Mustang_GT", "4", "220", "Automatic"},
+                {"Nissan_GTR", "4", "260", "Automatic"}
         };
 
-        for (String[] m : defaultModels) {
+        for (int i = 0; i < defaultModels.length; i++) {
+            String[] m = defaultModels[i];
             String[] gradients = MODEL_GRADIENTS.getOrDefault(m[0], new String[]{"#0a1c38", "#1669e0"});
-            CarCard card = new CarCard(m[0], m[1], m[2], m[3], gradients[0], gradients[1]);
+            Vehicle mockV = new Vehicle();
+            mockV.setVehicleId(i + 1);
+            mockV.setBrand(m[0].split("_")[0]);
+            mockV.setModel(m[0].replace("_", " "));
+            mockV.setSeats(Integer.parseInt(m[1]));
+            mockV.setDailyRate(new java.math.BigDecimal(m[2]));
+            mockV.setImagePath("/com/example/car_rental_sys/image/cars/" + m[0] + ".png");
+
+            CarCard card = new CarCard(mockV, m[0], m[1], m[2], m[3], gradients[0], gradients[1]);
             flowPane.getChildren().add(card);
         }
     }

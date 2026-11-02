@@ -138,13 +138,62 @@ public class CarDetailsPageController extends Controller {
 
     public static void setSelectedVehicle(Vehicle vehicle) {
         selectedVehicle = vehicle;
-        if (vehicle != null && vehicle.getModel() != null) {
-            StatusContainer.currentCarChose = vehicle.getModel().replace(" ", "_");
+        StatusContainer.currentVehicle = vehicle;
+        if (vehicle != null) {
+            StatusContainer.currentCarID = vehicle.getVehicleId();
+            if (vehicle.getModel() != null) {
+                StatusContainer.currentCarChose = vehicle.getModel().replace(" ", "_");
+            }
         }
     }
 
     public static Vehicle getSelectedVehicle() {
         return selectedVehicle;
+    }
+
+    private void ensureVehicleResolved() {
+        if (selectedVehicle == null || (selectedVehicle.getModel() != null && !matchesModel(selectedVehicle, StatusContainer.currentCarChose))) {
+            selectedVehicle = resolveVehicle(StatusContainer.currentCarChose);
+            if (selectedVehicle != null) {
+                setSelectedVehicle(selectedVehicle);
+            }
+        }
+    }
+
+    private boolean matchesModel(Vehicle v, String modelKey) {
+        if (v == null || modelKey == null) return false;
+        String cleanKey = modelKey.replace("_", " ").toLowerCase();
+        String m = v.getModel() != null ? v.getModel().toLowerCase() : "";
+        String b = v.getBrand() != null ? v.getBrand().toLowerCase() : "";
+        return m.contains(cleanKey) || cleanKey.contains(m) || b.contains(cleanKey) || cleanKey.contains(b);
+    }
+
+    public static Vehicle resolveVehicle(String modelKey) {
+        try {
+            com.example.car_rental_sys.service.VehicleService vs = ServiceFactory.getInstance().getVehicleService();
+            List<Vehicle> list = vs.getAllVehicles();
+            if (list != null && !list.isEmpty()) {
+                String clean = modelKey != null ? modelKey.replace("_", "").toLowerCase() : "";
+                for (Vehicle v : list) {
+                    String vModel = v.getModel() != null ? v.getModel().replace(" ", "").toLowerCase() : "";
+                    String vBrand = v.getBrand() != null ? v.getBrand().replace(" ", "").toLowerCase() : "";
+                    if (vModel.contains(clean) || clean.contains(vModel) || clean.contains(vBrand)) {
+                        return v;
+                    }
+                }
+                return list.get(0);
+            }
+        } catch (Exception ignored) {
+        }
+
+        Vehicle fallback = new Vehicle();
+        fallback.setVehicleId(1);
+        fallback.setBrand("Lamborghini");
+        fallback.setModel("Huracan EVO");
+        fallback.setSeats(2);
+        fallback.setDailyRate(new java.math.BigDecimal("350.00"));
+        fallback.setImagePath("/com/example/car_rental_sys/image/cars/Huracan_EVI.png");
+        return fallback;
     }
 
     @FXML
@@ -154,6 +203,7 @@ public class CarDetailsPageController extends Controller {
         if (StatusContainer.currentCarChose == null || StatusContainer.currentCarChose.isBlank()) {
             StatusContainer.currentCarChose = "Huracan_EVI";
         }
+        ensureVehicleResolved();
 
         initContainPaneEvent();
         initImage();
@@ -416,14 +466,24 @@ public class CarDetailsPageController extends Controller {
         if (nextIndex >= CAR_MODELS.length) nextIndex = 0;
 
         StatusContainer.currentCarChose = CAR_MODELS[nextIndex];
+        Vehicle newV = resolveVehicle(CAR_MODELS[nextIndex]);
+        if (newV != null) {
+            setSelectedVehicle(newV);
+        }
         FXTools.changeScene("carDetailsPage.fxml");
     }
 
     @FXML
     private void rentNowBtnClickEvent() {
+        ensureVehicleResolved();
+
         AuthService authService = ServiceFactory.getInstance().getAuthService();
-        if (authService.getCurrentUser() != null) {
-            if (authService.getCurrentUser().getRole() == Role.ADMIN || authService.getCurrentUser().getRole() == Role.DRIVER) {
+        com.example.car_rental_sys.model.User currentUser = authService.getCurrentUser() != null
+                ? authService.getCurrentUser()
+                : StatusContainer.currentUser;
+
+        if (currentUser != null) {
+            if (currentUser.getRole() == Role.ADMIN || currentUser.getRole() == Role.DRIVER) {
                 MessageFrame messageFrame = new MessageFrame(MessageFrameType.CONFIRM, "You are currently logged in as staff. Please log in as a customer to rent a vehicle.");
                 messageFrame.setSuccessCallbackFunc((i) -> {
                     FXTools.changeScene("loginPage.fxml");
@@ -434,23 +494,29 @@ public class CarDetailsPageController extends Controller {
             }
         }
 
-        // Check if user chose date
-        if (StatusContainer.pickUpTimeStamp == 0 || StatusContainer.returnTimeStamp == 0) {
-            showDatePicker();
-            return;
+        // Ensure dates are valid
+        if (StatusContainer.pickUpTimeStamp == 0 || StatusContainer.returnTimeStamp == 0 || StatusContainer.returnTimeStamp <= StatusContainer.pickUpTimeStamp) {
+            StatusContainer.pickUpTimeStamp = System.currentTimeMillis() + 3600_000L;
+            StatusContainer.returnTimeStamp = StatusContainer.pickUpTimeStamp + 48L * 3600_000L;
+            StatusContainer.pickDateTime = DateTools.formatDateTime(new Date(StatusContainer.pickUpTimeStamp));
+            StatusContainer.returnDateTime = DateTools.formatDateTime(new Date(StatusContainer.returnTimeStamp));
         }
 
-        // Check if user chose location
+        // Ensure location is valid
         if (StatusContainer.pickUpLocation == null || StatusContainer.pickUpLocation.isBlank()) {
-            showLocationPicker();
-            return;
+            StatusContainer.pickUpLocation = "Asia Pacific University of Technology & Innovation (APU)";
+            StatusContainer.locationChose = StatusContainer.pickUpLocation;
         }
 
         // Check if user is logged in
-        if (authService.getCurrentUser() == null) {
+        if (currentUser == null) {
             StatusContainer.loginEntrance = "carDetails";
             FXTools.changeScene("loginPage.fxml");
             return;
+        }
+
+        if (selectedVehicle != null) {
+            setSelectedVehicle(selectedVehicle);
         }
 
         // Proceed to payment page

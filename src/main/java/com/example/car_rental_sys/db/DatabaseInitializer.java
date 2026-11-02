@@ -86,6 +86,7 @@ public final class DatabaseInitializer {
             LOGGER.info("Database schema already initialized. Preserving existing fleet data.");
             try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
                 ensureAdminUser(conn);
+                ensureDefaultVehicles(conn);
             } catch (Exception ignored) {
             }
             return true;
@@ -145,6 +146,23 @@ public final class DatabaseInitializer {
             LOGGER.info("Verified default admin credentials (admin / admin123).");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Note verifying admin account: {0}", e.getMessage());
+        }
+    }
+
+    public static void ensureDefaultVehicles(Connection conn) {
+        String sql = "INSERT INTO `vehicles` (`vehicle_id`, `category_id`, `brand`, `model`, `year`, `license_plate`, `color`, `seats`, `transmission`, `fuel_type`, `daily_rate`, `mileage`, `status`, `image_path`) VALUES " +
+                "(1, 3, 'Lamborghini', 'Huracan EVO', 2024, 'LMB-001', 'Arancio Xanto', 2, 'AUTOMATIC', 'PETROL', 350.00, 1200, 'AVAILABLE', '/com/example/car_rental_sys/image/cars/Huracan_EVI.png'), " +
+                "(2, 4, 'Tesla', 'Model 3', 2024, 'TSL-002', 'Pearl White', 5, 'AUTOMATIC', 'ELECTRIC', 120.00, 4500, 'AVAILABLE', '/com/example/car_rental_sys/image/cars/Tesla_Model_3.png'), " +
+                "(3, 3, 'Porsche', '718 Cayman', 2024, 'POR-003', 'Guards Red', 2, 'AUTOMATIC', 'PETROL', 250.00, 2800, 'AVAILABLE', '/com/example/car_rental_sys/image/cars/Porsche_718.png'), " +
+                "(4, 3, 'Ferrari', '488 Spider', 2023, 'FER-004', 'Rosso Corsa', 2, 'AUTOMATIC', 'PETROL', 450.00, 3100, 'AVAILABLE', '/com/example/car_rental_sys/image/cars/Ferrari_488.png'), " +
+                "(5, 3, 'McLaren', '720S', 2024, 'MCL-005', 'Papaya Orange', 2, 'AUTOMATIC', 'PETROL', 420.00, 1500, 'AVAILABLE', '/com/example/car_rental_sys/image/cars/McLaren_720S.png'), " +
+                "(6, 1, 'BMW', 'M4 Competition', 2024, 'BMW-006', 'Isle of Man Green', 4, 'AUTOMATIC', 'PETROL', 180.00, 5200, 'AVAILABLE', '/com/example/car_rental_sys/image/cars/BMW_M4.png') " +
+                "ON DUPLICATE KEY UPDATE `status` = 'AVAILABLE', `daily_rate` = VALUES(`daily_rate`);";
+        try (Statement stmt = conn.createStatement()) {
+            stmt.executeUpdate(sql);
+            LOGGER.info("Verified default fleet vehicle catalog in MySQL.");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Note verifying default fleet vehicles: {0}", e.getMessage());
         }
     }
 }

@@ -46,13 +46,34 @@ public class DateTools {
     }
 
     public static long dateTimeToTimestamp(String dateStr) {
-        try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Date d = sdf.parse(dateStr);
-            return d.getTime();
-        } catch (Exception e) {
+        if (dateStr == null || dateStr.isBlank()) {
             return System.currentTimeMillis();
         }
+        String[] patterns = {
+                "yyyy-MM-dd HH:mm:ss",
+                "yyyy-MM-dd HH:mm",
+                "yyyy-MM-dd",
+                "MMM dd, yyyy, hh:mm a",
+                "MMM dd, yyyy HH:mm",
+                "MMM dd, hh:mm a",
+                "MMM dd, HH:mm"
+        };
+        for (String pattern : patterns) {
+            try {
+                SimpleDateFormat sdf = new SimpleDateFormat(pattern, Locale.ENGLISH);
+                Date d = sdf.parse(dateStr);
+                if (!pattern.contains("yyyy")) {
+                    java.util.Calendar cal = java.util.Calendar.getInstance();
+                    int curYear = cal.get(java.util.Calendar.YEAR);
+                    cal.setTime(d);
+                    cal.set(java.util.Calendar.YEAR, curYear);
+                    return cal.getTimeInMillis();
+                }
+                return d.getTime();
+            } catch (Exception ignored) {
+            }
+        }
+        return System.currentTimeMillis();
     }
 
     public static boolean validateDate(String start, String end) {

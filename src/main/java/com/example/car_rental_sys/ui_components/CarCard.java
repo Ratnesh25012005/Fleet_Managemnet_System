@@ -3,6 +3,8 @@ package com.example.car_rental_sys.ui_components;
 import com.example.car_rental_sys.StatusContainer;
 import com.example.car_rental_sys.ToolsLib.FXTools;
 import com.example.car_rental_sys.ToolsLib.ImageTools;
+import com.example.car_rental_sys.controllers.CarDetailsPageController;
+import com.example.car_rental_sys.model.Vehicle;
 import javafx.geometry.Pos;
 import javafx.scene.Cursor;
 import javafx.scene.control.Label;
@@ -24,9 +26,15 @@ public class CarCard extends Pane {
     private String carType;
     private String gradientDark;
     private String gradientLight;
+    private Vehicle vehicle;
 
     public CarCard(String brandModel, String passengers, String price, String carType, String gradientDark, String gradientLight) {
+        this(null, brandModel, passengers, price, carType, gradientDark, gradientLight);
+    }
+
+    public CarCard(Vehicle vehicle, String brandModel, String passengers, String price, String carType, String gradientDark, String gradientLight) {
         super();
+        this.vehicle = vehicle;
         this.brandModel = brandModel;
         this.passengers = passengers;
         this.price = price;
@@ -136,6 +144,11 @@ public class CarCard extends Pane {
     private void addClickEvent() {
         this.setOnMouseClicked(event -> {
             StatusContainer.currentCarChose = this.brandModel;
+            if (this.vehicle != null) {
+                StatusContainer.currentVehicle = this.vehicle;
+                StatusContainer.currentCarID = this.vehicle.getVehicleId();
+                CarDetailsPageController.setSelectedVehicle(this.vehicle);
+            }
             goToDetailsPage();
         });
     }
