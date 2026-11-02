@@ -17,8 +17,10 @@ import com.example.car_rental_sys.util.DatePickerModal;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.animation.FadeTransition;
 import javafx.application.Platform;
-import javafx.concurrent.Worker;
 import javafx.fxml.FXML;
+import javafx.geometry.VPos;
+import javafx.scene.canvas.Canvas;
+import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.Image;
@@ -27,9 +29,12 @@ import javafx.scene.input.KeyCode;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.FlowPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.paint.Color;
+import javafx.scene.text.Font;
+import javafx.scene.text.FontWeight;
+import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 import javafx.util.Duration;
 
@@ -158,7 +163,7 @@ public class CarDetailsPageController extends Controller {
         initComments();
         backBtnClickEvent();
         initKeyTips();
-        initWebView();
+        initRadarChart();
     }
 
     private void initImage() {
@@ -276,28 +281,113 @@ public class CarDetailsPageController extends Controller {
         }
     }
 
-    private void initWebView() {
+    private void initRadarChart() {
         if (webview == null) return;
-        WebEngine engine = webview.getEngine();
-        engine.setJavaScriptEnabled(true);
+        webview.setVisible(false);
+
+        Pane parent = (Pane) webview.getParent();
+        if (parent == null) return;
+
+        parent.getChildren().removeIf(node -> "nativeRadarCanvas".equals(node.getId()));
 
         double[] radar = RADAR_DATA.getOrDefault(StatusContainer.currentCarChose, new double[]{3.8, 4.2, 4.3, 4.2, 3.8, 3.1});
-        String radarDataStr = Arrays.toString(radar);
+        Canvas canvas = drawRadarCanvas(397, 311, radar);
+        canvas.setId("nativeRadarCanvas");
+        canvas.setLayoutX(webview.getLayoutX());
+        canvas.setLayoutY(webview.getLayoutY());
 
-        URL url = getClass().getResource("/com/example/car_rental_sys/html/radar.html");
-        if (url != null) {
-            engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-                if (newState == Worker.State.SUCCEEDED) {
-                    Platform.runLater(() -> {
-                        try {
-                            engine.executeScript("initRadar(" + radarDataStr + ");");
-                        } catch (Exception ignored) {
-                        }
-                    });
-                }
-            });
-            engine.load(url.toExternalForm());
+        parent.getChildren().add(canvas);
+    }
+
+    private Canvas drawRadarCanvas(double width, double height, double[] values) {
+        Canvas canvas = new Canvas(width, height);
+        GraphicsContext gc = canvas.getGraphicsContext2D();
+
+        double cx = width / 2.0;
+        double cy = height / 2.0;
+        double radius = Math.min(width, height) * 0.35; // ~108px
+
+        String[] labels = {"Power", "Comfort", "Handling", "Space", "Allocation", "Interior"};
+        int n = 6;
+        double startAngleRad = Math.toRadians(120);
+
+        // 1. Concentric hexagon rings (grid)
+        gc.setLineWidth(1.0);
+        gc.setStroke(Color.web("#444444"));
+
+        for (int ring = 1; ring <= 5; ring++) {
+            double r = radius * (ring / 5.0);
+            double[] xPoints = new double[n];
+            double[] yPoints = new double[n];
+            for (int i = 0; i < n; i++) {
+                double angle = startAngleRad + (i * 2 * Math.PI / n);
+                xPoints[i] = cx + r * Math.cos(angle);
+                yPoints[i] = cy - r * Math.sin(angle);
+            }
+            gc.strokePolygon(xPoints, yPoints, n);
         }
+
+        // 2. Radial axis lines & text labels
+        gc.setFont(Font.font("System", FontWeight.BOLD, 12));
+        gc.setTextAlign(TextAlignment.CENTER);
+        gc.setTextBaseline(VPos.CENTER);
+
+        for (int i = 0; i < n; i++) {
+            double angle = startAngleRad + (i * 2 * Math.PI / n);
+            double endX = cx + radius * Math.cos(angle);
+            double endY = cy - radius * Math.sin(angle);
+
+            // Axis line
+            gc.setStroke(Color.web("#555555"));
+            gc.setLineWidth(1.2);
+            gc.strokeLine(cx, cy, endX, endY);
+
+            // Label position
+            double labelR = radius + 22;
+            double lx = cx + labelR * Math.cos(angle);
+            double ly = cy - labelR * Math.sin(angle);
+
+            gc.setFill(Color.web("#dcdcdc"));
+            gc.fillText(labels[i], lx, ly);
+        }
+
+        // 3. Data polygon
+        double[] dataX = new double[n];
+        double[] dataY = new double[n];
+        for (int i = 0; i < n; i++) {
+            double val = (i < values.length) ? values[i] : 3.5;
+            double r = radius * Math.min(1.0, Math.max(0.1, val / 5.0));
+            double angle = startAngleRad + (i * 2 * Math.PI / n);
+            dataX[i] = cx + r * Math.cos(angle);
+            dataY[i] = cy - r * Math.sin(angle);
+        }
+
+        // Fill polygon (blue with opacity)
+        gc.setFill(Color.web("#165dff", 0.35));
+        gc.fillPolygon(dataX, dataY, n);
+
+        // Stroke polygon
+        gc.setStroke(Color.web("#165dff"));
+        gc.setLineWidth(2.8);
+        gc.strokePolygon(dataX, dataY, n);
+
+        // 4. Dot markers at each vertex
+        for (int i = 0; i < n; i++) {
+            // Glow
+            gc.setFill(Color.web("#CAE943", 0.35));
+            gc.fillOval(dataX[i] - 7, dataY[i] - 7, 14, 14);
+
+            // Inner dot
+            gc.setFill(Color.web("#CAE943"));
+            gc.fillOval(dataX[i] - 4, dataY[i] - 4, 8, 8);
+
+            // Dot border
+            gc.setStroke(Color.web("#ffffff"));
+            gc.setLineWidth(1.2);
+            gc.strokeOval(dataX[i] - 4, dataY[i] - 4, 8, 8);
+        }
+
+        return canvas;
     }
 
     private void initContainPaneEvent() {
