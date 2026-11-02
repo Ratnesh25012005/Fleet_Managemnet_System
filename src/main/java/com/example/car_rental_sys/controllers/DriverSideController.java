@@ -115,33 +115,52 @@ public class DriverSideController extends Controller {
     }
 
     private void attachNavigationHandlers() {
-        if (item1 != null) {
-            item1.setOnMouseClicked(event -> {
-                if (DriverMainPageController.driverMainPageInstance != null) {
-                    DriverMainPageController.driverMainPageInstance.showProfilePage();
-                } else {
-                    SceneManager.switchScene("PersonalInfoPage.fxml");
-                }
-            });
-        }
-        if (item2 != null) {
-            item2.setOnMouseClicked(event -> SceneManager.switchScene("messagePage.fxml"));
-        }
-        if (item3 != null) {
-            item3.setOnMouseClicked(event -> SceneManager.switchScene("drivingModePage.fxml"));
-        }
-        if (item4 != null) {
-            item4.setOnMouseClicked(event -> {
-                if (DriverMainPageController.driverMainPageInstance != null) {
-                    DriverMainPageController.driverMainPageInstance.showSettingPage();
-                } else {
-                    SceneManager.switchScene("SettingPage.fxml");
-                }
-            });
-        }
-        if (item5 != null) {
-            item5.setOnMouseClicked(event -> handleLogout());
-        }
+        Runnable openProfile = () -> {
+            if (DriverMainPageController.driverMainPageInstance != null) {
+                DriverMainPageController.driverMainPageInstance.showProfilePage();
+            } else {
+                SceneManager.switchScene("driverServicePage.fxml");
+                Platform.runLater(() -> {
+                    if (DriverMainPageController.driverMainPageInstance != null) {
+                        DriverMainPageController.driverMainPageInstance.showProfilePage();
+                    }
+                });
+            }
+        };
+        if (item1 != null) item1.setOnMouseClicked(e -> openProfile.run());
+        if (imgIcon1 != null) imgIcon1.setOnMouseClicked(e -> openProfile.run());
+
+        Runnable openMessage = () -> SceneManager.switchScene("messagePage.fxml");
+        if (item2 != null) item2.setOnMouseClicked(e -> openMessage.run());
+        if (imgIcon2 != null) imgIcon2.setOnMouseClicked(e -> openMessage.run());
+
+        Runnable openWorkplace = () -> {
+            if (DriverMainPageController.driverMainPageInstance != null) {
+                DriverMainPageController.driverMainPageInstance.showWorkplace();
+            } else {
+                SceneManager.switchScene("driverServicePage.fxml");
+            }
+        };
+        if (item3 != null) item3.setOnMouseClicked(e -> openWorkplace.run());
+        if (imgIcon3 != null) imgIcon3.setOnMouseClicked(e -> openWorkplace.run());
+
+        Runnable openSetting = () -> {
+            if (DriverMainPageController.driverMainPageInstance != null) {
+                DriverMainPageController.driverMainPageInstance.showSettingPage();
+            } else {
+                SceneManager.switchScene("driverServicePage.fxml");
+                Platform.runLater(() -> {
+                    if (DriverMainPageController.driverMainPageInstance != null) {
+                        DriverMainPageController.driverMainPageInstance.showSettingPage();
+                    }
+                });
+            }
+        };
+        if (item4 != null) item4.setOnMouseClicked(e -> openSetting.run());
+        if (imgIcon4 != null) imgIcon4.setOnMouseClicked(e -> openSetting.run());
+
+        if (item5 != null) item5.setOnMouseClicked(e -> handleLogout());
+        if (imgIcon5 != null) imgIcon5.setOnMouseClicked(e -> handleLogout());
     }
 
     private void handleLogout() {
@@ -149,4 +168,3 @@ public class DriverSideController extends Controller {
         SceneManager.switchScene("loginPage.fxml");
     }
 }
-

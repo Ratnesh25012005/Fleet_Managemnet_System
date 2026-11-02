@@ -51,12 +51,7 @@ public class AdminServiceController extends Controller {
     @FXML
     public void initialize() {
         instance = this;
-        if (dashboardContainer != null) {
-            dashboardContainer.setVisible(true);
-        }
-        if (hugeContainer != null) {
-            hugeContainer.setVisible(false);
-        }
+        showDashboardPage();
 
         if (toRightPane != null) {
             toRightPane.setOnMouseClicked(event -> toggleContainers());
@@ -71,37 +66,89 @@ public class AdminServiceController extends Controller {
         }
     }
 
-    public void showSettingsView(String fxmlName) {
+    public void showDashboardPage() {
+        if (dashboardContainer != null) dashboardContainer.setVisible(true);
+        if (hugeContainer != null) hugeContainer.setVisible(false);
+        if (centerContainer != null) centerContainer.setVisible(false);
+        if (rightContainer != null) rightContainer.setVisible(false);
+    }
+
+    public void showVehiclePage() {
         if (dashboardContainer != null) dashboardContainer.setVisible(false);
+        if (centerContainer != null) centerContainer.setVisible(false);
+        if (rightContainer != null) rightContainer.setVisible(false);
         if (hugeContainer != null) {
             hugeContainer.setVisible(true);
-            if (settingMainPanel != null) {
-                loadSubView(settingMainPanel, fxmlName);
+            loadSubView(hugeContainer, "AdminVehiclePage.fxml");
+        }
+    }
+
+    public void showOrderPage() {
+        if (dashboardContainer != null) dashboardContainer.setVisible(false);
+        if (hugeContainer != null) hugeContainer.setVisible(false);
+        if (centerContainer != null) {
+            centerContainer.setVisible(true);
+            loadSubView(centerContainer, "showOrderComponent.fxml");
+        }
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubView(rightContainer, "OrderDetailsComponent.fxml");
+        }
+    }
+
+    public void showOrderDetails() {
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubView(rightContainer, "OrderDetailsComponent.fxml");
+        }
+    }
+
+    public void showTrackOrder() {
+        if (rightContainer != null) {
+            rightContainer.setVisible(true);
+            loadSubView(rightContainer, "TrackOrderComponent.fxml");
+        }
+    }
+
+    private void initHugeSettingsContainer() {
+        if (dashboardContainer != null) dashboardContainer.setVisible(false);
+        if (centerContainer != null) centerContainer.setVisible(false);
+        if (rightContainer != null) rightContainer.setVisible(false);
+        if (hugeContainer != null) {
+            hugeContainer.setVisible(true);
+            hugeContainer.getChildren().clear();
+            if (middlePanel != null && settingMainPanel != null) {
+                hugeContainer.getChildren().addAll(middlePanel, settingMainPanel);
             }
         }
     }
 
     public void showSettingPage() {
-        showSettingsView("SettingPage.fxml");
-        loadSubView(middlePanel, "MiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubView(middlePanel, "MiddleBar.fxml");
+        if (settingMainPanel != null) loadSubView(settingMainPanel, "SettingPage.fxml");
     }
 
     public void showAccSecurity() {
-        showSettingsView("AccountSecurityPage.fxml");
-        loadSubView(middlePanel, "MiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubView(middlePanel, "MiddleBar.fxml");
+        if (settingMainPanel != null) loadSubView(settingMainPanel, "AccountSecurityPage.fxml");
     }
 
     public void showPasswordPage() {
-        showSettingsView("PasswordPage.fxml");
-        loadSubView(middlePanel, "MiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubView(middlePanel, "MiddleBar.fxml");
+        if (settingMainPanel != null) loadSubView(settingMainPanel, "PasswordPage.fxml");
     }
 
     public void showProfilePage() {
-        showSettingsView("PersonalInfoPage.fxml");
-        loadSubView(middlePanel, "InfoMiddleBar.fxml");
+        initHugeSettingsContainer();
+        if (middlePanel != null) loadSubView(middlePanel, "InfoMiddleBar.fxml");
+        if (settingMainPanel != null) loadSubView(settingMainPanel, "PersonalInfoPage.fxml");
     }
 
     private void loadSubView(Pane targetPane, String fxmlName) {
+        if (targetPane == null) return;
         try {
             URL resource = getClass().getResource("/com/example/car_rental_sys/fxml/" + fxmlName);
             if (resource != null) {
@@ -113,4 +160,3 @@ public class AdminServiceController extends Controller {
         }
     }
 }
-

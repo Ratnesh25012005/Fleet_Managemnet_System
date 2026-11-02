@@ -127,7 +127,7 @@ public final class SceneManager {
         if (primaryStage != null) {
             Rectangle2D screenBounds = Screen.getPrimary().getVisualBounds();
             double x = screenBounds.getMinX() + Math.max(0.0, (screenBounds.getWidth() - primaryStage.getWidth()) / 2);
-            double y = screenBounds.getMinY() + Math.max(30.0, (screenBounds.getHeight() - primaryStage.getHeight()) / 2);
+            double y = screenBounds.getMinY() + Math.max(0.0, (screenBounds.getHeight() - primaryStage.getHeight()) / 2);
             primaryStage.setX(x);
             primaryStage.setY(y);
         }

@@ -95,7 +95,11 @@ public class TrackOrderController extends Controller {
                 Platform.runLater(() -> {
                     btnReceive.setText("Received");
                     AlertHelper.showSuccess("Trip Completed", "Vehicle handover confirmed. Thank you for choosing our fleet service!");
-                    SceneManager.switchScene("showOrderComponent.fxml");
+                    if (CustomerServiceController.instance != null) {
+            CustomerServiceController.instance.closeTrackOrder();
+        } else {
+            SceneManager.switchScene("customerServicePage.fxml");
+        }
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
@@ -109,7 +113,11 @@ public class TrackOrderController extends Controller {
 
     @FXML
     private void leftIconClicked(MouseEvent event) {
-        SceneManager.switchScene("showOrderComponent.fxml");
+        if (CustomerServiceController.instance != null) {
+            CustomerServiceController.instance.closeTrackOrder();
+        } else {
+            SceneManager.switchScene("customerServicePage.fxml");
+        }
     }
 }
 

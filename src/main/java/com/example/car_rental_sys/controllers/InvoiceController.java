@@ -120,7 +120,7 @@ public class InvoiceController extends Controller {
 
     @FXML
     private void cancelBtnClick(MouseEvent event) {
-        SceneManager.switchScene("showOrderComponent.fxml");
+        SceneManager.switchScene("customerServicePage.fxml");
     }
 
     @FXML

@@ -90,28 +90,38 @@ public class MainPageController extends Controller {
 
     @FXML
     private void locationBtnClick(MouseEvent event) {
-        locationIndex = (locationIndex + 1) % locations.length;
-        if (locationText != null) {
-            locationText.setText(locations[locationIndex]);
-        }
+        com.example.car_rental_sys.util.LocationPickerModal modal =
+                new com.example.car_rental_sys.util.LocationPickerModal(
+                        SceneManager.getPrimaryStage(),
+                        selectedLocation -> {
+                            if (locationText != null && selectedLocation != null) {
+                                locationText.setText(selectedLocation);
+                            }
+                        }
+                );
+        modal.show();
     }
 
     @FXML
     private void pickUpBtnClick(MouseEvent event) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
-        LocalDate date = LocalDate.now();
-        if (pickUpDateLabel != null) {
-            pickUpDateLabel.setText(date.format(formatter) + " 09:00 AM");
-        }
+        openDatePickerModal();
     }
 
     @FXML
     private void returnBtnClick(MouseEvent event) {
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMM dd, yyyy");
-        LocalDate date = LocalDate.now().plusDays(5);
-        if (returnDateLabel != null) {
-            returnDateLabel.setText(date.format(formatter) + " 06:00 PM");
-        }
+        openDatePickerModal();
+    }
+
+    private void openDatePickerModal() {
+        com.example.car_rental_sys.util.DatePickerModal modal =
+                new com.example.car_rental_sys.util.DatePickerModal(
+                        SceneManager.getPrimaryStage(),
+                        (pickStr, retStr) -> {
+                            if (pickUpDateLabel != null) pickUpDateLabel.setText(pickStr);
+                            if (returnDateLabel != null) returnDateLabel.setText(retStr);
+                        }
+                );
+        modal.show();
     }
 }
 
