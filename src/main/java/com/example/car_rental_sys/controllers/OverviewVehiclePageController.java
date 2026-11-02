@@ -2,187 +2,118 @@ package com.example.car_rental_sys.controllers;
 
 import com.example.car_rental_sys.concurrency.AsyncExecutor;
 import com.example.car_rental_sys.model.Vehicle;
-import com.example.car_rental_sys.model.VehicleStatus;
 import com.example.car_rental_sys.service.ServiceFactory;
 import com.example.car_rental_sys.service.VehicleService;
-import com.example.car_rental_sys.util.AlertHelper;
+import com.example.car_rental_sys.ui_components.VehicleCard;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
+import javafx.scene.layout.FlowPane;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Controller for the Fleet Inventory Overview Table within the Admin Panel.
+ * Controller for Admin Fleet Overview (OverviewVehiclePage.fxml).
+ * Uses authentic 233x221 VehicleCard components with specs and Edit modal buttons.
  */
 public class OverviewVehiclePageController extends Controller {
 
     @FXML
     private ScrollPane scrollPaneVehicle;
 
-    private VBox tableContainer;
+    private FlowPane flowPane;
+
+    private static final Map<String, String[]> MODEL_GRADIENTS = new HashMap<>();
+
+    static {
+        MODEL_GRADIENTS.put("Huracan_EVI", new String[]{"#430707", "#EE0D0D"});
+        MODEL_GRADIENTS.put("Porsche_718", new String[]{"#0a1c38", "#1669e0"});
+        MODEL_GRADIENTS.put("Ferrari_488", new String[]{"#360505", "#c71212"});
+        MODEL_GRADIENTS.put("McLaren_720S", new String[]{"#2c1200", "#cc5803"});
+        MODEL_GRADIENTS.put("BMW_M4", new String[]{"#0b2520", "#17826d"});
+        MODEL_GRADIENTS.put("Mercedes_AMG_GT", new String[]{"#1a1a1a", "#6b7280"});
+        MODEL_GRADIENTS.put("Audi_R8", new String[]{"#111827", "#374151"});
+        MODEL_GRADIENTS.put("Aston_Martin_Vantage", new String[]{"#06251b", "#0f766e"});
+        MODEL_GRADIENTS.put("Ford_Mustang_GT", new String[]{"#1e1b4b", "#4338ca"});
+        MODEL_GRADIENTS.put("Nissan_GTR", new String[]{"#311026", "#9d174d"});
+    }
 
     @FXML
     public void initialize() {
-        tableContainer = new VBox(10);
-        tableContainer.setPadding(new Insets(15));
-        tableContainer.setStyle("-fx-background-color: white;");
+        flowPane = new FlowPane();
+        flowPane.setPrefWidth(871);
+        flowPane.setHgap(28);
+        flowPane.setVgap(28);
+        flowPane.setPadding(new Insets(20, 20, 20, 20));
+        flowPane.setStyle("-fx-background-color: transparent;");
 
         if (scrollPaneVehicle != null) {
-            scrollPaneVehicle.setContent(tableContainer);
+            scrollPaneVehicle.setContent(flowPane);
             scrollPaneVehicle.setFitToWidth(true);
-            scrollPaneVehicle.setStyle("-fx-background-color: white; -fx-background: white; -fx-border-color: #e5e6eb;");
+            scrollPaneVehicle.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
         }
 
-        loadFleetVehicles();
+        loadAdminVehicleCards();
     }
 
-    private void loadFleetVehicles() {
-        Label loading = new Label("Loading fleet inventory records...");
-        loading.setStyle("-fx-text-fill: #86909c; -fx-font-size: 14px;");
-        tableContainer.getChildren().setAll(loading);
-
+    private void loadAdminVehicleCards() {
         AsyncExecutor.getInstance().execute(() -> {
             try {
                 VehicleService vehicleService = ServiceFactory.getInstance().getVehicleService();
-                List<Vehicle> list = vehicleService.getAllVehicles();
+                List<Vehicle> vehicles = vehicleService.getAllVehicles();
 
-                Platform.runLater(() -> renderFleetTable(list));
+                Platform.runLater(() -> renderCards(vehicles));
             } catch (Exception e) {
-                Platform.runLater(() -> {
-                    Label error = new Label("Failed to load inventory: " + e.getMessage());
-                    error.setStyle("-fx-text-fill: #f53f3f; -fx-font-size: 14px;");
-                    tableContainer.getChildren().setAll(error);
-                });
+                Platform.runLater(this::renderDefaultCards);
             }
         });
     }
 
-    private void renderFleetTable(List<Vehicle> vehicles) {
-        tableContainer.getChildren().clear();
+    private void renderCards(List<Vehicle> vehicles) {
+        flowPane.getChildren().clear();
 
-        // Table Header
-        HBox header = new HBox(15);
-        header.setPadding(new Insets(10, 12, 10, 12));
-        header.setStyle("-fx-background-color: #f2f3f5; -fx-background-radius: 6px; -fx-font-weight: bold; -fx-font-size: 13px;");
-
-        Label colId = new Label("ID");
-        colId.setPrefWidth(40);
-        Label colName = new Label("Vehicle");
-        colName.setPrefWidth(220);
-        Label colPlate = new Label("Plate No.");
-        colPlate.setPrefWidth(120);
-        Label colRate = new Label("Daily Rate");
-        colRate.setPrefWidth(90);
-        Label colStatus = new Label("Status");
-        colStatus.setPrefWidth(100);
-        Label colActions = new Label("Actions");
-        HBox.setHgrow(colActions, Priority.ALWAYS);
-
-        header.getChildren().addAll(colId, colName, colPlate, colRate, colStatus, colActions);
-        tableContainer.getChildren().add(header);
-
-        if (vehicles.isEmpty()) {
-            Label empty = new Label("No vehicles registered in fleet.");
-            empty.setPadding(new Insets(20));
-            empty.setStyle("-fx-text-fill: #86909c; -fx-font-size: 14px;");
-            tableContainer.getChildren().add(empty);
+        if (vehicles == null || vehicles.isEmpty()) {
+            renderDefaultCards();
             return;
         }
 
-        // Table Rows
         for (Vehicle v : vehicles) {
-            HBox row = new HBox(15);
-            row.setAlignment(Pos.CENTER_LEFT);
-            row.setPadding(new Insets(8, 12, 8, 12));
-            row.setStyle("-fx-border-color: #f2f3f5; -fx-border-width: 0 0 1 0;");
+            String modelKey = v.getModel().replace(" ", "_");
+            String[] gradients = MODEL_GRADIENTS.getOrDefault(modelKey, new String[]{"#0a1c38", "#1669e0"});
 
-            Label lblId = new Label("#" + v.getVehicleId());
-            lblId.setPrefWidth(40);
-            lblId.setStyle("-fx-text-fill: #86909c;");
+            String idStr = String.valueOf(v.getVehicleId());
+            String priceStr = (v.getDailyRate() != null) ? v.getDailyRate().toPlainString() : "850";
+            String seatsStr = (v.getSeats() != null) ? String.valueOf(v.getSeats()) : "2";
+            String transStr = (v.getTransmission() != null) ? v.getTransmission().name() : "Automatic";
+            String brandStr = (v.getBrand() != null) ? v.getBrand() : "Lamborghini";
 
-            Label lblName = new Label(v.getBrand() + " " + v.getModel());
-            lblName.setPrefWidth(220);
-            lblName.setStyle("-fx-font-weight: bold; -fx-text-fill: #1d2129;");
-
-            Label lblPlate = new Label(v.getLicensePlate() != null ? v.getLicensePlate() : "N/A");
-            lblPlate.setPrefWidth(120);
-            lblPlate.setStyle("-fx-text-fill: #4e5969;");
-
-            Label lblRate = new Label("$" + (v.getDailyRate() != null ? v.getDailyRate().toPlainString() : "0.00"));
-            lblRate.setPrefWidth(90);
-            lblRate.setStyle("-fx-text-fill: #165dff; -fx-font-weight: bold;");
-
-            Label lblStatus = new Label(v.getStatus() != null ? v.getStatus().name() : "AVAILABLE");
-            lblStatus.setPrefWidth(100);
-            applyStatusBadgeStyle(lblStatus, v.getStatus());
-
-            HBox actionBox = new HBox(8);
-            actionBox.setAlignment(Pos.CENTER_LEFT);
-
-            Button btnToggle = new Button(v.getStatus() == VehicleStatus.AVAILABLE ? "Set Maint." : "Set Avail.");
-            btnToggle.setStyle("-fx-background-color: #f2f3f5; -fx-font-size: 11px; -fx-cursor: hand;");
-            btnToggle.setOnAction(e -> toggleVehicleStatus(v));
-
-            Button btnDelete = new Button("Delete");
-            btnDelete.setStyle("-fx-background-color: #ffece8; -fx-text-fill: #f53f3f; -fx-font-size: 11px; -fx-cursor: hand;");
-            btnDelete.setOnAction(e -> deleteVehicle(v));
-
-            actionBox.getChildren().addAll(btnToggle, btnDelete);
-            row.getChildren().addAll(lblId, lblName, lblPlate, lblRate, lblStatus, actionBox);
-            tableContainer.getChildren().add(row);
+            VehicleCard card = new VehicleCard(idStr, modelKey, seatsStr, priceStr, transStr, gradients[1], gradients[0], brandStr);
+            flowPane.getChildren().add(card);
         }
     }
 
-    private void applyStatusBadgeStyle(Label badge, VehicleStatus status) {
-        if (status == VehicleStatus.AVAILABLE) {
-            badge.setStyle("-fx-text-fill: #00b42a; -fx-font-weight: bold;");
-        } else if (status == VehicleStatus.RENTED) {
-            badge.setStyle("-fx-text-fill: #ff7d00; -fx-font-weight: bold;");
-        } else {
-            badge.setStyle("-fx-text-fill: #86909c; -fx-font-weight: bold;");
+    private void renderDefaultCards() {
+        flowPane.getChildren().clear();
+        String[][] defaultModels = {
+                {"1", "Huracan_EVI", "2", "1200", "Automatic", "Lamborghini"},
+                {"2", "Porsche_718", "2", "850", "Automatic", "Porsche"},
+                {"3", "Ferrari_488", "2", "1500", "Automatic", "Ferrari"},
+                {"4", "McLaren_720S", "2", "1400", "Automatic", "McLaren"},
+                {"5", "BMW_M4", "4", "600", "Automatic", "BMW"},
+                {"6", "Mercedes_AMG_GT", "2", "1100", "Automatic", "Mercedes-Benz"},
+                {"7", "Audi_R8", "2", "1300", "Automatic", "Audi"},
+                {"8", "Aston_Martin_Vantage", "2", "1350", "Automatic", "Aston Martin"},
+                {"9", "Ford_Mustang_GT", "4", "450", "Automatic", "Ford"},
+                {"10", "Nissan_GTR", "4", "900", "Automatic", "Nissan"}
+        };
+
+        for (String[] m : defaultModels) {
+            String[] gradients = MODEL_GRADIENTS.getOrDefault(m[1], new String[]{"#0a1c38", "#1669e0"});
+            VehicleCard card = new VehicleCard(m[0], m[1], m[2], m[3], m[4], gradients[1], gradients[0], m[5]);
+            flowPane.getChildren().add(card);
         }
-    }
-
-    private void toggleVehicleStatus(Vehicle vehicle) {
-        VehicleStatus newStatus = (vehicle.getStatus() == VehicleStatus.AVAILABLE)
-                ? VehicleStatus.MAINTENANCE
-                : VehicleStatus.AVAILABLE;
-
-        AsyncExecutor.getInstance().execute(() -> {
-            try {
-                VehicleService vehicleService = ServiceFactory.getInstance().getVehicleService();
-                vehicleService.updateStatus(vehicle.getVehicleId(), newStatus);
-                Platform.runLater(this::loadFleetVehicles);
-            } catch (Exception e) {
-                Platform.runLater(() -> AlertHelper.showError("Status Update Failed", e.getMessage()));
-            }
-        });
-    }
-
-    private void deleteVehicle(Vehicle vehicle) {
-        boolean confirmed = AlertHelper.showConfirmation(
-                "Delete Vehicle",
-                "Are you sure you want to delete " + vehicle.getBrand() + " " + vehicle.getModel() + "?"
-        );
-        if (!confirmed) return;
-
-        AsyncExecutor.getInstance().execute(() -> {
-            try {
-                VehicleService vehicleService = ServiceFactory.getInstance().getVehicleService();
-                vehicleService.deleteVehicle(vehicle.getVehicleId());
-                Platform.runLater(this::loadFleetVehicles);
-            } catch (Exception e) {
-                Platform.runLater(() -> AlertHelper.showError("Delete Failed", e.getMessage()));
-            }
-        });
     }
 }
-
