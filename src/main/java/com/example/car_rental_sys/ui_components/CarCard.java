@@ -144,3 +144,4 @@ public class CarCard extends Pane {
         FXTools.changeScene("carDetailsPage.fxml");
     }
 }
+

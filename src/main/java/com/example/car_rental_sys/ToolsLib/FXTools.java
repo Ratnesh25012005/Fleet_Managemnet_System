@@ -15,3 +15,4 @@ public class FXTools {
         SceneManager.switchScene("SettingPage.fxml");
     }
 }
+

@@ -8,3 +8,4 @@ public class MessageFrameType {
     public static final String CONFIRM = "Confirm Notification";
     public static final String FEEDBACK = "FeedBack Frame";
 }
+

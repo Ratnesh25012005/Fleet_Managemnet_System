@@ -46,3 +46,4 @@ public class UIPagination extends Pane {
         this.getChildren().add(box);
     }
 }
+

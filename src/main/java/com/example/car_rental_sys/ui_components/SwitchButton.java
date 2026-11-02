@@ -61,3 +61,4 @@ public class SwitchButton extends Pane {
         return isOn;
     }
 }
+

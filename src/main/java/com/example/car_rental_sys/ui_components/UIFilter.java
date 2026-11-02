@@ -135,3 +135,4 @@ public class UIFilter extends Pane {
         rbPriceAsc.setOnAction(e -> selectedState = 3);
     }
 }
+

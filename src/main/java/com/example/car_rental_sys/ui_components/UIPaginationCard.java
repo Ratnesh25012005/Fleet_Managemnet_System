@@ -44,3 +44,4 @@ public class UIPaginationCard extends Button {
         this.setText(content);
     }
 }
+

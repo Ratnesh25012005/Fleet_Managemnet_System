@@ -107,3 +107,4 @@ public class UICusBillRow extends Pane {
         this.getChildren().addAll(imgPane, billType, billDate, billTime, billAmount, billStatus);
     }
 }
+
