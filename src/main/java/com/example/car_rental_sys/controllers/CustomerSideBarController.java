@@ -33,6 +33,9 @@ public class CustomerSideBarController extends Controller {
     private Label emailTextLabel;
 
     @FXML
+    private Pane itemRentCar; // Rent a Car / Browse Catalog
+
+    @FXML
     private Pane item1; // Profile
 
     @FXML
@@ -110,6 +113,9 @@ public class CustomerSideBarController extends Controller {
     }
 
     private void attachNavigationHandlers() {
+        if (itemRentCar != null) {
+            itemRentCar.setOnMouseClicked(event -> rentCarClicked(event));
+        }
         if (item1 != null) {
             item1.setOnMouseClicked(event -> {
                 if (CustomerServiceController.instance != null) {
@@ -172,6 +178,11 @@ public class CustomerSideBarController extends Controller {
         if (item6 != null) {
             item6.setOnMouseClicked(event -> handleLogout());
         }
+    }
+
+    @FXML
+    public void rentCarClicked(MouseEvent event) {
+        SceneManager.switchScene("carsListPage.fxml");
     }
 
     @FXML

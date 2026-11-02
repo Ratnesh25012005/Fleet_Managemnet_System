@@ -97,8 +97,23 @@ public class OrderDetailsComponentController extends Controller {
     @FXML
     public void initialize() {
         instance = this;
+        initTheme();
         populateOrderData();
         attachButtonEvents();
+    }
+
+    private void initTheme() {
+        boolean isCustomer = (com.example.car_rental_sys.StatusContainer.currentUser == null
+                || com.example.car_rental_sys.StatusContainer.currentUser.getRole() == com.example.car_rental_sys.model.Role.CUSTOMER);
+        if (isCustomer && panelOrderDetails != null) {
+            try {
+                java.net.URL css = getClass().getResource("/com/example/car_rental_sys/style/orderDetailsComponentDark.css");
+                if (css != null) {
+                    panelOrderDetails.getStylesheets().clear();
+                    panelOrderDetails.getStylesheets().add(css.toExternalForm());
+                }
+            } catch (Exception ignored) {}
+        }
     }
 
     public void updateOrderDetails(com.example.car_rental_sys.ui_components.UIOrderRow row) {

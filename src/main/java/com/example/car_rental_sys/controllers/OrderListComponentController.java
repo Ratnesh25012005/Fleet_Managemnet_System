@@ -6,6 +6,7 @@ import com.example.car_rental_sys.dao.DAOFactory;
 import com.example.car_rental_sys.dao.OrderDAO;
 import com.example.car_rental_sys.model.Order;
 import com.example.car_rental_sys.model.OrderStatus;
+import com.example.car_rental_sys.model.Role;
 import com.example.car_rental_sys.model.User;
 import com.example.car_rental_sys.service.ServiceFactory;
 import com.example.car_rental_sys.ui_components.UIFilter;
@@ -50,6 +51,30 @@ public class OrderListComponentController extends Controller {
     private Button btnCancel;
 
     @FXML
+    private Button btnRentCar;
+
+    @FXML
+    private Label lblTitleOrders;
+
+    @FXML
+    private Label lblHeaderOrderID;
+
+    @FXML
+    private Label lblHeaderProduct;
+
+    @FXML
+    private Label lblHeaderDate;
+
+    @FXML
+    private Label lblHeaderPricing;
+
+    @FXML
+    private Label lblHeaderStatus;
+
+    @FXML
+    private javafx.scene.shape.Line tableDivider;
+
+    @FXML
     private Pane tableContainer;
 
     @FXML
@@ -66,7 +91,71 @@ public class OrderListComponentController extends Controller {
     public void initialize() {
         instance = this;
         setupUIContainers();
+        initTheme();
         loadOrders();
+    }
+
+    private void initTheme() {
+        boolean isCustomer = (StatusContainer.currentUser == null || StatusContainer.currentUser.getRole() == Role.CUSTOMER);
+        if (isCustomer) {
+            if (panelOrderList != null) {
+                panelOrderList.setStyle("-fx-background-color: transparent;");
+            }
+            if (lblTitleOrders != null) {
+                lblTitleOrders.setStyle("-fx-text-fill: #ffffff;");
+            }
+            if (numOrder != null) {
+                numOrder.setStyle("-fx-text-fill: #86909c;");
+            }
+            if (lblHeaderOrderID != null) {
+                lblHeaderOrderID.setStyle("-fx-text-fill: #4080ff;");
+            }
+            if (lblHeaderProduct != null) {
+                lblHeaderProduct.setStyle("-fx-text-fill: #c5c5c5;");
+            }
+            if (lblHeaderDate != null) {
+                lblHeaderDate.setStyle("-fx-text-fill: #c5c5c5;");
+            }
+            if (lblHeaderPricing != null) {
+                lblHeaderPricing.setStyle("-fx-text-fill: #c5c5c5;");
+            }
+            if (lblHeaderStatus != null) {
+                lblHeaderStatus.setStyle("-fx-text-fill: #c5c5c5;");
+            }
+            if (tableDivider != null) {
+                tableDivider.setStroke(javafx.scene.paint.Color.web("#38383a"));
+            }
+        } else {
+            if (lblTitleOrders != null) {
+                lblTitleOrders.setStyle("-fx-text-fill: #1d2129;");
+            }
+            if (numOrder != null) {
+                numOrder.setStyle("-fx-text-fill: #86909c;");
+            }
+            if (lblHeaderOrderID != null) {
+                lblHeaderOrderID.setStyle("-fx-text-fill: #4080ff;");
+            }
+            if (lblHeaderProduct != null) {
+                lblHeaderProduct.setStyle("-fx-text-fill: #4e5969;");
+            }
+            if (lblHeaderDate != null) {
+                lblHeaderDate.setStyle("-fx-text-fill: #4e5969;");
+            }
+            if (lblHeaderPricing != null) {
+                lblHeaderPricing.setStyle("-fx-text-fill: #4e5969;");
+            }
+            if (lblHeaderStatus != null) {
+                lblHeaderStatus.setStyle("-fx-text-fill: #4e5969;");
+            }
+            if (tableDivider != null) {
+                tableDivider.setStroke(javafx.scene.paint.Color.web("#d9d9d9"));
+            }
+        }
+    }
+
+    @FXML
+    private void rentCarClicked(MouseEvent event) {
+        com.example.car_rental_sys.util.SceneManager.switchScene("carsListPage.fxml");
     }
 
     private void setupUIContainers() {
@@ -159,9 +248,9 @@ public class OrderListComponentController extends Controller {
             numOrder.setText("3 orders");
         }
 
-        UIOrderRow r1 = new UIOrderRow(3, "Huracán EVO", "2026-11-02", 700, 1);
-        UIOrderRow r2 = new UIOrderRow(2, "Porsche 718", "2026-11-01", 700, 5);
-        UIOrderRow r3 = new UIOrderRow(1, "McLaren 720S", "2026-10-28", 240, 5);
+        UIOrderRow r1 = new UIOrderRow(3, "Vehicle #1", "2026-11-02", 700, 1);
+        UIOrderRow r2 = new UIOrderRow(2, "Vehicle #1", "2026-11-01", 700, 5);
+        UIOrderRow r3 = new UIOrderRow(1, "Vehicle #2", "2026-11-01", 240, 5);
 
         orderRowBox.getChildren().addAll(r1, r2, r3);
     }

@@ -22,105 +22,122 @@
     </Label>
     <Line endX="109.0" layoutX="147.0" layoutY="223.0" startX="-123.0" stroke="#e3e3e399" />
     <Line endX="109.0" layoutX="147.0" layoutY="415.0" startX="-123.0" stroke="#e3e3e399" />
-    <Pane layoutX="24.0" layoutY="442.0" prefHeight="60.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
-        <Pane fx:id="item1" layoutY="10.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
+    <Pane layoutX="24.0" layoutY="412.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden hidden solid hidden;">
+        <Pane fx:id="itemRentCar" layoutY="5.0" onMouseClicked="#rentCarClicked" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10; -fx-cursor: hand;" styleClass="menuItem">
+            <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10; -fx-background-color: #00b42a;" styleClass="menuImagePane">
+                <ImageView fitHeight="22.0" fitWidth="22.0" layoutX="9.0" layoutY="9.0" pickOnBounds="true" preserveRatio="true">
+                    <Image url="@../image/UI/car.png" />
+                </ImageView>
+            </Pane>
+            <Label layoutX="60.0" layoutY="10.0" text="Rent a Car" textFill="#00b42a">
+                <font>
+                    <Font name="System Bold" size="15.0" />
+                </font>
+            </Label>
+        </Pane>
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+            <Image url="@../image/UI/right.png" />
+        </ImageView>
+    </Pane>
+    <Pane layoutX="24.0" layoutY="464.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
+        <Pane fx:id="item1" layoutY="5.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
             <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10;" styleClass="menuImagePane">
                 <ImageView fitHeight="30.0" fitWidth="25.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../image/UI/profile.png" />
                 </ImageView>
             </Pane>
-            <Label layoutX="83.0" layoutY="10.0" text="Profile" textFill="#b9b9b9">
+            <Label layoutX="60.0" layoutY="10.0" text="Profile" textFill="#b9b9b9">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Label>
         </Pane>
-        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
             <Image url="@../image/UI/right1.png" />
         </ImageView>
     </Pane>
-    <Pane layoutX="24.0" layoutY="502.0" prefHeight="60.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
-        <Pane fx:id="item2" layoutY="10.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
+    <Pane layoutX="24.0" layoutY="516.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
+        <Pane fx:id="item2" layoutY="5.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
             <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10;" styleClass="menuImagePane">
                 <ImageView fitHeight="30.0" fitWidth="25.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../image/UI/message1.png" />
                 </ImageView>
             </Pane>
-            <Label layoutX="83.0" layoutY="10.0" text="Message" textFill="#b9b9b9">
+            <Label layoutX="60.0" layoutY="10.0" text="Message" textFill="#b9b9b9">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Label>
         </Pane>
-        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
             <Image url="@../image/UI/right.png" />
         </ImageView>
     </Pane>
-    <Pane layoutX="24.0" layoutY="562.0" prefHeight="60.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
-        <Pane fx:id="item3" layoutY="10.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
+    <Pane layoutX="24.0" layoutY="568.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
+        <Pane fx:id="item3" layoutY="5.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
             <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10;" styleClass="menuImagePane">
                 <ImageView fitHeight="30.0" fitWidth="25.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../image/UI/wallet1.png" />
                 </ImageView>
             </Pane>
-            <Label layoutX="83.0" layoutY="10.0" text="Wallet" textFill="#b9b9b9">
+            <Label layoutX="60.0" layoutY="10.0" text="Wallet" textFill="#b9b9b9">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Label>
         </Pane>
-        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
             <Image url="@../image/UI/right.png" />
         </ImageView>
     </Pane>
-    <Pane layoutX="24.0" layoutY="622.0" prefHeight="60.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
-        <Pane fx:id="item4" layoutY="10.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
+    <Pane layoutX="24.0" layoutY="620.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
+        <Pane fx:id="item4" layoutY="5.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
             <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10;" styleClass="menuImagePane">
                 <ImageView fitHeight="30.0" fitWidth="25.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../image/UI/history.png" />
                 </ImageView>
             </Pane>
-            <Label layoutX="83.0" layoutY="10.0" text="History" textFill="#b9b9b9">
+            <Label layoutX="60.0" layoutY="10.0" text="History" textFill="#b9b9b9">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Label>
         </Pane>
-        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
             <Image url="@../image/UI/right.png" />
         </ImageView>
     </Pane>
-    <Pane layoutX="24.0" layoutY="682.0" prefHeight="60.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
-        <Pane fx:id="item5" layoutY="10.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
+    <Pane layoutX="24.0" layoutY="672.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
+        <Pane fx:id="item5" layoutY="5.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
             <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10;" styleClass="menuImagePane">
                 <ImageView fitHeight="30.0" fitWidth="25.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../image/UI/seetting.png" />
                 </ImageView>
             </Pane>
-            <Label layoutX="83.0" layoutY="10.0" text="Setting" textFill="#b9b9b9">
+            <Label layoutX="60.0" layoutY="10.0" text="Setting" textFill="#b9b9b9">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Label>
         </Pane>
-        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
             <Image url="@../image/UI/right.png" />
         </ImageView>
     </Pane>
-    <Pane layoutX="24.0" layoutY="742.0" prefHeight="60.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
-        <Pane fx:id="item6" layoutY="10.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
+    <Pane layoutX="24.0" layoutY="724.0" prefHeight="50.0" prefWidth="233.0" style="-fx-border-color: #e8e8e8; -fx-border-style: hidden  hidden solid hidden;">
+        <Pane fx:id="item6" layoutY="5.0" prefHeight="40.0" prefWidth="180.0" style="-fx-background-color: transparent; -fx-background-radius: 10;" styleClass="menuItem">
             <Pane prefHeight="40.0" prefWidth="40.0" style="-fx-background-radius: 10;" styleClass="menuImagePane">
                 <ImageView fitHeight="30.0" fitWidth="25.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
                     <Image url="@../image/UI/logout1.png" />
                 </ImageView>
             </Pane>
-            <Label layoutX="83.0" layoutY="10.0" text="Logout" textFill="#b9b9b9">
+            <Label layoutX="60.0" layoutY="10.0" text="Logout" textFill="#b9b9b9">
                 <font>
                     <Font name="System Bold" size="15.0" />
                 </font>
             </Label>
         </Pane>
-        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
+        <ImageView fitHeight="40.0" fitWidth="30.0" layoutX="204.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true" styleClass="leftIcon">
             <Image url="@../image/UI/right.png" />
         </ImageView>
     </Pane>

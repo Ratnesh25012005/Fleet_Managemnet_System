@@ -32,7 +32,7 @@ public class UIOrderRow extends Pane {
         this.orderID = orderID;
         this.name = name;
         this.orderDate = DateTools.getSpecFormatDate(orderDate);
-        this.orderAmount = "RM" + orderAmount;
+        this.orderAmount = String.format("$%d.00", orderAmount);
         this.orderStatus = orderStatus;
         init();
     }
@@ -40,7 +40,7 @@ public class UIOrderRow extends Pane {
     private void init() {
         this.setLayoutX(0);
         this.setLayoutY(0);
-        this.setPrefSize(460, 30);
+        this.setPrefSize(460, 32);
         initData();
         initComponent();
         initTheme();
@@ -48,8 +48,8 @@ public class UIOrderRow extends Pane {
     }
 
     private void initData() {
-        String[] info = DataTools.getOrderInfoFromOrderID(String.valueOf(orderID));
         try {
+            String[] info = DataTools.getOrderInfoFromOrderID(String.valueOf(orderID));
             this.carID = Integer.parseInt(info[1]);
         } catch (Exception e) {
             this.carID = 1;
@@ -63,7 +63,7 @@ public class UIOrderRow extends Pane {
         lblOrderAmount = new Label();
         lblOrderStatus = new Label();
 
-        lblOrderID.setText(DataTools.getOrderIDStr(orderID));
+        lblOrderID.setText("#" + orderID);
         String displayName = (name != null) ? name : "Vehicle #" + carID;
         if (displayName.length() > 16) {
             displayName = displayName.substring(0, 16) + "...";
@@ -72,24 +72,34 @@ public class UIOrderRow extends Pane {
         lblOrderDate.setText(orderDate);
         lblOrderAmount.setText(orderAmount);
 
+        boolean isCustomer = (StatusContainer.currentUser == null || StatusContainer.currentUser.getRole() == Role.CUSTOMER);
         String statusStr;
-        String color;
+        String pillStyle;
+
         if (orderStatus == -1) {
-            statusStr = "Cancelled";
-            color = "#F76560";
+            statusStr = "CANCELLED";
+            pillStyle = isCustomer
+                    ? "-fx-background-color: rgba(245, 63, 63, 0.25); -fx-text-fill: #f76560;"
+                    : "-fx-background-color: #ffece8; -fx-text-fill: #f53f3f;";
         } else if (orderStatus == 0 || orderStatus == 1 || orderStatus == 2) {
-            statusStr = "In Progress";
-            color = "#6AA1FF";
+            statusStr = "CONFIRMED";
+            pillStyle = isCustomer
+                    ? "-fx-background-color: rgba(22, 93, 255, 0.25); -fx-text-fill: #6aa1ff;"
+                    : "-fx-background-color: #e8f3ff; -fx-text-fill: #165dff;";
         } else if (orderStatus == 3 || orderStatus == 4) {
-            statusStr = "Continuing";
-            color = "#FF9A2E";
+            statusStr = "CONTINUING";
+            pillStyle = isCustomer
+                    ? "-fx-background-color: rgba(255, 125, 0, 0.25); -fx-text-fill: #ff9a2e;"
+                    : "-fx-background-color: #fff7e8; -fx-text-fill: #ff7d00;";
         } else {
-            statusStr = "Completed";
-            color = "#4CD263";
+            statusStr = "COMPLETED";
+            pillStyle = isCustomer
+                    ? "-fx-background-color: rgba(0, 180, 42, 0.25); -fx-text-fill: #4cd263;"
+                    : "-fx-background-color: #e8ffea; -fx-text-fill: #00b42a;";
         }
 
         lblOrderStatus.setText(statusStr);
-        lblOrderStatus.setStyle("-fx-text-fill: " + color + "; -fx-font-weight: bold;");
+        lblOrderStatus.setStyle(pillStyle + " -fx-background-radius: 4px; -fx-padding: 3 8 3 8; -fx-font-weight: bold; -fx-font-size: 10px;");
 
         lblOrderID.setLayoutX(9);
         lblName.setLayoutX(90);
@@ -101,23 +111,33 @@ public class UIOrderRow extends Pane {
         lblName.setLayoutY(6);
         lblOrderDate.setLayoutY(6);
         lblOrderAmount.setLayoutY(6);
-        lblOrderStatus.setLayoutY(6);
+        lblOrderStatus.setLayoutY(5);
 
         this.getChildren().addAll(lblOrderID, lblName, lblOrderDate, lblOrderAmount, lblOrderStatus);
     }
 
     private void initTheme() {
         boolean isCustomer = (StatusContainer.currentUser == null || StatusContainer.currentUser.getRole() == Role.CUSTOMER);
-        String textColor = isCustomer ? "#ababac" : "#86909C";
 
-        Label[] labels = {lblOrderID, lblName, lblOrderDate, lblOrderAmount};
-        for (Label label : labels) {
-            label.setStyle("-fx-text-fill: " + textColor + "; -fx-font-weight: bold;");
-        }
+        lblOrderID.setStyle("-fx-text-fill: #4080ff; -fx-font-weight: bold;");
+        lblName.setStyle("-fx-text-fill: " + (isCustomer ? "#ffffff" : "#1d2129") + "; -fx-font-weight: bold;");
+        lblOrderDate.setStyle("-fx-text-fill: #86909c; -fx-font-weight: normal;");
+        lblOrderAmount.setStyle("-fx-text-fill: " + (isCustomer ? "#ffffff" : "#1d2129") + "; -fx-font-weight: bold;");
     }
 
     private void initEvent() {
         this.setCursor(Cursor.HAND);
+        boolean isCustomer = (StatusContainer.currentUser == null || StatusContainer.currentUser.getRole() == Role.CUSTOMER);
+
+        this.setOnMouseEntered(e -> {
+            this.setStyle(isCustomer
+                    ? "-fx-background-color: rgba(255, 255, 255, 0.06); -fx-background-radius: 6px;"
+                    : "-fx-background-color: #f2f3f5; -fx-background-radius: 6px;");
+        });
+
+        this.setOnMouseExited(e -> {
+            this.setStyle("-fx-background-color: transparent;");
+        });
         this.addEventFilter(MouseEvent.MOUSE_CLICKED, event -> {
             StatusContainer.currentOrderID = this.orderID;
 
