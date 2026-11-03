@@ -1,24 +1,25 @@
 package com.example.car_rental_sys.controllers;
 
+import com.example.car_rental_sys.StatusContainer;
 import com.example.car_rental_sys.model.Role;
 import com.example.car_rental_sys.model.User;
 import com.example.car_rental_sys.service.ServiceFactory;
+import com.example.car_rental_sys.ui_components.SwitchButton;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.fxml.FXML;
-import javafx.scene.control.Button;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
 
+import java.net.URL;
+
 /**
- * Controller for General Application Preferences and Privacy Settings.
+ * Controller for Application Preferences and Settings (SettingPage.fxml).
+ * Uses authentic SwitchButton iOS-style toggle components.
  */
 public class SettingPageController extends Controller {
 
     @FXML
     private Pane settingPane;
-
-    @FXML
-    private Button backBtn;
 
     @FXML
     private Pane switchPaneOne;
@@ -29,55 +30,40 @@ public class SettingPageController extends Controller {
     @FXML
     private Pane switchPaneThree;
 
-    private boolean stateOne = true;
-    private boolean stateTwo = true;
-    private boolean stateThree = false;
-
     @FXML
     public void initialize() {
-        setupSwitch(switchPaneOne, stateOne, () -> stateOne = !stateOne);
-        setupSwitch(switchPaneTwo, stateTwo, () -> stateTwo = !stateTwo);
-        setupSwitch(switchPaneThree, stateThree, () -> stateThree = !stateThree);
+        initTheme();
+
+        if (switchPaneOne != null) {
+            switchPaneOne.getChildren().setAll(new SwitchButton(true));
+        }
+        if (switchPaneTwo != null) {
+            switchPaneTwo.getChildren().setAll(new SwitchButton(true));
+        }
+        if (switchPaneThree != null) {
+            switchPaneThree.getChildren().setAll(new SwitchButton(false));
+        }
+    }
+
+    private void initTheme() {
+        User currentUser = ServiceFactory.getInstance().getAuthService().getCurrentUser();
+        if (currentUser != null && currentUser.getRole() == Role.CUSTOMER && settingPane != null) {
+            URL darkCss = getClass().getResource("/com/example/car_rental_sys/style/settingComponentDark.css");
+            if (darkCss != null) {
+                settingPane.getStylesheets().add(darkCss.toExternalForm());
+            }
+        }
     }
 
     @FXML
     private void backToDashboardClicked(MouseEvent event) {
         User currentUser = ServiceFactory.getInstance().getAuthService().getCurrentUser();
-        if (currentUser != null && currentUser.getRole() != null) {
-            switch (currentUser.getRole()) {
-                case ADMIN:
-                    SceneManager.switchScene("adminServicePage.fxml");
-                    return;
-                case DRIVER:
-                    SceneManager.switchScene("driverServicePage.fxml");
-                    return;
-                case CUSTOMER:
-                default:
-                    SceneManager.switchScene("customerServicePage.fxml");
-                    return;
-            }
-        }
-        SceneManager.switchScene("customerServicePage.fxml");
-    }
-
-    private void setupSwitch(Pane switchPane, boolean initialActive, Runnable onToggle) {
-        if (switchPane == null) return;
-        updateSwitchVisual(switchPane, initialActive);
-
-        switchPane.setOnMouseClicked(event -> {
-            onToggle.run();
-            // Check state and update visual
-            boolean current = switchPane.getStyle().contains("#165dff");
-            updateSwitchVisual(switchPane, !current);
-        });
-    }
-
-    private void updateSwitchVisual(Pane switchPane, boolean active) {
-        if (active) {
-            switchPane.setStyle("-fx-background-color: #165dff; -fx-background-radius: 12px; -fx-cursor: hand;");
+        if (currentUser != null && currentUser.getRole() == Role.ADMIN) {
+            SceneManager.switchScene("adminServicePage.fxml");
+        } else if (currentUser != null && currentUser.getRole() == Role.DRIVER) {
+            SceneManager.switchScene("driverServicePage.fxml");
         } else {
-            switchPane.setStyle("-fx-background-color: #c9cdd4; -fx-background-radius: 12px; -fx-cursor: hand;");
+            SceneManager.switchScene("customerServicePage.fxml");
         }
     }
 }
-

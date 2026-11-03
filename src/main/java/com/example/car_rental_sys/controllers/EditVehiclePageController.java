@@ -31,6 +31,7 @@ import java.math.BigDecimal;
  */
 public class EditVehiclePageController extends Controller {
 
+    public static EditVehiclePageController instance;
     private static boolean editMode = false;
     private static Vehicle targetVehicle;
 
@@ -91,6 +92,7 @@ public class EditVehiclePageController extends Controller {
 
     @FXML
     public void initialize() {
+        instance = this;
         populateDropdowns();
         setupColorPanes();
 
@@ -101,6 +103,20 @@ public class EditVehiclePageController extends Controller {
             if (btnSaveOption != null) btnSaveOption.setVisible(false);
             if (btnOperation != null) btnOperation.setVisible(true);
         }
+    }
+
+    public void setCarData(int vehicleId) {
+        com.example.car_rental_sys.concurrency.AsyncExecutor.getInstance().execute(() -> {
+            try {
+                var vOpt = com.example.car_rental_sys.service.ServiceFactory.getInstance().getVehicleService().getVehicleById(vehicleId);
+                javafx.application.Platform.runLater(() -> {
+                    if (vOpt.isPresent()) {
+                        setEditMode(true, vOpt.get());
+                        loadVehicleData(vOpt.get());
+                    }
+                });
+            } catch (Exception ignored) {}
+        });
     }
 
     private void populateDropdowns() {

@@ -23,6 +23,8 @@ import java.util.List;
  */
 public class showCardDetailsController extends Controller {
 
+    public static showCardDetailsController instance;
+
     @FXML
     private Label cardName;
 
@@ -66,6 +68,11 @@ public class showCardDetailsController extends Controller {
 
     @FXML
     public void initialize() {
+        instance = this;
+        loadCardDetails();
+    }
+
+    public void initText() {
         loadCardDetails();
     }
 

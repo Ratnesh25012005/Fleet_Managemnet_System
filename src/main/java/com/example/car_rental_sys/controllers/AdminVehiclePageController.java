@@ -17,6 +17,8 @@ import java.util.logging.Logger;
  */
 public class AdminVehiclePageController extends Controller {
 
+    public static AdminVehiclePageController instance;
+
     private static final Logger LOGGER = Logger.getLogger(AdminVehiclePageController.class.getName());
 
     @FXML
@@ -36,7 +38,16 @@ public class AdminVehiclePageController extends Controller {
 
     @FXML
     public void initialize() {
+        instance = this;
         loadSubView("OverviewVehiclePage.fxml");
+    }
+
+    public void showEditVehiclePage() {
+        if (editVehicleBtn != null) {
+            editVehicleBtn.setVisible(true);
+            highlightButton(editVehicleBtn);
+        }
+        loadSubView("EditVehiclePage.fxml");
     }
 
     @FXML

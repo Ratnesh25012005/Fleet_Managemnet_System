@@ -78,7 +78,7 @@
                     <Font size="16.0" />
                 </font>
             </Label>
-            <Label fx:id="locationText" layoutX="85.0" layoutY="50.0" prefHeight="19.0" prefWidth="199.0" text="Kuala Lumpur, Malaysia" textFill="#bcbcbc">
+            <Label fx:id="locationText" layoutX="85.0" layoutY="50.0" onMouseClicked="#locationBtnClick" prefHeight="19.0" prefWidth="199.0" style="-fx-cursor: hand;" text="Kuala Lumpur, Malaysia" textFill="#bcbcbc">
                 <font>
                     <Font size="14.0" />
                 </font>
@@ -88,7 +88,7 @@
                     <Font size="16.0" />
                 </font>
             </Label>
-            <Label fx:id="pickUpDateLabel" layoutX="386.0" layoutY="50.0" text="Oct 28, 10:00 AM" textFill="#bcbcbc">
+            <Label fx:id="pickUpDateLabel" layoutX="386.0" layoutY="50.0" onMouseClicked="#pickUpBtnClick" style="-fx-cursor: hand;" text="Oct 28, 10:00 AM" textFill="#bcbcbc">
                 <font>
                     <Font size="14.0" />
                 </font>
@@ -98,7 +98,7 @@
                     <Font size="16.0" />
                 </font>
             </Label>
-            <Label fx:id="returnDateLabel" layoutX="651.0" layoutY="50.0" text="Nov 08, 10:00 AM" textFill="#bcbcbc">
+            <Label fx:id="returnDateLabel" layoutX="651.0" layoutY="50.0" onMouseClicked="#returnBtnClick" style="-fx-cursor: hand;" text="Nov 08, 10:00 AM" textFill="#bcbcbc">
                 <font>
                     <Font size="14.0" />
                 </font>

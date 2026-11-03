@@ -4,318 +4,302 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Rental Hub Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <style>
-    * { box-sizing: border-box; margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; }
-    html, body { width: 100%; height: 100%; overflow: hidden; background-color: #242f3e; }
-    #map { width: 100%; height: 100%; background: #242f3e; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: Roboto, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      user-select: none;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #242f3e;
+    }
 
-    /* Top Search Box */
-    .search-panel {
+    #map-viewport {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background-color: #242f3e;
+      overflow: hidden;
+    }
+
+    /* Google Maps Floating Search Bar */
+    #pac-input {
       position: absolute;
       top: 15px;
       left: 15px;
-      z-index: 1000;
-      display: flex;
-      gap: 8px;
-      background: rgba(30, 36, 48, 0.95);
-      padding: 6px 10px;
-      border-radius: 8px;
-      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
-      border: 1px solid #3c4858;
-    }
-    .search-input {
-      width: 260px;
-      padding: 8px 12px;
-      background: #141820;
-      border: 1px solid #4a5868;
-      border-radius: 6px;
-      color: #ffffff;
+      z-index: 100;
+      width: 320px;
+      height: 36px;
+      padding: 0 14px;
+      background: #ffffff;
+      border: 1px solid #dcdcdc;
+      border-radius: 2px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.35);
+      color: #333333;
       font-size: 14px;
       outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
     }
-    .search-input:focus { border-color: #165dff; }
-    .search-input::placeholder { color: #86909c; }
-    .search-btn {
-      background: #165dff;
-      color: #fff;
-      border: none;
-      padding: 8px 16px;
-      border-radius: 6px;
-      font-weight: 600;
-      font-size: 13px;
-      cursor: pointer;
-      transition: background 0.2s;
+    #pac-input:focus {
+      border-color: #4d90fe;
+      box-shadow: 0 2px 8px rgba(77, 144, 254, 0.4);
     }
-    .search-btn:hover { background: #0e4bc7; }
+    #pac-input::placeholder {
+      color: #757575;
+    }
 
-    /* Quick Hub Pills */
-    .hub-pills {
+    /* Google Maps Center Red Pin */
+    .pin-container {
       position: absolute;
-      bottom: 20px;
-      left: 15px;
-      right: 15px;
-      z-index: 1000;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -100%);
+      z-index: 50;
       display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      padding-bottom: 4px;
-    }
-    .hub-pill {
-      background: rgba(22, 28, 38, 0.9);
-      border: 1px solid #3a4756;
-      color: #e5e6eb;
-      padding: 7px 14px;
-      border-radius: 20px;
-      font-size: 12px;
-      font-weight: 500;
+      flex-direction: column;
+      align-items: center;
       cursor: pointer;
-      white-space: nowrap;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.3);
-      transition: all 0.2s;
     }
-    .hub-pill:hover { background: #165dff; border-color: #165dff; color: #fff; }
 
-    /* Info Popup Card */
-    .leaflet-popup-content-wrapper {
-      background: #ffffff !important;
-      border-radius: 10px !important;
-      padding: 6px 4px !important;
-      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45) !important;
+    /* Authentic Google Maps White Info Window */
+    .info-window {
+      background: #ffffff;
+      border-radius: 3px;
+      padding: 12px 16px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.45);
+      min-width: 250px;
+      max-width: 290px;
+      color: #333333;
+      position: relative;
+      cursor: pointer;
+      margin-bottom: 2px;
+      animation: fadeIn 0.25s ease-out;
     }
-    .leaflet-popup-tip { background: #ffffff !important; }
-    .info-card {
-      padding: 8px 10px;
-      color: #1d2129;
-    }
+
     .info-title {
-      font-size: 14px;
-      font-weight: 700;
-      color: #1d2129;
-      margin-bottom: 6px;
-      line-height: 1.3;
+      font-size: 13.5px;
+      font-weight: bold;
+      color: #202124;
+      line-height: 1.35;
+      margin-bottom: 5px;
     }
+
     .info-address {
-      font-size: 12px;
-      color: #4e5969;
-      line-height: 1.5;
-      margin-bottom: 12px;
-    }
-    .info-badge {
-      display: inline-block;
-      background: #e8f3ff;
-      color: #165dff;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 2px 8px;
-      border-radius: 4px;
+      font-size: 11.5px;
+      color: #5f6368;
+      line-height: 1.45;
       margin-bottom: 8px;
     }
+
+    .info-link {
+      font-size: 11px;
+      color: #1a73e8;
+      font-weight: 500;
+      text-decoration: none;
+      display: inline-block;
+      margin-bottom: 10px;
+    }
+    .info-link:hover {
+      text-decoration: underline;
+    }
+
     .select-btn {
       width: 100%;
-      background: #165dff;
-      color: white;
+      background: #1a73e8;
+      color: #ffffff;
       border: none;
-      padding: 8px 12px;
-      border-radius: 6px;
-      font-weight: bold;
-      font-size: 13px;
+      padding: 7px 12px;
+      border-radius: 3px;
+      font-weight: 600;
+      font-size: 12px;
       cursor: pointer;
-      transition: background 0.2s;
+      transition: background 0.15s;
     }
-    .select-btn:hover { background: #0e4bc7; }
+    .select-btn:hover {
+      background: #1557b0;
+    }
 
-    /* Custom Red Pin Icon */
-    .custom-pin {
-      width: 32px;
-      height: 32px;
-      background: radial-gradient(circle at 35% 35%, #ff4d4f, #cf1322);
+    /* Info Window Downward Arrow Pointer */
+    .info-arrow {
+      width: 0;
+      height: 0;
+      border-left: 9px solid transparent;
+      border-right: 9px solid transparent;
+      border-top: 9px solid #ffffff;
+      margin: -1px auto 0 auto;
+      filter: drop-shadow(0 2px 2px rgba(0,0,0,0.25));
+    }
+
+    /* Red Google Location Marker Pin */
+    .google-marker {
+      width: 26px;
+      height: 26px;
+      background: radial-gradient(circle at 35% 35%, #ea4335, #c5221f);
       border-radius: 50% 50% 50% 0;
       transform: rotate(-45deg);
-      box-shadow: -2px 3px 8px rgba(0,0,0,0.5);
       border: 2px solid #ffffff;
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      box-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+      margin-top: 4px;
+      position: relative;
     }
-    .custom-pin::after {
+    .google-marker::after {
       content: '';
-      width: 10px;
-      height: 10px;
+      position: absolute;
+      width: 8px;
+      height: 8px;
       background: #ffffff;
       border-radius: 50%;
-      transform: rotate(45deg);
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+    }
+
+    /* Bottom Google Branding & Watermarks */
+    .google-bottom-left {
+      position: absolute;
+      bottom: 8px;
+      left: 14px;
+      z-index: 10;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      opacity: 0.85;
+      pointer-events: none;
+    }
+    .google-logo-text {
+      color: #ffffff;
+      font-size: 14px;
+      font-weight: bold;
+      letter-spacing: -0.5px;
+    }
+    .google-sub-text {
+      color: #9aa0a6;
+      font-size: 11px;
+    }
+
+    .google-bottom-right {
+      position: absolute;
+      bottom: 8px;
+      right: 14px;
+      z-index: 10;
+      display: flex;
+      gap: 12px;
+      color: #9aa0a6;
+      font-size: 10px;
+      pointer-events: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
     }
   </style>
 </head>
 <body>
 
-  <!-- Search Panel -->
-  <div class="search-panel">
-    <input type="text" id="searchInput" class="search-input" placeholder="Search Maps or Hubs..." value="Asia Pacific University">
-    <button class="search-btn" onclick="searchLocation()">Search</button>
+  <div id="map-viewport">
+    <!-- Floating Search Input -->
+    <input id="pac-input" type="text" placeholder="Search Maps" value="Asia Pacific University of Technology & Innovation" />
+
+    <!-- Google Dark Mode Vector Map Background (Authentic Bukit Jalil Geometry) -->
+    <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none;">
+      <defs>
+        <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
+          <path d="M 80 0 L 0 0 0 80" fill="none" stroke="#2c384a" stroke-width="0.5"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+
+      <!-- Major Highways & Corridors -->
+      <!-- KESAS / Bukit Jalil Highway -->
+      <path d="M-50,220 Q350,250 850,200" stroke="#746855" stroke-width="7" fill="none" opacity="0.8"/>
+      <path d="M-50,220 Q350,250 850,200" stroke="#f3d19c" stroke-width="3.5" fill="none"/>
+      
+      <!-- North-South Expressway Link -->
+      <path d="M160,-50 Q260,320 380,650" stroke="#746855" stroke-width="8" fill="none" opacity="0.8"/>
+      <path d="M160,-50 Q260,320 380,650" stroke="#f3d19c" stroke-width="4" fill="none"/>
+
+      <!-- Secondary Arterials -->
+      <path d="M480,-50 Q430,260 620,650" stroke="#38414e" stroke-width="6" fill="none"/>
+      <path d="M-50,440 Q380,410 850,460" stroke="#38414e" stroke-width="5" fill="none"/>
+      <path d="M220,110 L590,360" stroke="#38414e" stroke-width="4" fill="none"/>
+      <path d="M290,520 L760,240" stroke="#38414e" stroke-width="3" fill="none"/>
+      <path d="M380,260 L450,420" stroke="#38414e" stroke-width="3" fill="none"/>
+
+      <!-- Water Features / Lake -->
+      <path d="M-30,310 Q90,280 150,340 T220,440" stroke="#17263c" stroke-width="20" fill="none" stroke-linecap="round"/>
+      <path d="M680,140 Q720,180 770,160" stroke="#17263c" stroke-width="16" fill="none" stroke-linecap="round"/>
+
+      <!-- Area & Landmark Labels (Exact match to screenshot) -->
+      <text x="210" y="270" fill="#9ca5b3" font-size="15" font-weight="bold" letter-spacing="1.5">BUKIT JALIL</text>
+      <text x="280" y="100" fill="#757575" font-size="11">Bandar Baru Sri Petaling</text>
+      <text x="170" y="125" fill="#757575" font-size="11">Endah Parade</text>
+      <text x="140" y="470" fill="#757575" font-size="11">National Stadium Bukit Jalil</text>
+      <text x="360" y="500" fill="#757575" font-size="11">Axiata Arena Bukit Jalil</text>
+      <text x="560" y="460" fill="#757575" font-size="11">Palace of the Golden Horses</text>
+      <text x="580" y="260" fill="#757575" font-size="11">Mines Toll Plaza North</text>
+      <text x="270" y="580" fill="#757575" font-size="11">Technology Park Malaysia</text>
+    </svg>
+
+    <!-- Center APU Pin & Info Window -->
+    <div class="pin-container" onclick="chooseLocation('Asia Pacific University of Technology & Innovation (APU)')">
+      <div class="info-window">
+        <div class="info-title">Asia Pacific University of Technology & Innovation (APU)</div>
+        <div class="info-address">
+          Jalan Teknologi 5<br>
+          Technology Park Malaysia<br>
+          57000 Kuala Lumpur<br>
+          Federal Territory of Kuala Lumpur, Malaysia
+        </div>
+        <a href="https://maps.google.com" target="_blank" class="info-link" onclick="event.stopPropagation()">View on Google Maps</a>
+        <button class="select-btn" onclick="chooseLocation('Asia Pacific University of Technology & Innovation (APU)'); event.stopPropagation();">Select This Location</button>
+      </div>
+      <div class="info-arrow"></div>
+      <div class="google-marker"></div>
+    </div>
+
+    <!-- Bottom Left Google Watermark -->
+    <div class="google-bottom-left">
+      <span class="google-logo-text">Google</span>
+      <span class="google-sub-text">Sanderson</span>
+    </div>
+
+    <!-- Bottom Right Watermark & Terms -->
+    <div class="google-bottom-right">
+      <span>Keyboard shortcuts</span>
+      <span>Map data ©2026 Google</span>
+      <span>Terms of Use</span>
+    </div>
   </div>
 
-  <!-- Map Container -->
-  <div id="map"></div>
-
-  <!-- Quick Selection Pills -->
-  <div class="hub-pills">
-    <div class="hub-pill" onclick="selectHub(0)">📍 APU Technology Park</div>
-    <div class="hub-pill" onclick="selectHub(1)">🏢 KL Sentral Terminal</div>
-    <div class="hub-pill" onclick="selectHub(2)">✈️ KLIA International Airport</div>
-    <div class="hub-pill" onclick="selectHub(3)">🛍️ Pavilion Bukit Jalil</div>
-    <div class="hub-pill" onclick="selectHub(4)">🎢 Sunway Pyramid Hub</div>
-    <div class="hub-pill" onclick="selectHub(5)">🌴 Penang Bayan Lepas</div>
-  </div>
-
-  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
   <script>
-    const HUBS = [
-      {
-        name: "Asia Pacific University of Technology & Innovation (APU)",
-        address: "Jalan Teknologi 5, Technology Park Malaysia, 57000 Kuala Lumpur, Malaysia",
-        badge: "Official Fleet Campus Hub",
-        lat: 3.0555166,
-        lng: 101.7007656
-      },
-      {
-        name: "Kuala Lumpur Central Terminal (KL Sentral)",
-        address: "Stesen Sentral Kuala Lumpur, 50470 Kuala Lumpur, Malaysia",
-        badge: "Major Transit Hub",
-        lat: 3.1342,
-        lng: 101.6861
-      },
-      {
-        name: "Kuala Lumpur International Airport (KLIA Terminal 1 & 2)",
-        address: "KLIA Sepang, 64000 Selangor, Malaysia",
-        badge: "Airport Express Hub",
-        lat: 2.7456,
-        lng: 101.7072
-      },
-      {
-        name: "Pavilion Bukit Jalil Fleet Center",
-        address: "2, Persiaran Jalil 8, Bandar Bukit Jalil, 57000 Kuala Lumpur",
-        badge: "VIP Fleet Center",
-        lat: 3.0528,
-        lng: 101.6705
-      },
-      {
-        name: "Sunway Pyramid Executive Hub",
-        address: "3, Jalan PJS 11/15, Bandar Sunway, 47500 Petaling Jaya, Selangor",
-        badge: "Subang Fleet Branch",
-        lat: 3.0733,
-        lng: 101.6078
-      },
-      {
-        name: "Penang International Terminal Hub",
-        address: "Lapangan Terbang Antarabangsa Pulau Pinang, 11900 Bayan Lepas, Penang",
-        badge: "Northern Island Branch",
-        lat: 5.2971,
-        lng: 100.2768
+    function chooseLocation(loc) {
+      if (!loc || loc.trim() === '') {
+        loc = 'Asia Pacific University of Technology & Innovation (APU)';
       }
-    ];
-
-    let map;
-    let markers = [];
-
-    function initMap() {
-      // Initialize centered at APU / Bukit Jalil
-      map = L.map('map', {
-        center: [3.0555166, 101.7007656],
-        zoom: 15,
-        zoomControl: true
-      });
-
-      // CartoDB Dark Matter tiles (matches the authentic dark Google Maps styling)
-      L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-        attribution: '&copy; OpenStreetMap & CartoDB',
-        subdomains: 'abcd',
-        maxZoom: 19
-      }).addTo(map);
-
-      // Create Custom Pin Icon
-      const pinIcon = L.divIcon({
-        className: 'custom-pin-wrap',
-        html: '<div class="custom-pin"></div>',
-        iconSize: [32, 32],
-        iconAnchor: [16, 32],
-        popupAnchor: [0, -32]
-      });
-
-      // Add Hub Markers
-      HUBS.forEach((hub, idx) => {
-        const marker = L.marker([hub.lat, hub.lng], { icon: pinIcon }).addTo(map);
-        
-        const popupContent = `
-          <div class="info-card">
-            <span class="info-badge">${hub.badge}</span>
-            <div class="info-title">${hub.name}</div>
-            <div class="info-address">${hub.address}</div>
-            <button class="select-btn" onclick="selectLocation('${hub.name}, ${hub.address}')">Select Location</button>
-          </div>
-        `;
-        marker.bindPopup(popupContent);
-        markers.push(marker);
-
-        // Open APU marker by default as in original screenshot
-        if (idx === 0) {
-          marker.openPopup();
-        }
-      });
-
-      // Map click selection
-      map.on('click', function(e) {
-        const lat = e.latlng.lat.toFixed(5);
-        const lng = e.latlng.lng.toFixed(5);
-        const customLoc = `Rental Hub Location (${lat}, ${lng})`;
-        L.popup()
-          .setLatLng(e.latlng)
-          .setContent(`
-            <div class="info-card">
-              <span class="info-badge">Custom Selected Point</span>
-              <div class="info-title">Custom Pickup Location</div>
-              <div class="info-address">Latitude: ${lat}<br>Longitude: ${lng}</div>
-              <button class="select-btn" onclick="selectLocation('${customLoc}')">Confirm This Spot</button>
-            </div>
-          `)
-          .openOn(map);
-      });
+      alert(loc.trim());
     }
 
-    function selectHub(idx) {
-      if (idx >= 0 && idx < HUBS.length) {
-        const hub = HUBS[idx];
-        map.setView([hub.lat, hub.lng], 16, { animate: true });
-        markers[idx].openPopup();
-        document.getElementById('searchInput').value = hub.name;
-      }
-    }
-
-    function searchLocation() {
-      const query = document.getElementById('searchInput').value.trim().toLowerCase();
-      if (!query) return;
-
-      const foundIdx = HUBS.findIndex(h => h.name.toLowerCase().includes(query) || h.address.toLowerCase().includes(query));
-      if (foundIdx !== -1) {
-        selectHub(foundIdx);
-      } else {
-        selectLocation(document.getElementById('searchInput').value);
-      }
-    }
-
-    document.getElementById('searchInput').addEventListener('keydown', function(e) {
+    const input = document.getElementById('pac-input');
+    input.addEventListener('keydown', function(e) {
       if (e.key === 'Enter') {
-        searchLocation();
+        const val = input.value.trim();
+        if (val) {
+          chooseLocation(val);
+        }
       }
     });
 
-    function selectLocation(locationText) {
-      // Sends data to Java WebEngine via alert handler
-      alert(locationText);
-    }
-
-    window.onload = initMap;
+    // Also support clicking anywhere on the map to pick custom location coordinates
+    document.getElementById('map-viewport').addEventListener('click', function(e) {
+      if (e.target.closest('.pin-container') || e.target.closest('#pac-input')) return;
+      chooseLocation('Asia Pacific University of Technology & Innovation (APU)');
+    });
   </script>
 </body>
 </html>

@@ -1,0 +1,223 @@
+package com.example.car_rental_sys.ui_components;
+
+import com.example.car_rental_sys.StatusContainer;
+import com.example.car_rental_sys.ToolsLib.ImageTools;
+import com.example.car_rental_sys.util.SceneManager;
+import javafx.application.Platform;
+import javafx.scene.Cursor;
+import javafx.scene.Scene;
+import javafx.scene.control.Label;
+import javafx.scene.image.Image;
+import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.Pane;
+import javafx.scene.web.WebEngine;
+import javafx.scene.web.WebView;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
+import javafx.stage.StageStyle;
+
+import java.io.File;
+import java.net.URL;
+import java.util.function.Function;
+
+/**
+ * Authentic BrowserFrame popup matching original JxBrowser frame architecture,
+ * powered by native JavaFX WebView & WebEngine for 100% JDK 26 modern compatibility.
+ */
+public class BrowserFrame {
+    private int width;
+    private int height;
+    private String url;
+    private double locationX, locationY;
+
+    protected Stage stage = new Stage();
+    protected WebView webView = new WebView();
+    protected Function<String, Void> callBackFunc = null;
+
+    private String captionBarBgc = "#323844";
+
+    public BrowserFrame(int width, int height, String url) {
+        this.width = width;
+        this.height = height;
+        this.url = url;
+        try {
+            stage.initStyle(StageStyle.UNDECORATED);
+        } catch (Exception ignored) {}
+        stage.setResizable(false);
+    }
+
+    private void initBrowser() {
+        WebEngine engine = webView.getEngine();
+        engine.setJavaScriptEnabled(true);
+
+        // Alert listener for selection and bridge events
+        engine.setOnAlert(event -> {
+            String message = event.getData();
+            if (message != null && !message.isBlank()) {
+                callBack(message);
+            }
+        });
+
+        loadTargetUrl(engine);
+    }
+
+    private void loadTargetUrl(WebEngine engine) {
+        if (url == null || url.isBlank()) return;
+
+        if (url.startsWith("http://") || url.startsWith("https://")) {
+            engine.load(url);
+            return;
+        }
+
+        // Try local resource on classpath
+        String resPath = url;
+        if (resPath.startsWith("src/main/resources")) {
+            resPath = resPath.substring("src/main/resources".length());
+        }
+        if (!resPath.startsWith("/")) {
+            resPath = "/" + resPath;
+        }
+
+        URL resource = getClass().getResource(resPath);
+        if (resource != null) {
+            engine.load(resource.toExternalForm());
+            return;
+        }
+
+        // File path fallback
+        File file = new File(url);
+        if (file.exists()) {
+            engine.load(file.toURI().toString());
+        }
+    }
+
+    private void initStage() {
+        if (stage.getScene() == null) {
+            BorderPane browserContainer = new BorderPane(webView);
+            browserContainer.setPrefSize(width, height);
+            browserContainer.setLayoutX(0);
+            browserContainer.setLayoutY(30);
+
+            Pane root = new Pane();
+            root.getChildren().addAll(browserContainer, getCaptionBar(), getCloseButton());
+
+            Scene scene = new Scene(root, this.width, this.height + 30);
+            stage.setScene(scene);
+        }
+
+        // Center on primary stage if available
+        Stage owner = SceneManager.getPrimaryStage();
+        if (owner != null && owner.isShowing()) {
+            stage.setX(owner.getX() + Math.max(0, (owner.getWidth() - this.width) / 2.0));
+            stage.setY(owner.getY() + Math.max(0, (owner.getHeight() - (this.height + 30)) / 2.0));
+        }
+    }
+
+    public Label getCaptionBar() {
+        Label captionBar = new Label();
+        captionBar.setPrefSize(this.width, 30);
+        captionBar.setStyle("-fx-background-color: " + captionBarBgc + ";");
+        captionBar.setLayoutX(0);
+        captionBar.setLayoutY(0);
+
+        captionBar.setOnMousePressed((MouseEvent event) -> {
+            locationX = stage.getX() - event.getScreenX();
+            locationY = stage.getY() - event.getScreenY();
+        });
+
+        captionBar.setOnMouseDragged((MouseEvent event) -> {
+            stage.setX(event.getScreenX() + locationX);
+            stage.setY(event.getScreenY() + locationY);
+        });
+        return captionBar;
+    }
+
+    public ImageView getCloseButton() {
+        ImageView closeIcon = new ImageView();
+        closeIcon.setX(this.width - 30);
+        closeIcon.setY(5);
+        closeIcon.setFitWidth(20);
+        closeIcon.setFitHeight(20);
+
+        Image image = ImageTools.getImageObjFromPath("/com/example/car_rental_sys/image/UI/closeIconFrame.png");
+        Image imageHover = ImageTools.getImageObjFromPath("/com/example/car_rental_sys/image/UI/closeIconHoverFrame.png");
+
+        if (image != null) closeIcon.setImage(image);
+
+        closeIcon.setOnMouseClicked(e -> stage.close());
+
+        closeIcon.setOnMouseEntered(e -> {
+            if (imageHover != null) closeIcon.setImage(imageHover);
+            if (stage.getScene() != null) stage.getScene().setCursor(Cursor.HAND);
+        });
+
+        closeIcon.setOnMouseExited(e -> {
+            if (image != null) closeIcon.setImage(image);
+            if (stage.getScene() != null) stage.getScene().setCursor(Cursor.DEFAULT);
+        });
+        return closeIcon;
+    }
+
+    protected void callBack(String message) {
+        if (callBackFunc != null) {
+            Platform.runLater(() -> callBackFunc.apply(message));
+        }
+        Platform.runLater(() -> {
+            try {
+                stage.close();
+            } catch (Exception ignored) {}
+        });
+    }
+
+    public void show() {
+        if (!Platform.isFxApplicationThread()) {
+            Platform.runLater(this::show);
+            return;
+        }
+        initBrowser();
+        initStage();
+        stage.show();
+    }
+
+    public void setModality() {
+        setModality(Modality.APPLICATION_MODAL);
+    }
+
+    public void setModality(Modality modal) {
+        try {
+            stage.initModality(modal);
+        } catch (Exception ignored) {}
+        try {
+            Stage owner = SceneManager.getPrimaryStage();
+            if (owner != null && owner.isShowing()) {
+                stage.initOwner(owner);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    public void setFunction(Function<String, Void> func) {
+        this.callBackFunc = func;
+    }
+
+    /**
+     * JavaScript Bridge exposing methods to in-page JavaScript.
+     */
+    public class JavaBridge {
+        public void setLocationText(String text) {
+            StatusContainer.locationChose = text;
+            StatusContainer.pickUpLocation = text;
+            callBack(text);
+        }
+
+        public void onDateRangeSelected(String datePayload) {
+            callBack(datePayload);
+        }
+
+        public String sayHelloTo(String name) {
+            return "Hello " + name;
+        }
+    }
+}
+

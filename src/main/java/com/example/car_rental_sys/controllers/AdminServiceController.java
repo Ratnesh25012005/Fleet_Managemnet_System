@@ -103,6 +103,10 @@ public class AdminServiceController extends Controller {
         }
     }
 
+    public void closeTrackOrder() {
+        showOrderDetails();
+    }
+
     public void showTrackOrder() {
         if (rightContainer != null) {
             rightContainer.setVisible(true);

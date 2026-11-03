@@ -23,6 +23,7 @@ import java.util.Optional;
  */
 public class OrderDetailsComponentController extends Controller {
 
+    public static OrderDetailsComponentController instance;
     private static Order selectedOrder;
 
     @FXML
@@ -95,8 +96,34 @@ public class OrderDetailsComponentController extends Controller {
 
     @FXML
     public void initialize() {
+        instance = this;
+        initTheme();
         populateOrderData();
         attachButtonEvents();
+    }
+
+    private void initTheme() {
+        boolean isCustomer = (com.example.car_rental_sys.StatusContainer.currentUser == null
+                || com.example.car_rental_sys.StatusContainer.currentUser.getRole() == com.example.car_rental_sys.model.Role.CUSTOMER);
+        if (isCustomer && panelOrderDetails != null) {
+            try {
+                java.net.URL css = getClass().getResource("/com/example/car_rental_sys/style/orderDetailsComponentDark.css");
+                if (css != null) {
+                    panelOrderDetails.getStylesheets().clear();
+                    panelOrderDetails.getStylesheets().add(css.toExternalForm());
+                }
+            } catch (Exception ignored) {}
+        }
+    }
+
+    public void updateOrderDetails(com.example.car_rental_sys.ui_components.UIOrderRow row) {
+        if (row == null) return;
+        if (orderNum != null) orderNum.setText(String.format("%09d", row.getOrderID()));
+        if (orderDate != null) orderDate.setText(row.getOrderDate());
+        if (carName != null) carName.setText(row.getName());
+        if (carPrice != null) carPrice.setText(row.getOrderAmount());
+        if (totalAmount != null) totalAmount.setText(row.getOrderAmount());
+        if (carImg != null && row.imgCar != null) carImg.setImage(row.imgCar);
     }
 
     private void populateOrderData() {

@@ -63,33 +63,11 @@ public class PaySuccessPageController extends Controller {
                 mainPane.setOnKeyPressed(event -> {
                     if (event.getCode() == KeyCode.SPACE
                             || event.getCode() == KeyCode.ENTER) {
-                        skipToOrders(engine);
+                        skipToOrders();
                     }
                 });
             }
         });
-
-        // Poll every 500 ms: if the HTML has displayed #container (video done),
-        // navigate after a brief pause so user sees the success overlay.
-        javafx.animation.Timeline poll = new javafx.animation.Timeline(
-                new javafx.animation.KeyFrame(Duration.millis(500), ev -> {
-                    try {
-                        Object display = engine.executeScript(
-                                "document.getElementById('container') !== null "
-                                + "&& document.getElementById('container').style.display !== 'none' "
-                                + "&& document.getElementById('container').style.display !== '' ? 'visible' : 'hidden'");
-                        if ("visible".equals(display)) {
-                            // Container is visible — wait 4s then navigate
-                            if (autoNavTimer != null) {
-                                autoNavTimer.stop();
-                            }
-                            scheduleAutoNav(4);
-                        }
-                    } catch (Exception ignored) { }
-                })
-        );
-        poll.setCycleCount(60); // poll for up to 30 seconds
-        poll.play();
     }
 
     private void scheduleAutoNav(int seconds) {
@@ -98,11 +76,8 @@ public class PaySuccessPageController extends Controller {
         t.play();
     }
 
-    private void skipToOrders(WebEngine engine) {
+    private void skipToOrders() {
         if (autoNavTimer != null) autoNavTimer.stop();
-        try {
-            engine.executeScript("stopVideo();");
-        } catch (Exception ignored) { }
         goToOrders();
     }
 

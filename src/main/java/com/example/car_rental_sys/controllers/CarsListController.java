@@ -4,190 +4,125 @@ import com.example.car_rental_sys.concurrency.AsyncExecutor;
 import com.example.car_rental_sys.model.Vehicle;
 import com.example.car_rental_sys.service.ServiceFactory;
 import com.example.car_rental_sys.service.VehicleService;
-import com.example.car_rental_sys.util.SceneManager;
+import com.example.car_rental_sys.ui_components.CarCard;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.geometry.Pos;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.scene.layout.FlowPane;
-import javafx.scene.layout.HBox;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.VBox;
 
-import java.io.InputStream;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
- * Controller for the public Vehicle Catalog & Search Results.
+ * Controller for the public Vehicle Catalog (carsListPage.fxml).
+ * Uses authentic CarCard components with linear gradients, cutout PNGs, and specs.
  */
 public class CarsListController extends Controller {
 
     @FXML
     private ScrollPane scrollPane;
 
-    private FlowPane cardContainer;
+    private FlowPane flowPane;
+
+    // Authentic brand gradient lookup table
+    private static final Map<String, String[]> MODEL_GRADIENTS = new HashMap<>();
+
+    static {
+        MODEL_GRADIENTS.put("Huracan_EVI", new String[]{"#430707", "#EE0D0D"});
+        MODEL_GRADIENTS.put("Porsche_718", new String[]{"#0a1c38", "#1669e0"});
+        MODEL_GRADIENTS.put("Ferrari_488", new String[]{"#360505", "#c71212"});
+        MODEL_GRADIENTS.put("McLaren_720S", new String[]{"#2c1200", "#cc5803"});
+        MODEL_GRADIENTS.put("BMW_M4", new String[]{"#0b2520", "#17826d"});
+        MODEL_GRADIENTS.put("Mercedes_AMG_GT", new String[]{"#1a1a1a", "#6b7280"});
+        MODEL_GRADIENTS.put("Audi_R8", new String[]{"#111827", "#374151"});
+        MODEL_GRADIENTS.put("Aston_Martin_Vantage", new String[]{"#06251b", "#0f766e"});
+        MODEL_GRADIENTS.put("Ford_Mustang_GT", new String[]{"#1e1b4b", "#4338ca"});
+        MODEL_GRADIENTS.put("Nissan_GTR", new String[]{"#311026", "#9d174d"});
+    }
 
     @FXML
     public void initialize() {
-        setupCatalogContainer();
-        loadAvailableVehicles();
-    }
-
-    private void setupCatalogContainer() {
-        cardContainer = new FlowPane();
-        cardContainer.setHgap(25);
-        cardContainer.setVgap(25);
-        cardContainer.setPadding(new Insets(30, 40, 40, 40));
-        cardContainer.setStyle("-fx-background-color: transparent;");
+        flowPane = new FlowPane();
+        flowPane.setPrefWidth(1270);
+        flowPane.setHgap(20);
+        flowPane.setVgap(20);
+        flowPane.setPadding(new Insets(20, 20, 20, 20));
+        flowPane.setStyle("-fx-background-color: transparent;");
 
         if (scrollPane != null) {
-            scrollPane.setContent(cardContainer);
             scrollPane.setFitToWidth(true);
-            scrollPane.setStyle("-fx-background: #151515; -fx-background-color: #151515; -fx-border-color: transparent;");
+            scrollPane.setContent(flowPane);
+            scrollPane.setStyle("-fx-background: #000000; -fx-background-color: #000000; -fx-border-color: transparent;");
         }
+
+        loadVehicleCards();
     }
 
-    private void loadAvailableVehicles() {
-        Label loadingLabel = new Label("Loading available fleet catalog...");
-        loadingLabel.setStyle("-fx-text-fill: #999999; -fx-font-size: 16px;");
-        cardContainer.getChildren().setAll(loadingLabel);
-
+    private void loadVehicleCards() {
         AsyncExecutor.getInstance().execute(() -> {
             try {
                 VehicleService vehicleService = ServiceFactory.getInstance().getVehicleService();
-                List<Vehicle> vehicles = vehicleService.getAvailableVehicles();
-                if (vehicles.isEmpty()) {
-                    // Fallback to all vehicles if none marked specifically AVAILABLE yet
-                    vehicles = vehicleService.getAllVehicles();
-                }
+                List<Vehicle> vehicles = vehicleService.getAllVehicles();
 
-                final List<Vehicle> finalList = vehicles;
-                Platform.runLater(() -> renderVehicleCards(finalList));
+                Platform.runLater(() -> renderCards(vehicles));
             } catch (Exception e) {
-                Platform.runLater(() -> {
-                    Label errorLabel = new Label("Failed to load vehicle catalog: " + e.getMessage());
-                    errorLabel.setStyle("-fx-text-fill: #ff6b6b; -fx-font-size: 16px;");
-                    cardContainer.getChildren().setAll(errorLabel);
-                });
+                Platform.runLater(this::renderDefaultCards);
             }
         });
     }
 
-    private void renderVehicleCards(List<Vehicle> vehicles) {
-        cardContainer.getChildren().clear();
+    private void renderCards(List<Vehicle> vehicles) {
+        flowPane.getChildren().clear();
 
-        if (vehicles.isEmpty()) {
-            Label emptyLabel = new Label("No vehicles are currently available for rental.");
-            emptyLabel.setStyle("-fx-text-fill: #888888; -fx-font-size: 18px;");
-            cardContainer.getChildren().add(emptyLabel);
+        if (vehicles == null || vehicles.isEmpty()) {
+            renderDefaultCards();
             return;
         }
 
         for (Vehicle v : vehicles) {
-            VBox card = createVehicleCard(v);
-            cardContainer.getChildren().add(card);
+            String modelKey = v.getModel().replace(" ", "_");
+            String[] gradients = MODEL_GRADIENTS.getOrDefault(modelKey, new String[]{"#0a1c38", "#1669e0"});
+
+            String seats = (v.getSeats() != null) ? String.valueOf(v.getSeats()) : "2";
+            String price = (v.getDailyRate() != null) ? v.getDailyRate().toPlainString() : "850";
+            String transmission = (v.getTransmission() != null) ? v.getTransmission().name() : "Automatic";
+
+            CarCard card = new CarCard(v, modelKey, seats, price, transmission, gradients[0], gradients[1]);
+            flowPane.getChildren().add(card);
         }
     }
 
-    private VBox createVehicleCard(Vehicle vehicle) {
-        VBox card = new VBox(12);
-        card.setPrefWidth(350);
-        card.setPrefHeight(380);
-        card.setPadding(new Insets(20));
-        card.setStyle(
-                "-fx-background-color: #202020;" +
-                "-fx-background-radius: 16px;" +
-                "-fx-border-color: #333333;" +
-                "-fx-border-radius: 16px;" +
-                "-fx-border-width: 1px;" +
-                "-fx-cursor: hand;"
-        );
+    private void renderDefaultCards() {
+        flowPane.getChildren().clear();
+        String[][] defaultModels = {
+                {"Huracan_EVI", "2", "350", "Automatic"},
+                {"Porsche_718", "2", "250", "Automatic"},
+                {"Ferrari_488", "2", "450", "Automatic"},
+                {"McLaren_720S", "2", "420", "Automatic"},
+                {"BMW_M4", "4", "180", "Automatic"},
+                {"Mercedes_AMG_GT", "2", "320", "Automatic"},
+                {"Audi_R8", "2", "380", "Automatic"},
+                {"Aston_Martin_Vantage", "2", "390", "Automatic"},
+                {"Ford_Mustang_GT", "4", "220", "Automatic"},
+                {"Nissan_GTR", "4", "260", "Automatic"}
+        };
 
-        // Header: Brand & Model
-        Label titleLabel = new Label(vehicle.getBrand() + " " + vehicle.getModel());
-        titleLabel.setStyle("-fx-text-fill: white; -fx-font-size: 18px; -fx-font-weight: bold;");
+        for (int i = 0; i < defaultModels.length; i++) {
+            String[] m = defaultModels[i];
+            String[] gradients = MODEL_GRADIENTS.getOrDefault(m[0], new String[]{"#0a1c38", "#1669e0"});
+            Vehicle mockV = new Vehicle();
+            mockV.setVehicleId(i + 1);
+            mockV.setBrand(m[0].split("_")[0]);
+            mockV.setModel(m[0].replace("_", " "));
+            mockV.setSeats(Integer.parseInt(m[1]));
+            mockV.setDailyRate(new java.math.BigDecimal(m[2]));
+            mockV.setImagePath("/com/example/car_rental_sys/image/cars/" + m[0] + ".png");
 
-        Label categoryLabel = new Label(vehicle.getYear() != null ? vehicle.getYear() + " Model" : "Premium Series");
-        categoryLabel.setStyle("-fx-text-fill: #00d26a; -fx-font-size: 12px; -fx-font-weight: bold;");
-
-        // Vehicle Image Preview
-        ImageView imageView = new ImageView();
-        imageView.setFitHeight(160);
-        imageView.setFitWidth(310);
-        imageView.setPreserveRatio(true);
-        loadVehicleImage(imageView, vehicle.getImagePath());
-
-        // Spec highlights
-        HBox specs = new HBox(15);
-        specs.setAlignment(Pos.CENTER_LEFT);
-        Label seats = new Label((vehicle.getSeats() != null ? vehicle.getSeats() : 4) + " Seats");
-        seats.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 13px;");
-        Label fuel = new Label(vehicle.getFuelType() != null ? vehicle.getFuelType().name() : "Petrol");
-        fuel.setStyle("-fx-text-fill: #aaaaaa; -fx-font-size: 13px;");
-        Label plate = new Label(vehicle.getLicensePlate() != null ? vehicle.getLicensePlate() : "N/A");
-        plate.setStyle("-fx-text-fill: #777777; -fx-font-size: 12px;");
-        specs.getChildren().addAll(seats, fuel, plate);
-
-        // Footer: Price & Details button
-        HBox footer = new HBox(10);
-        footer.setAlignment(Pos.CENTER_LEFT);
-        VBox.setVgrow(footer, Priority.ALWAYS);
-
-        Label priceLabel = new Label("$" + (vehicle.getDailyRate() != null ? vehicle.getDailyRate().toPlainString() : "150.00") + " / day");
-        priceLabel.setStyle("-fx-text-fill: #ffffff; -fx-font-size: 16px; -fx-font-weight: bold;");
-        HBox.setHgrow(priceLabel, Priority.ALWAYS);
-
-        Button viewBtn = new Button("View Details");
-        viewBtn.setStyle(
-                "-fx-background-color: #1d90f4;" +
-                "-fx-text-fill: white;" +
-                "-fx-font-weight: bold;" +
-                "-fx-background-radius: 8px;" +
-                "-fx-padding: 8 16 8 16;"
-        );
-        viewBtn.setOnAction(e -> openVehicleDetails(vehicle));
-
-        footer.getChildren().addAll(priceLabel, viewBtn);
-        card.getChildren().addAll(titleLabel, categoryLabel, imageView, specs, footer);
-        card.setOnMouseClicked(e -> openVehicleDetails(vehicle));
-
-        return card;
-    }
-
-    private void openVehicleDetails(Vehicle vehicle) {
-        CarDetailsPageController.setSelectedVehicle(vehicle);
-        SceneManager.switchScene("carDetailsPage.fxml");
-    }
-
-    private void loadVehicleImage(ImageView imageView, String imagePath) {
-        String resourcePath = (imagePath != null && !imagePath.isBlank())
-                ? imagePath
-                : "/com/example/car_rental_sys/image/cars/Huracan_EVI.png";
-
-        if (!resourcePath.startsWith("/")) {
-            resourcePath = "/com/example/car_rental_sys/" + resourcePath;
-        }
-
-        try (InputStream stream = getClass().getResourceAsStream(resourcePath)) {
-            if (stream != null) {
-                imageView.setImage(new Image(stream));
-                return;
-            }
-        } catch (Exception ignored) {
-        }
-
-        // Fallback default car image
-        try (InputStream fallback = getClass().getResourceAsStream("/com/example/car_rental_sys/image/cars/Huracan_EVI.png")) {
-            if (fallback != null) {
-                imageView.setImage(new Image(fallback));
-            }
-        } catch (Exception ignored) {
+            CarCard card = new CarCard(mockV, m[0], m[1], m[2], m[3], gradients[0], gradients[1]);
+            flowPane.getChildren().add(card);
         }
     }
 }
-

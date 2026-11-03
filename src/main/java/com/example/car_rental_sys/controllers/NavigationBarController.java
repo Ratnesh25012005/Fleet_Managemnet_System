@@ -1,5 +1,6 @@
 package com.example.car_rental_sys.controllers;
 
+import com.example.car_rental_sys.ToolsLib.ImageTools;
 import com.example.car_rental_sys.model.Role;
 import com.example.car_rental_sys.model.User;
 import com.example.car_rental_sys.service.AuthService;
@@ -21,6 +22,8 @@ import java.io.InputStream;
  */
 public class NavigationBarController {
 
+    public static NavigationBarController navigationBarControllerInstance;
+
     @FXML
     private Pane navBarPanel;
 
@@ -35,6 +38,7 @@ public class NavigationBarController {
 
     @FXML
     public void initialize() {
+        navigationBarControllerInstance = this;
         setupWindowDrag();
     }
 
@@ -105,15 +109,22 @@ public class NavigationBarController {
         setImageFromClasspath(closeIconBtn, "/com/example/car_rental_sys/image/UI/closeIcon.png");
     }
 
+    public void changeLogoImage(String type) {
+        String path = "/com/example/car_rental_sys/image/UI/";
+        if ("blue".equalsIgnoreCase(type)) {
+            path += "logo_dark_blue.png";
+        } else {
+            path += "logo_dark.png";
+        }
+        setImageFromClasspath(logoImage, path);
+    }
+
     private void setImageFromClasspath(ImageView imageView, String resourcePath) {
         if (imageView != null) {
-            try (InputStream stream = getClass().getResourceAsStream(resourcePath)) {
-                if (stream != null) {
-                    imageView.setImage(new Image(stream));
-                }
-            } catch (Exception ignored) {
+            Image img = ImageTools.getImageObjFromPath(resourcePath);
+            if (img != null) {
+                imageView.setImage(img);
             }
         }
     }
 }
-
