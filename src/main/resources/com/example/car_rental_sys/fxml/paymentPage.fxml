@@ -15,7 +15,7 @@
         <ImageView fx:id="avatarImageView" fitHeight="60.0" fitWidth="53.0" layoutX="50.0" layoutY="130.0" pickOnBounds="true" preserveRatio="true">
             <Image url="@../image/avatar/1.png" />
         </ImageView>
-        <Label fx:id="customerName" layoutX="120.0" layoutY="130.0" text="Innis" textFill="WHITE">
+        <Label fx:id="customerName" layoutX="120.0" layoutY="130.0" text="Client" textFill="WHITE">
             <font>
                 <Font name="System Bold" size="16.0" />
             </font>
@@ -31,7 +31,7 @@
                 <Font size="14.0" />
             </font>
         </Label>
-        <Label fx:id="price" layoutX="225.0" layoutY="240.0" prefHeight="19.0" prefWidth="130.0" text="RM200/H" textFill="WHITE">
+        <Label fx:id="price" layoutX="225.0" layoutY="240.0" prefHeight="19.0" prefWidth="130.0" text="₹200/H" textFill="WHITE">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -51,7 +51,7 @@
                 <Font size="14.0" />
             </font>
         </Label>
-        <Label fx:id="discount" layoutX="225.0" layoutY="400.0" prefHeight="19.0" prefWidth="130.0" text="RM100/H" textFill="#838383">
+        <Label fx:id="discount" layoutX="225.0" layoutY="400.0" prefHeight="19.0" prefWidth="130.0" text="₹100/H" textFill="#838383">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -77,7 +77,7 @@
                 <Font size="14.0" />
             </font>
         </Label>
-        <Label fx:id="totalPrice" layoutX="260.0" layoutY="515.0" prefHeight="19.0" prefWidth="76.0" text="RM10000" textFill="WHITE">
+        <Label fx:id="totalPrice" layoutX="260.0" layoutY="515.0" prefHeight="19.0" prefWidth="76.0" text="₹10000" textFill="WHITE">
             <font>
                 <Font name="System Bold" size="14.0" />
             </font>
@@ -123,7 +123,7 @@
             <Font name="System Bold" size="14.0" />
         </font>
     </Label>
-    <Label fx:id="priceText" layoutX="285.0" layoutY="277.0" prefHeight="19.0" prefWidth="178.0" text="RM2000/D" textFill="#838383">
+    <Label fx:id="priceText" layoutX="285.0" layoutY="277.0" prefHeight="19.0" prefWidth="178.0" text="₹2000/D" textFill="#838383">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>
@@ -139,7 +139,7 @@
             <Font size="14.0" />
         </font>
     </Label>
-    <Label fx:id="balanceText" layoutX="703.0" layoutY="353.0" prefHeight="15.0" prefWidth="104.0" text="RM10000" textAlignment="RIGHT" textFill="#cae943">
+    <Label fx:id="balanceText" layoutX="703.0" layoutY="353.0" prefHeight="15.0" prefWidth="104.0" text="₹10000" textAlignment="RIGHT" textFill="#cae943">
         <font>
             <Font name="System Bold" size="14.0" />
         </font>

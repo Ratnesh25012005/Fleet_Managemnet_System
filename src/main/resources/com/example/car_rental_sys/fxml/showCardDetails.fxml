@@ -75,12 +75,12 @@
             <Font name="Arial Bold" size="10.0" />
         </font>
     </Label>
-    <Label fx:id="cardBillingAddress" alignment="TOP_LEFT" layoutX="296.0" layoutY="59.0" prefHeight="62.0" prefWidth="138.0" text="4, Jalan Technology Park, 48600, Bukit Jalil, Malaysia" textFill="#f7f8fa" wrapText="true">
+    <Label fx:id="cardBillingAddress" alignment="TOP_LEFT" layoutX="296.0" layoutY="59.0" prefHeight="62.0" prefWidth="138.0" text="SRM University-AP, Neerukonda, Mangalagiri, Amaravati 522502" textFill="#f7f8fa" wrapText="true">
         <font>
             <Font name="Arial Bold" size="11.0" />
         </font>
     </Label>
-    <TextArea fx:id="txtBillingAddress" layoutX="291.0" layoutY="55.0" prefHeight="78.0" prefWidth="160.0" text="4, Jalan Technology Park,&#10;48600 Bukit Jalil,&#10;Malaysia&#10;" visible="false" />
+    <TextArea fx:id="txtBillingAddress" layoutX="291.0" layoutY="55.0" prefHeight="78.0" prefWidth="160.0" text="SRM University-AP,&#10;Neerukonda, Amaravati,&#10;Andhra Pradesh 522502&#10;" visible="false" />
     <TextField fx:id="txtCardName" layoutX="12.0" layoutY="54.0" prefHeight="15.0" prefWidth="124.0" text="PayPal Balance" visible="false">
         <font>
             <Font size="11.0" />

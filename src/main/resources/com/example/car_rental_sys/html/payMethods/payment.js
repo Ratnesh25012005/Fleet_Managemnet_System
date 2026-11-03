@@ -82,13 +82,13 @@ function getValue(type) {
 
     let price = localStorage.getItem("plan-price");
     let PlanType = null;
-    if (price === "RM 0") {
+    if (price === "₹ 0" || price === "RM 0") {
         PlanType = "free";
     }
-    else if (price === "RM 58") {
+    else if (price === "₹ 58" || price === "RM 58") {
         PlanType = "personal";
     }
-    else if (price === "RM 88") {
+    else if (price === "₹ 88" || price === "RM 88") {
         PlanType = "professional";
     } {
 

@@ -37,7 +37,7 @@
                     <Font name="Arial Bold" size="15.0"/>
                 </font>
             </Label>
-            <Label layoutY="39.0" text="Bukit Jalil, Malaysia" textFill="#86909c">
+            <Label layoutY="39.0" text="SRM University-AP, Amaravati, India" textFill="#86909c">
                 <font>
                     <Font name="Arial Bold" size="11.0"/>
                 </font>
@@ -109,13 +109,13 @@
                     <Font name="Arial Bold" size="12.0"/>
                 </font>
             </Label>
-            <Label fx:id="ivUnitPrice" layoutX="260.0" layoutY="38.0" prefWidth="70.0" text="RM 60.00"
+            <Label fx:id="ivUnitPrice" layoutX="260.0" layoutY="38.0" prefWidth="70.0" text="₹ 60.00"
                    textFill="#4e5969">
                 <font>
                     <Font name="Arial Bold" size="12.0"/>
                 </font>
             </Label>
-            <Label fx:id="ivPrice" layoutX="357.0" layoutY="38.0" prefWidth="70.0" text="RM 6000.00"
+            <Label fx:id="ivPrice" layoutX="357.0" layoutY="38.0" prefWidth="70.0" text="₹ 6000.00"
                    textFill="#4e5969">
                 <font>
                     <Font name="Arial Bold" size="12.0"/>
@@ -131,7 +131,7 @@
         </Label>
         <Line endX="240.0" fill="#f2f3f5" layoutX="224.0" layoutY="424.0" startX="-190.0" stroke="#f2f3f5"
               strokeWidth="2.0"/>
-        <Label fx:id="ivSubTotal" layoutX="392.0" layoutY="394.0" prefWidth="70.0" text="RM 6000.00"
+        <Label fx:id="ivSubTotal" layoutX="392.0" layoutY="394.0" prefWidth="70.0" text="₹ 6000.00"
                textFill="#4080ff">
             <font>
                 <Font name="Arial Bold" size="12.0"/>
@@ -142,7 +142,7 @@
                 <Font name="Arial Black" size="10.0"/>
             </font>
         </Label>
-        <Label fx:id="taxLabel" layoutX="392.0" layoutY="442.0" prefWidth="70.0" text="RM 0.00" textFill="#4080ff">
+        <Label fx:id="taxLabel" layoutX="392.0" layoutY="442.0" prefWidth="70.0" text="₹ 0.00" textFill="#4080ff">
             <font>
                 <Font name="Arial Bold" size="12.0"/>
             </font>
@@ -154,7 +154,7 @@
                 <Font name="Arial Black" size="10.0"/>
             </font>
         </Label>
-        <Label fx:id="ivTotalPrice" layoutX="393.0" layoutY="492.0" prefWidth="70.0" text="RM 6000.00"
+        <Label fx:id="ivTotalPrice" layoutX="393.0" layoutY="492.0" prefWidth="70.0" text="₹ 6000.00"
                textFill="#4080ff">
             <font>
                 <Font name="Arial Bold" size="12.0"/>

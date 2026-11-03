@@ -319,10 +319,10 @@ function addHearderData(monthOrderData) {
     let hd3 = document.getElementById('header-data-3');
     let hd4 = document.getElementById('header-data-4');
 
-    hd1.innerHTML = "RM " + monthOrderData[0];
-    hd2.innerHTML = "RM " + monthOrderData[1];
-    hd3.innerHTML = "RM " + monthOrderData[2];
-    hd4.innerHTML = "RM " + monthOrderData[3];
+    hd1.innerHTML = "₹ " + monthOrderData[0];
+    hd2.innerHTML = "₹ " + monthOrderData[1];
+    hd3.innerHTML = "₹ " + monthOrderData[2];
+    hd4.innerHTML = "₹ " + monthOrderData[3];
 }
 
 /// init data 

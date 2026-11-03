@@ -15,8 +15,8 @@ public class StatusContainer {
     public static String currentCarChose = "Huracan_EVI";
     public static boolean isFirstViewCar = true;
 
-    public static String locationChose = "Asia Pacific University of Technology & Innovation (APU)";
-    public static String pickUpLocation = "Asia Pacific University of Technology & Innovation (APU)";
+    public static String locationChose = "SRM University-AP, Amaravati";
+    public static String pickUpLocation = "SRM University-AP, Amaravati";
 
     public static String pickDateTime = null;
     public static String returnDateTime = null;

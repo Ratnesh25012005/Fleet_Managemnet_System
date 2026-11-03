@@ -262,7 +262,7 @@ public class CarDetailsPageController extends Controller {
     private void initSpeedSeatsPowerPrice() {
         String[] specs = CAR_SPECS.getOrDefault(StatusContainer.currentCarChose, new String[]{"2", "1200", "325", "5.2", "4.9"});
         if (seatsText != null) seatsText.setText(specs[0]);
-        if (priceText != null) priceText.setText("RM" + specs[1] + "/D");
+        if (priceText != null) priceText.setText("₹" + specs[1] + "/D");
         if (speedText != null) speedText.setText(specs[2] + " km/h");
         if (powerText != null) powerText.setText(specs[3] + " L");
     }
@@ -274,7 +274,7 @@ public class CarDetailsPageController extends Controller {
 
         // Authentic review cards
         CommentCard c1 = new CommentCard("Marcus Vance", "Absolutely breathtaking performance. Acceleration is unmatched and the cockpit ergonomics are sublime.", "2026-10-25", 24, 5);
-        CommentCard c2 = new CommentCard("Sophia Lin", "Effortless pickup at APU campus hub. Pristine vehicle condition with flawless telemetry diagnostics.", "2026-10-21", 18, 5);
+        CommentCard c2 = new CommentCard("Sophia Lin", "Effortless pickup at SRM AP campus hub. Pristine vehicle condition with flawless telemetry diagnostics.", "2026-10-21", 18, 5);
         CommentCard c3 = new CommentCard("Daniel Thorne", "A masterclass in automotive engineering. Would rent again without hesitation.", "2026-10-15", 9, 4);
 
         flowPane.getChildren().addAll(c1, c2, c3);
@@ -504,7 +504,7 @@ public class CarDetailsPageController extends Controller {
 
         // Ensure location is valid
         if (StatusContainer.pickUpLocation == null || StatusContainer.pickUpLocation.isBlank()) {
-            StatusContainer.pickUpLocation = "Asia Pacific University of Technology & Innovation (APU)";
+            StatusContainer.pickUpLocation = "SRM University-AP, Amaravati";
             StatusContainer.locationChose = StatusContainer.pickUpLocation;
         }
 

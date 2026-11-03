@@ -97,7 +97,7 @@ public class CarCard extends Pane {
         addImage("manual.png", 140, cardHeight - 80, 20, 20, "UI");
         Label passagesNum = addLabel(passgerNum != null ? passgerNum : "2", 110, cardHeight - 80);
         Label manualOrAuto = addLabel(type != null ? type : "Automatic", 170, cardHeight - 80);
-        Label priceLbl = addLabel("RM" + (priceNum != null ? priceNum : "850") + "/D", 280, cardHeight - 80);
+        Label priceLbl = addLabel("₹" + (priceNum != null ? priceNum : "850") + "/D", 280, cardHeight - 80);
         priceLbl.setAlignment(Pos.CENTER_RIGHT);
 
         this.getChildren().addAll(passagesNum, manualOrAuto, priceLbl);
