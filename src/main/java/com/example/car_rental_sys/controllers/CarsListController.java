@@ -8,7 +8,6 @@ import com.example.car_rental_sys.ui_components.CarCard;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.geometry.Insets;
-import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.FlowPane;
 
@@ -31,16 +30,26 @@ public class CarsListController extends Controller {
     private static final Map<String, String[]> MODEL_GRADIENTS = new HashMap<>();
 
     static {
+        MODEL_GRADIENTS.put("Huracan_EVO", new String[]{"#430707", "#EE0D0D"});
         MODEL_GRADIENTS.put("Huracan_EVI", new String[]{"#430707", "#EE0D0D"});
+        MODEL_GRADIENTS.put("Model_3", new String[]{"#061d36", "#0077b6"});
+        MODEL_GRADIENTS.put("Tesla_Model_3", new String[]{"#061d36", "#0077b6"});
+        MODEL_GRADIENTS.put("718_Cayman", new String[]{"#0a1c38", "#1669e0"});
         MODEL_GRADIENTS.put("Porsche_718", new String[]{"#0a1c38", "#1669e0"});
+        MODEL_GRADIENTS.put("488_Spider", new String[]{"#360505", "#c71212"});
         MODEL_GRADIENTS.put("Ferrari_488", new String[]{"#360505", "#c71212"});
+        MODEL_GRADIENTS.put("Ferrari_SF90_Spider", new String[]{"#360505", "#c71212"});
+        MODEL_GRADIENTS.put("720S", new String[]{"#2c1200", "#cc5803"});
         MODEL_GRADIENTS.put("McLaren_720S", new String[]{"#2c1200", "#cc5803"});
+        MODEL_GRADIENTS.put("Mclaren_720s", new String[]{"#2c1200", "#cc5803"});
+        MODEL_GRADIENTS.put("M4_Competition", new String[]{"#0b2520", "#17826d"});
         MODEL_GRADIENTS.put("BMW_M4", new String[]{"#0b2520", "#17826d"});
         MODEL_GRADIENTS.put("Mercedes_AMG_GT", new String[]{"#1a1a1a", "#6b7280"});
         MODEL_GRADIENTS.put("Audi_R8", new String[]{"#111827", "#374151"});
         MODEL_GRADIENTS.put("Aston_Martin_Vantage", new String[]{"#06251b", "#0f766e"});
         MODEL_GRADIENTS.put("Ford_Mustang_GT", new String[]{"#1e1b4b", "#4338ca"});
         MODEL_GRADIENTS.put("Nissan_GTR", new String[]{"#311026", "#9d174d"});
+        MODEL_GRADIENTS.put("Koenigsegg", new String[]{"#1e1b4b", "#4338ca"});
     }
 
     @FXML
@@ -53,9 +62,9 @@ public class CarsListController extends Controller {
         flowPane.setStyle("-fx-background-color: transparent;");
 
         if (scrollPane != null) {
-            scrollPane.setFitToWidth(true);
             scrollPane.setContent(flowPane);
-            scrollPane.setStyle("-fx-background: #000000; -fx-background-color: #000000; -fx-border-color: transparent;");
+            scrollPane.setFitToWidth(true);
+            scrollPane.setStyle("-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;");
         }
 
         loadVehicleCards();
@@ -83,7 +92,7 @@ public class CarsListController extends Controller {
         }
 
         for (Vehicle v : vehicles) {
-            String modelKey = v.getModel().replace(" ", "_");
+            String modelKey = v.getModel() != null ? v.getModel().replace(" ", "_") : "Vehicle";
             String[] gradients = MODEL_GRADIENTS.getOrDefault(modelKey, new String[]{"#0a1c38", "#1669e0"});
 
             String seats = (v.getSeats() != null) ? String.valueOf(v.getSeats()) : "2";
