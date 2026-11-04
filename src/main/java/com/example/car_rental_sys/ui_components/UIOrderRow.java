@@ -32,7 +32,7 @@ public class UIOrderRow extends Pane {
         this.orderID = orderID;
         this.name = name;
         this.orderDate = DateTools.getSpecFormatDate(orderDate);
-        this.orderAmount = String.format("$%d.00", orderAmount);
+        this.orderAmount = String.format("₹%d.00", orderAmount);
         this.orderStatus = orderStatus;
         init();
     }

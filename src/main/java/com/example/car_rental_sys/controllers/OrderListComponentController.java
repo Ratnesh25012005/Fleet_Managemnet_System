@@ -283,6 +283,11 @@ public class OrderListComponentController extends Controller {
     }
 
     @FXML
+    private void btnCompletedClicked(MouseEvent event) {
+        btnCompleteClicked(event);
+    }
+
+    @FXML
     private void btnContinueClicked(MouseEvent event) {
         setFocusedButton(btnContinue);
         displayedOrders = allOrders.stream()

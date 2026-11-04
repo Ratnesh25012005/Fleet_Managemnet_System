@@ -98,11 +98,11 @@ public class InvoiceController extends Controller {
             BigDecimal subtotal = total.divide(new BigDecimal("1.06"), 2, RoundingMode.HALF_UP);
             BigDecimal tax = total.subtract(subtotal);
 
-            if (ivSubTotal != null) ivSubTotal.setText("$" + subtotal.toPlainString());
-            if (taxLabel != null) taxLabel.setText("$" + tax.toPlainString());
-            if (ivTotalPrice != null) ivTotalPrice.setText("$" + total.toPlainString());
-            if (ivPrice != null) ivPrice.setText("$" + subtotal.toPlainString());
-            if (ivUnitPrice != null) ivUnitPrice.setText("$" + subtotal.toPlainString());
+            if (ivSubTotal != null) ivSubTotal.setText("₹" + subtotal.toPlainString());
+            if (taxLabel != null) taxLabel.setText("₹" + tax.toPlainString());
+            if (ivTotalPrice != null) ivTotalPrice.setText("₹" + total.toPlainString());
+            if (ivPrice != null) ivPrice.setText("₹" + subtotal.toPlainString());
+            if (ivUnitPrice != null) ivUnitPrice.setText("₹" + subtotal.toPlainString());
             if (ivCarName != null) ivCarName.setText("Vehicle Rental #" + selectedOrder.getVehicleId());
             if (ivQuantity != null) ivQuantity.setText("Rental Period");
         }
@@ -120,7 +120,12 @@ public class InvoiceController extends Controller {
 
     @FXML
     private void cancelBtnClick(MouseEvent event) {
-        SceneManager.switchScene("customerServicePage.fxml");
+        if (com.example.car_rental_sys.StatusContainer.currentUser != null
+                && com.example.car_rental_sys.StatusContainer.currentUser.getRole() == com.example.car_rental_sys.model.Role.ADMIN) {
+            SceneManager.switchScene("adminServicePage.fxml");
+        } else {
+            SceneManager.switchScene("customerServicePage.fxml");
+        }
     }
 
     @FXML

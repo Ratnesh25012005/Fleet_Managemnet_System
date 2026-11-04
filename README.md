@@ -93,21 +93,86 @@ Fleet_Management_System/
 - **Apache Maven**: 3.8+
 - **MySQL Server**: 8.0 or later (running on `localhost:3306`)
 
-### 1. Database Configuration
-Edit [`src/main/resources/db.properties`](src/main/resources/db.properties) with your MySQL credentials:
+### 1. Environment Configuration (`.env`)
+The system supports centralized, production-grade environment variable management via a root `.env` file (with sample template in `.env.example`).
 
-```properties
-db.url=jdbc:mysql://localhost:3306/fleet_management_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true
-db.username=root
-db.password=your_password
+Copy `.env.example` to `.env` in the `Fleet_Management_System` folder:
+```bash
+cp .env.example .env
 ```
 
-> **Note**: On the first application boot, `DatabaseInitializer` will automatically execute [`schema.sql`](src/main/resources/schema.sql) to create all 12 tables, indexes, and seed default roles and categories.
+Configure your credentials and API keys in `.env`:
+```properties
+# ==============================================================================
+# Database Configuration (MySQL 8+)
+# ==============================================================================
+DB_URL=jdbc:mysql://localhost:3306/fleet_management_db?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC&characterEncoding=UTF-8&autoReconnect=true
+DB_USERNAME=root
+DB_PASSWORD=your_password
+
+# ==============================================================================
+# External Web APIs
+# ==============================================================================
+# 1. Google Maps Platform API Key (Optional, see API Guide below)
+GOOGLE_MAPS_API_KEY=
+
+# 2. IP Geolocation REST API (Live, 100% Free, No Key Required)
+IP_API_URL=http://ip-api.com/json/
+
+# 3. OpenAI API Key (Optional for Customer Service AI Assistant)
+OPENAI_API_KEY=
+```
+
+---
+
+## 🌐 External APIs & Integration Guide
+
+The system integrates real-world external APIs fulfilling academic and enterprise technical requirements:
+
+### 1. Google Maps Platform API (Optional / Commercial)
+* **Provider:** [Google Cloud Console](https://console.cloud.google.com/)
+* **Purpose:** Powers Google Maps Embed directions, turn-by-turn routing, and interactive satellite/hybrid maps.
+* **Required Google Cloud APIs to Enable:**
+  1. `Maps JavaScript API` (interactive map canvas)
+  2. `Maps Embed API` (embedded driving routes)
+  3. `Directions API` (route and waypoint path calculation)
+  4. `Places API (New)` (location search & autocomplete)
+* **Configuration:** Paste your generated `AIzaSy...` key into `GOOGLE_MAPS_API_KEY=` in `.env`.
+* **Zero-Configuration Fallback:** If left blank, the application automatically runs on the built-in, dark-mode **Esri Dark Gray Canvas & Leaflet Vector Navigation Engine** (centered on SRM University-AP and Vijayawada Hub) with zero watermarks and zero license errors.
+
+### 2. IP-API Geolocation REST API (Live & Free)
+* **Provider:** [IP-API](https://ip-api.com/)
+* **Purpose:** Live client geolocation and network telemetry auto-detection.
+* **Endpoint:** `http://ip-api.com/json/`
+* **Features:**
+  * Requires **no credit card**, **no paid subscription**, and **no authentication key**.
+  * Returns real-time JSON payload:
+    ```json
+    {
+      "status": "success",
+      "country": "India",
+      "regionName": "Andhra Pradesh",
+      "city": "Guntur / Amaravati",
+      "lat": 16.3007,
+      "lon": 80.4639,
+      "isp": "Tejasri Communications",
+      "query": "103.217.237.58"
+    }
+    ```
+* **Implementation:** Java class [`GeoLocationService.java`](src/main/java/com/example/car_rental_sys/service/GeoLocationService.java) executes live HTTP GET requests, parses telemetry with `org.json`, and feeds coordinates into rental hub selection.
+
+### 3. OpenAI API (AI Customer Assistant)
+* **Provider:** [OpenAI Developer Platform](https://platform.openai.com/api-keys)
+* **Purpose:** Powers conversational automated AI support responses.
+
+---
 
 ### 2. Default Seed Accounts
-| Role | Username | Password |
-|------|----------|----------|
-| **Administrator** | `admin` | `admin123` |
+| Portal | Role | Username | Password |
+|---|---|---|---|
+| **Admin Portal** | `ADMIN` | `admin` | `admin123` |
+| **Customer Portal** | `CUSTOMER` | `customer` (or `savy`) | `customer123` |
+| **Driver Mission Control** | `DRIVER` | `driver` | `driver123` |
 
 ---
 

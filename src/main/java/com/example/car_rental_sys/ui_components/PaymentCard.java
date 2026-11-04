@@ -81,7 +81,7 @@ public class PaymentCard extends Pane {
         nameLbl.setLayoutX(44);
         nameLbl.setLayoutY(10);
 
-        Label balLbl = new Label("RM " + this.cardBalance + ".00");
+        Label balLbl = new Label("₹ " + this.cardBalance + ".00");
         balLbl.setStyle("-fx-text-fill: #0E42D2; -fx-font-size: 16px; -fx-font-weight: bold;");
         balLbl.setLayoutX(16);
         balLbl.setLayoutY(40);

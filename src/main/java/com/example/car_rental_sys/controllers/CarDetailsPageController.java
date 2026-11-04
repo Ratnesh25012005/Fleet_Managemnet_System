@@ -35,7 +35,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import javafx.scene.web.WebView;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -68,7 +67,7 @@ public class CarDetailsPageController extends Controller {
     private ImageView keyTipsImageView;
 
     @FXML
-    private WebView webview;
+    private Pane radarPane;
 
     @FXML
     private ScrollPane commentScrollPane;
@@ -262,7 +261,7 @@ public class CarDetailsPageController extends Controller {
     private void initSpeedSeatsPowerPrice() {
         String[] specs = CAR_SPECS.getOrDefault(StatusContainer.currentCarChose, new String[]{"2", "1200", "325", "5.2", "4.9"});
         if (seatsText != null) seatsText.setText(specs[0]);
-        if (priceText != null) priceText.setText("RM" + specs[1] + "/D");
+        if (priceText != null) priceText.setText("₹" + specs[1] + "/D");
         if (speedText != null) speedText.setText(specs[2] + " km/h");
         if (powerText != null) powerText.setText(specs[3] + " L");
     }
@@ -274,7 +273,7 @@ public class CarDetailsPageController extends Controller {
 
         // Authentic review cards
         CommentCard c1 = new CommentCard("Marcus Vance", "Absolutely breathtaking performance. Acceleration is unmatched and the cockpit ergonomics are sublime.", "2026-10-25", 24, 5);
-        CommentCard c2 = new CommentCard("Sophia Lin", "Effortless pickup at APU campus hub. Pristine vehicle condition with flawless telemetry diagnostics.", "2026-10-21", 18, 5);
+        CommentCard c2 = new CommentCard("Sophia Lin", "Effortless pickup at SRM AP campus hub. Pristine vehicle condition with flawless telemetry diagnostics.", "2026-10-21", 18, 5);
         CommentCard c3 = new CommentCard("Daniel Thorne", "A masterclass in automotive engineering. Would rent again without hesitation.", "2026-10-15", 9, 4);
 
         flowPane.getChildren().addAll(c1, c2, c3);
@@ -332,21 +331,14 @@ public class CarDetailsPageController extends Controller {
     }
 
     private void initRadarChart() {
-        if (webview == null) return;
-        webview.setVisible(false);
-
-        Pane parent = (Pane) webview.getParent();
-        if (parent == null) return;
-
-        parent.getChildren().removeIf(node -> "nativeRadarCanvas".equals(node.getId()));
+        if (radarPane == null) return;
+        radarPane.getChildren().clear();
 
         double[] radar = RADAR_DATA.getOrDefault(StatusContainer.currentCarChose, new double[]{3.8, 4.2, 4.3, 4.2, 3.8, 3.1});
         Canvas canvas = drawRadarCanvas(397, 311, radar);
         canvas.setId("nativeRadarCanvas");
-        canvas.setLayoutX(webview.getLayoutX());
-        canvas.setLayoutY(webview.getLayoutY());
 
-        parent.getChildren().add(canvas);
+        radarPane.getChildren().add(canvas);
     }
 
     private Canvas drawRadarCanvas(double width, double height, double[] values) {
@@ -504,7 +496,7 @@ public class CarDetailsPageController extends Controller {
 
         // Ensure location is valid
         if (StatusContainer.pickUpLocation == null || StatusContainer.pickUpLocation.isBlank()) {
-            StatusContainer.pickUpLocation = "Asia Pacific University of Technology & Innovation (APU)";
+            StatusContainer.pickUpLocation = "SRM University-AP, Amaravati";
             StatusContainer.locationChose = StatusContainer.pickUpLocation;
         }
 

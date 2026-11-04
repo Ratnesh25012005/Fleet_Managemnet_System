@@ -64,7 +64,7 @@ public class UICusBillRow extends Pane {
         imgPane.getChildren().add(imageView);
 
         String typeText = Objects.equals(type, "rental") ? "Rental Fee" : "Top-up wallet";
-        String amountText = Objects.equals(type, "rental") ? "-RM" + amount : "+RM" + amount;
+        String amountText = Objects.equals(type, "rental") ? "-₹" + amount : "+₹" + amount;
 
         billType = new Label(typeText);
         billType.setLayoutX(52);

@@ -194,6 +194,34 @@
       pointer-events: none;
     }
 
+    .hub-chips-bar {
+      position: absolute;
+      bottom: 30px;
+      left: 14px;
+      z-index: 15;
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+    }
+
+    .hub-chip {
+      background: rgba(30, 37, 48, 0.88);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 12px;
+      color: #e8eaed;
+      font-size: 11px;
+      padding: 4px 10px;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+
+    .hub-chip:hover {
+      background: rgba(222, 254, 0, 0.2);
+      border-color: #defe00;
+      color: #defe00;
+    }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-4px); }
       to { opacity: 1; transform: translateY(0); }
@@ -204,9 +232,9 @@
 
   <div id="map-viewport">
     <!-- Floating Search Input -->
-    <input id="pac-input" type="text" placeholder="Search Maps" value="Asia Pacific University of Technology & Innovation" />
+    <input id="pac-input" type="text" placeholder="Search SRM AP & Andhra Pradesh Hubs" value="SRM University-AP, Amaravati" />
 
-    <!-- Google Dark Mode Vector Map Background (Authentic Bukit Jalil Geometry) -->
+    <!-- Google Dark Mode Vector Map Background (Authentic Amaravati & SRM AP Geography) -->
     <svg width="100%" height="100%" style="position: absolute; top: 0; left: 0; pointer-events: none;">
       <defs>
         <pattern id="grid" width="80" height="80" patternUnits="userSpaceOnUse">
@@ -215,58 +243,68 @@
       </defs>
       <rect width="100%" height="100%" fill="url(#grid)" />
 
-      <!-- Major Highways & Corridors -->
-      <!-- KESAS / Bukit Jalil Highway -->
+      <!-- Major Corridors & Expressways -->
+      <!-- NH16 / Chennai-Kolkata Highway -->
       <path d="M-50,220 Q350,250 850,200" stroke="#746855" stroke-width="7" fill="none" opacity="0.8"/>
       <path d="M-50,220 Q350,250 850,200" stroke="#f3d19c" stroke-width="3.5" fill="none"/>
       
-      <!-- North-South Expressway Link -->
+      <!-- Amaravati Seed Access Road -->
       <path d="M160,-50 Q260,320 380,650" stroke="#746855" stroke-width="8" fill="none" opacity="0.8"/>
       <path d="M160,-50 Q260,320 380,650" stroke="#f3d19c" stroke-width="4" fill="none"/>
 
-      <!-- Secondary Arterials -->
+      <!-- Secondary Roads & Connectors -->
       <path d="M480,-50 Q430,260 620,650" stroke="#38414e" stroke-width="6" fill="none"/>
       <path d="M-50,440 Q380,410 850,460" stroke="#38414e" stroke-width="5" fill="none"/>
       <path d="M220,110 L590,360" stroke="#38414e" stroke-width="4" fill="none"/>
       <path d="M290,520 L760,240" stroke="#38414e" stroke-width="3" fill="none"/>
       <path d="M380,260 L450,420" stroke="#38414e" stroke-width="3" fill="none"/>
 
-      <!-- Water Features / Lake -->
-      <path d="M-30,310 Q90,280 150,340 T220,440" stroke="#17263c" stroke-width="20" fill="none" stroke-linecap="round"/>
-      <path d="M680,140 Q720,180 770,160" stroke="#17263c" stroke-width="16" fill="none" stroke-linecap="round"/>
+      <!-- Krishna River Corridor -->
+      <path d="M-30,180 Q250,140 450,190 T850,120" stroke="#17263c" stroke-width="26" fill="none" stroke-linecap="round"/>
+      <path d="M-30,310 Q90,280 150,340 T220,440" stroke="#17263c" stroke-width="14" fill="none" stroke-linecap="round"/>
 
-      <!-- Area & Landmark Labels (Exact match to screenshot) -->
-      <text x="210" y="270" fill="#9ca5b3" font-size="15" font-weight="bold" letter-spacing="1.5">BUKIT JALIL</text>
-      <text x="280" y="100" fill="#757575" font-size="11">Bandar Baru Sri Petaling</text>
-      <text x="170" y="125" fill="#757575" font-size="11">Endah Parade</text>
-      <text x="140" y="470" fill="#757575" font-size="11">National Stadium Bukit Jalil</text>
-      <text x="360" y="500" fill="#757575" font-size="11">Axiata Arena Bukit Jalil</text>
-      <text x="560" y="460" fill="#757575" font-size="11">Palace of the Golden Horses</text>
-      <text x="580" y="260" fill="#757575" font-size="11">Mines Toll Plaza North</text>
-      <text x="270" y="580" fill="#757575" font-size="11">Technology Park Malaysia</text>
+      <!-- Area & Landmark Labels -->
+      <text x="210" y="270" fill="#9ca5b3" font-size="15" font-weight="bold" letter-spacing="1.5">AMARAVATI / NEERUKONDA</text>
+      <text x="280" y="100" fill="#757575" font-size="11">Krishna River Corridor</text>
+      <text x="170" y="125" fill="#757575" font-size="11">Prakasam Barrage</text>
+      <text x="140" y="470" fill="#757575" font-size="11">SRM University-AP Campus</text>
+      <text x="360" y="500" fill="#757575" font-size="11">Mangalagiri / AIIMS Hub</text>
+      <text x="560" y="460" fill="#757575" font-size="11">Guntur Junction</text>
+      <text x="580" y="260" fill="#757575" font-size="11">Vijayawada BZA Hub</text>
+      <text x="270" y="580" fill="#757575" font-size="11">AP State Secretariat</text>
     </svg>
 
-    <!-- Center APU Pin & Info Window -->
-    <div class="pin-container" onclick="chooseLocation('Asia Pacific University of Technology & Innovation (APU)')">
+    <!-- Center SRM AP Pin & Info Window -->
+    <div class="pin-container" onclick="chooseLocation('SRM University-AP, Amaravati')">
       <div class="info-window">
-        <div class="info-title">Asia Pacific University of Technology & Innovation (APU)</div>
+        <div class="info-title">SRM University-AP (Amaravati)</div>
         <div class="info-address">
-          Jalan Teknologi 5<br>
-          Technology Park Malaysia<br>
-          57000 Kuala Lumpur<br>
-          Federal Territory of Kuala Lumpur, Malaysia
+          Neerukonda, Mangalagiri Mandal<br>
+          Guntur District, Amaravati<br>
+          Andhra Pradesh 522502<br>
+          India
         </div>
         <a href="https://maps.google.com" target="_blank" class="info-link" onclick="event.stopPropagation()">View on Google Maps</a>
-        <button class="select-btn" onclick="chooseLocation('Asia Pacific University of Technology & Innovation (APU)'); event.stopPropagation();">Select This Location</button>
+        <button class="select-btn" onclick="chooseLocation('SRM University-AP, Amaravati'); event.stopPropagation();">Select This Location</button>
       </div>
       <div class="info-arrow"></div>
       <div class="google-marker"></div>
     </div>
 
+    <!-- Quick Hub Selection Chips -->
+    <div class="hub-chips-bar">
+      <span class="hub-chip" onclick="chooseLocation('SRM AP Campus Hub (Neerukonda)'); event.stopPropagation();">📍 SRM AP Campus</span>
+      <span class="hub-chip" onclick="chooseLocation('Vijayawada Junction (BZA)'); event.stopPropagation();">🚆 Vijayawada Junction</span>
+      <span class="hub-chip" onclick="chooseLocation('Vijayawada Airport (Gannavaram - VGA)'); event.stopPropagation();">✈️ Vijayawada Airport</span>
+      <span class="hub-chip" onclick="chooseLocation('Mangalagiri AIIMS Hub'); event.stopPropagation();">🏥 Mangalagiri AIIMS</span>
+      <span class="hub-chip" onclick="chooseLocation('Guntur Central Station'); event.stopPropagation();">🏢 Guntur Central</span>
+      <span class="hub-chip" onclick="chooseLocation('Amaravati Secretariat'); event.stopPropagation();">🏛️ Amaravati Secretariat</span>
+    </div>
+
     <!-- Bottom Left Google Watermark -->
     <div class="google-bottom-left">
       <span class="google-logo-text">Google</span>
-      <span class="google-sub-text">Sanderson</span>
+      <span class="google-sub-text">Fleet Navigation</span>
     </div>
 
     <!-- Bottom Right Watermark & Terms -->
@@ -280,7 +318,7 @@
   <script>
     function chooseLocation(loc) {
       if (!loc || loc.trim() === '') {
-        loc = 'Asia Pacific University of Technology & Innovation (APU)';
+        loc = 'SRM University-AP, Amaravati';
       }
       alert(loc.trim());
     }
@@ -297,8 +335,8 @@
 
     // Also support clicking anywhere on the map to pick custom location coordinates
     document.getElementById('map-viewport').addEventListener('click', function(e) {
-      if (e.target.closest('.pin-container') || e.target.closest('#pac-input')) return;
-      chooseLocation('Asia Pacific University of Technology & Innovation (APU)');
+      if (e.target.closest('.pin-container') || e.target.closest('#pac-input') || e.target.closest('.hub-chips-bar')) return;
+      chooseLocation('SRM University-AP, Amaravati');
     });
   </script>
 </body>

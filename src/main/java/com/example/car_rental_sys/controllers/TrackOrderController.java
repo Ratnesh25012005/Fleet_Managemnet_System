@@ -46,6 +46,9 @@ public class TrackOrderController extends Controller {
     @FXML
     private Label lblPickupDate;
 
+    @FXML
+    private ImageView locationIcon;
+
     public static void setSelectedOrder(Order order) {
         selectedOrder = order;
     }
@@ -96,10 +99,12 @@ public class TrackOrderController extends Controller {
                     btnReceive.setText("Received");
                     AlertHelper.showSuccess("Trip Completed", "Vehicle handover confirmed. Thank you for choosing our fleet service!");
                     if (CustomerServiceController.instance != null) {
-            CustomerServiceController.instance.closeTrackOrder();
-        } else {
-            SceneManager.switchScene("customerServicePage.fxml");
-        }
+                        CustomerServiceController.instance.closeTrackOrder();
+                    } else if (AdminServiceController.instance != null) {
+                        AdminServiceController.instance.closeTrackOrder();
+                    } else {
+                        SceneManager.switchScene("customerServicePage.fxml");
+                    }
                 });
             } catch (Exception e) {
                 Platform.runLater(() -> {
@@ -115,6 +120,8 @@ public class TrackOrderController extends Controller {
     private void leftIconClicked(MouseEvent event) {
         if (CustomerServiceController.instance != null) {
             CustomerServiceController.instance.closeTrackOrder();
+        } else if (AdminServiceController.instance != null) {
+            AdminServiceController.instance.closeTrackOrder();
         } else {
             SceneManager.switchScene("customerServicePage.fxml");
         }

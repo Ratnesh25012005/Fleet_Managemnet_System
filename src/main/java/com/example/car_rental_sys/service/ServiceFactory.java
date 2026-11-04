@@ -11,12 +11,14 @@ public final class ServiceFactory {
     private final VehicleService vehicleService;
     private final RentalService rentalService;
     private final PaymentService paymentService;
+    private final GeoLocationService geoLocationService;
 
     private ServiceFactory() {
         this.authService = new AuthService();
         this.vehicleService = new VehicleService();
         this.rentalService = new RentalService();
         this.paymentService = new PaymentService();
+        this.geoLocationService = new GeoLocationService();
     }
 
     public static ServiceFactory getInstance() {
@@ -44,5 +46,9 @@ public final class ServiceFactory {
 
     public PaymentService getPaymentService() {
         return paymentService;
+    }
+
+    public GeoLocationService getGeoLocationService() {
+        return geoLocationService;
     }
 }

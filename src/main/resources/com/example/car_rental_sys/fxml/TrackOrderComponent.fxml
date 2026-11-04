@@ -52,7 +52,7 @@
     </Label>
     <Line endX="320.0" layoutY="602.0" startX="40.0" stroke="#c9cdd4"/>
     <Label fx:id="lblLocation" layoutX="40.0" layoutY="561.0" prefHeight="25.0" prefWidth="230.0"
-           text="40 Jalan Techonology Park, Bukit Jalil, Malaysia" textFill="#86909c" wrapText="true">
+           text="SRM University-AP, Neerukonda, Amaravati, AP 522502" textFill="#86909c" wrapText="true">
         <font>
             <Font name="System Bold" size="10.0"/>
         </font>

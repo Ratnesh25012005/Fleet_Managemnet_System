@@ -78,7 +78,7 @@
                     <Font size="16.0" />
                 </font>
             </Label>
-            <Label fx:id="locationText" layoutX="85.0" layoutY="50.0" onMouseClicked="#locationBtnClick" prefHeight="19.0" prefWidth="199.0" style="-fx-cursor: hand;" text="Kuala Lumpur, Malaysia" textFill="#bcbcbc">
+            <Label fx:id="locationText" layoutX="85.0" layoutY="50.0" onMouseClicked="#locationBtnClick" prefHeight="19.0" prefWidth="199.0" style="-fx-cursor: hand;" text="SRM AP, Amaravati" textFill="#bcbcbc">
                 <font>
                     <Font size="14.0" />
                 </font>

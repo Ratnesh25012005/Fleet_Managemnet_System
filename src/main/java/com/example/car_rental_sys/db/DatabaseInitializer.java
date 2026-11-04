@@ -85,7 +85,7 @@ public final class DatabaseInitializer {
         if (tablesAlreadyExist()) {
             LOGGER.info("Database schema already initialized. Preserving existing fleet data.");
             try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-                ensureAdminUser(conn);
+                ensureDefaultUsers(conn);
                 ensureDefaultVehicles(conn);
             } catch (Exception ignored) {
             }
@@ -123,7 +123,7 @@ public final class DatabaseInitializer {
                         sqlBuilder.setLength(0);
                     }
                 }
-                ensureAdminUser(conn);
+                ensureDefaultUsers(conn);
                 LOGGER.info("Database schema initialized successfully.");
                 return true;
             }
@@ -133,11 +133,17 @@ public final class DatabaseInitializer {
         }
     }
 
+    private static void ensureDefaultUsers(Connection conn) {
+        ensureAdminUser(conn);
+        ensureDriverUser(conn);
+        ensureCustomerUser(conn);
+    }
+
     private static void ensureAdminUser(Connection conn) {
         String adminPass = "admin123";
         String adminHash = com.example.car_rental_sys.util.PasswordUtil.hashPassword(adminPass);
         String sql = "INSERT INTO `users` (`user_id`, `username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
-                     "VALUES (1, 'admin', ?, 'admin@fleetms.com', '+1-555-0100', 'System Administrator', 'ADMIN', 'ACTIVE') " +
+                     "VALUES (1, 'admin', ?, 'admin@fleetms.com', '+91 98765 00001', 'System Administrator', 'ADMIN', 'ACTIVE') " +
                      "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE'";
         try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sql)) {
             pstmt.setString(1, adminHash);
@@ -146,6 +152,49 @@ public final class DatabaseInitializer {
             LOGGER.info("Verified default admin credentials (admin / admin123).");
         } catch (Exception e) {
             LOGGER.log(Level.WARNING, "Note verifying admin account: {0}", e.getMessage());
+        }
+    }
+
+    private static void ensureDriverUser(Connection conn) {
+        String driverPass = "driver123";
+        String driverHash = com.example.car_rental_sys.util.PasswordUtil.hashPassword(driverPass);
+        String sqlUser = "INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
+                         "VALUES ('driver', ?, 'driver@fleetms.com', '+91 98765 00002', 'David Davis', 'DRIVER', 'ACTIVE') " +
+                         "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE', `role` = 'DRIVER'";
+        try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
+            pstmt.setString(1, driverHash);
+            pstmt.setString(2, driverHash);
+            pstmt.executeUpdate();
+            LOGGER.info("Verified default driver credentials (driver / driver123).");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Note verifying driver account: {0}", e.getMessage());
+        }
+
+        try (Statement stmt = conn.createStatement();
+             java.sql.ResultSet rs = stmt.executeQuery("SELECT user_id FROM users WHERE username = 'driver'")) {
+            if (rs.next()) {
+                int driverUid = rs.getInt(1);
+                String sqlDriver = "INSERT INTO `drivers` (`user_id`, `license_number`, `experience_years`, `rating`, `status`) " +
+                                   "VALUES (" + driverUid + ", 'DL-AP-2024-8899', 5, 4.95, 'AVAILABLE') " +
+                                   "ON DUPLICATE KEY UPDATE `rating` = 4.95, `status` = 'AVAILABLE'";
+                stmt.executeUpdate(sqlDriver);
+            }
+        } catch (Exception ignored) {}
+    }
+
+    private static void ensureCustomerUser(Connection conn) {
+        String customerPass = "customer123";
+        String customerHash = com.example.car_rental_sys.util.PasswordUtil.hashPassword(customerPass);
+        String sqlUser = "INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
+                         "VALUES ('customer', ?, 'customer@fleetms.com', '+91 98765 00003', 'Alexander Wright', 'CUSTOMER', 'ACTIVE') " +
+                         "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE', `role` = 'CUSTOMER'";
+        try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
+            pstmt.setString(1, customerHash);
+            pstmt.setString(2, customerHash);
+            pstmt.executeUpdate();
+            LOGGER.info("Verified default customer credentials (customer / customer123).");
+        } catch (Exception e) {
+            LOGGER.log(Level.WARNING, "Note verifying customer account: {0}", e.getMessage());
         }
     }
 

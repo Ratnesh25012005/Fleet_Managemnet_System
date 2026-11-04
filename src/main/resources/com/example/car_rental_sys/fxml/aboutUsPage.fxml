@@ -12,34 +12,44 @@
     </Pane>
    <ScrollPane fx:id="scrollPane" hbarPolicy="NEVER" layoutY="100.0" prefHeight="732.0" prefWidth="1280.0" style="-fx-background-color: transparent;" vbarPolicy="NEVER">
       <content>
-         <VBox prefHeight="1700.0" prefWidth="1280.0" style="-fx-background-color: transparent; -fx-border-color: transparent;">
+         <VBox prefHeight="1850.0" prefWidth="1280.0" style="-fx-background-color: transparent; -fx-border-color: transparent;">
             <children>
                <WebView fx:id="webView" prefHeight="732.0" prefWidth="1280.0" />
-               <Pane prefHeight="310.0" prefWidth="1280.0" style="-fx-background-color: #000000;">
+               <Pane prefHeight="320.0" prefWidth="1280.0" style="-fx-background-color: #000000;">
                   <children>
-                     <Label layoutX="88.0" layoutY="59.0" text="About us" textFill="WHITE">
+                     <Label layoutX="88.0" layoutY="45.0" text="About Us" textFill="WHITE">
                         <font>
-                           <Font name="Microsoft Tai Le" size="50.0" />
+                           <Font name="Microsoft Tai Le" size="48.0" />
                         </font>
                      </Label>
-                     <Label layoutX="640.0" layoutY="69.0" prefHeight="153.0" prefWidth="598.0" text="We started our own software company because we believed there was always a better way to do things. We are passionate about experiences, user interfaces and developing the best possible digital products. In a short period of time, we have gathered very talented people to help us on our journey - designing and programming the world we want to live in." textFill="WHITE" wrapText="true">
+                     <Label layoutX="88.0" layoutY="115.0" text="SRM University-AP, Andhra Pradesh" textFill="#defe00">
                         <font>
-                           <Font size="18.0" />
+                           <Font name="System Bold" size="16.0" />
                         </font>
                      </Label>
-                     <Label layoutX="640.0" layoutY="238.0" text="Innis &amp; KK " textFill="WHITE">
+                     <Label layoutX="88.0" layoutY="145.0" text="Department of Computer Science &amp; Engineering" textFill="#bfbfbf">
                         <font>
-                           <Font size="18.0" />
+                           <Font size="14.0" />
                         </font>
                      </Label>
-                     <Label layoutX="88.0" layoutY="134.0" text="From APU, Kuala Lumpur, Malaysia" textFill="#bfbfbf">
+                     <Label layoutX="88.0" layoutY="170.0" text="Java OOP Course Project" textFill="#888888">
+                        <font>
+                           <Font size="13.0" />
+                        </font>
+                     </Label>
+                     <Label layoutX="580.0" layoutY="45.0" prefHeight="130.0" prefWidth="640.0" text="We developed the Fleet Management &amp; Car Rental System for our Java course project at SRM University-AP. Designed with an enterprise multi-tier architecture, it features seamless MySQL 8 persistence, responsive JavaFX desktop interfaces, live fleet telemetry, and automated transaction billing." textFill="WHITE" wrapText="true">
                         <font>
                            <Font size="16.0" />
                         </font>
                      </Label>
-                     <Label layoutX="735.0" layoutY="237.0" text="— Co-founders" textFill="#bfbfbf">
+                     <Label layoutX="580.0" layoutY="190.0" text="Project Team: Avinash • Saurav • Ratnesh • Nirali • Sajal" textFill="#f0f0f0">
                         <font>
-                           <Font size="18.0" />
+                           <Font name="System Bold" size="14.0" />
+                        </font>
+                     </Label>
+                     <Label layoutX="580.0" layoutY="218.0" text="— SRM University-AP Student Engineering Team" textFill="#defe00">
+                        <font>
+                           <Font size="14.0" />
                         </font>
                      </Label>
                   </children>
@@ -49,6 +59,119 @@
                      <Image url="@../image/UI/team.png" />
                   </image>
                </ImageView>
+               <Pane prefHeight="110.0" prefWidth="1280.0" style="-fx-background-color: #000000;">
+                  <children>
+                     <!-- Member 1: Avinash Reddy -->
+                     <Pane layoutX="40.0" layoutY="10.0" prefHeight="90.0" prefWidth="215.0" style="-fx-background-color: #16181d; -fx-background-radius: 8; -fx-border-color: #282c35; -fx-border-radius: 8;">
+                        <children>
+                           <Label layoutX="14.0" layoutY="12.0" prefWidth="187.0" text="CHINTHALACHERUVU AVINASH REDDY" textFill="WHITE" wrapText="true">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="44.0" text="AP24110010136" textFill="#defe00">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="64.0" text="Project Lead" textFill="#9aa0a6">
+                              <font>
+                                 <Font size="11.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+
+                     <!-- Member 2: Saurav Shankar -->
+                     <Pane layoutX="285.0" layoutY="10.0" prefHeight="90.0" prefWidth="215.0" style="-fx-background-color: #16181d; -fx-background-radius: 8; -fx-border-color: #282c35; -fx-border-radius: 8;">
+                        <children>
+                           <Label layoutX="14.0" layoutY="12.0" prefWidth="187.0" text="SAURAV SHANKAR" textFill="WHITE">
+                              <font>
+                                 <Font name="System Bold" size="12.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="34.0" text="aka LURKER" textFill="#4080ff">
+                              <font>
+                                 <Font size="10.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="50.0" text="AP24110010128" textFill="#defe00">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="68.0" text="Database Engineer" textFill="#9aa0a6">
+                              <font>
+                                 <Font size="11.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+
+                     <!-- Member 3: Ratnesh Singh Bhandari -->
+                     <Pane layoutX="530.0" layoutY="10.0" prefHeight="90.0" prefWidth="215.0" style="-fx-background-color: #16181d; -fx-background-radius: 8; -fx-border-color: #282c35; -fx-border-radius: 8;">
+                        <children>
+                           <Label layoutX="14.0" layoutY="12.0" prefWidth="187.0" text="RATNESH SINGH BHANDARI" textFill="WHITE" wrapText="true">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="44.0" text="AP24110010649" textFill="#defe00">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="64.0" text="Floater" textFill="#9aa0a6">
+                              <font>
+                                 <Font size="11.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+
+                     <!-- Member 4: Nirali -->
+                     <Pane layoutX="775.0" layoutY="10.0" prefHeight="90.0" prefWidth="215.0" style="-fx-background-color: #16181d; -fx-background-radius: 8; -fx-border-color: #282c35; -fx-border-radius: 8;">
+                        <children>
+                           <Label layoutX="14.0" layoutY="12.0" prefWidth="187.0" text="NIRALI" textFill="WHITE">
+                              <font>
+                                 <Font name="System Bold" size="12.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="44.0" text="AP24110010636" textFill="#defe00">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="64.0" text="Frontend Designer" textFill="#9aa0a6">
+                              <font>
+                                 <Font size="11.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+
+                     <!-- Member 5: Sajal Porey -->
+                     <Pane layoutX="1020.0" layoutY="10.0" prefHeight="90.0" prefWidth="215.0" style="-fx-background-color: #16181d; -fx-background-radius: 8; -fx-border-color: #282c35; -fx-border-radius: 8;">
+                        <children>
+                           <Label layoutX="14.0" layoutY="12.0" prefWidth="187.0" text="SAJAL POREY" textFill="WHITE">
+                              <font>
+                                 <Font name="System Bold" size="12.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="44.0" text="AP24110011895" textFill="#defe00">
+                              <font>
+                                 <Font name="System Bold" size="11.0" />
+                              </font>
+                           </Label>
+                           <Label layoutX="14.0" layoutY="64.0" text="Backend Architect" textFill="#9aa0a6">
+                              <font>
+                                 <Font size="11.0" />
+                              </font>
+                           </Label>
+                        </children>
+                     </Pane>
+                  </children>
+               </Pane>
                <Pane prefHeight="286.0" prefWidth="1280.0" style="-fx-background-color: #000000;">
                   <children>
                      <Label fx:id="per" layoutX="34.0" layoutY="62.0" text="#Perfectionism" textFill="#999999">

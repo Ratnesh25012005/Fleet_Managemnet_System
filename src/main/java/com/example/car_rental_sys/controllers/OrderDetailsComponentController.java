@@ -124,6 +124,16 @@ public class OrderDetailsComponentController extends Controller {
         if (carPrice != null) carPrice.setText(row.getOrderAmount());
         if (totalAmount != null) totalAmount.setText(row.getOrderAmount());
         if (carImg != null && row.imgCar != null) carImg.setImage(row.imgCar);
+
+        AsyncExecutor.getInstance().execute(() -> {
+            try {
+                java.util.Optional<Order> orderOpt = ServiceFactory.getInstance().getRentalService().getOrderById(row.getOrderID());
+                if (orderOpt.isPresent()) {
+                    selectedOrder = orderOpt.get();
+                    Platform.runLater(this::populateOrderData);
+                }
+            } catch (Exception ignored) {}
+        });
     }
 
     private void populateOrderData() {
@@ -139,12 +149,12 @@ public class OrderDetailsComponentController extends Controller {
 
         if (paymentType != null) paymentType.setText("Credit Card / Digital Payment");
         if (lblLocation != null) {
-            lblLocation.setText(selectedOrder.getPickupLocation() != null ? selectedOrder.getPickupLocation() : "Central Airport Hub");
+            lblLocation.setText(selectedOrder.getPickupLocation() != null ? selectedOrder.getPickupLocation() : "SRM University-AP, Amaravati");
         }
 
         if (totalAmount != null && selectedOrder.getTotalPrice() != null) {
-            totalAmount.setText("$" + selectedOrder.getTotalPrice().toPlainString());
-            if (carPrice != null) carPrice.setText("$" + selectedOrder.getTotalPrice().toPlainString());
+            totalAmount.setText("₹" + selectedOrder.getTotalPrice().toPlainString());
+            if (carPrice != null) carPrice.setText("₹" + selectedOrder.getTotalPrice().toPlainString());
         }
 
         if (orderTime != null && selectedOrder.getCreatedAt() != null) {
@@ -196,7 +206,13 @@ public class OrderDetailsComponentController extends Controller {
     @FXML
     private void btnTrackOrderClicked(MouseEvent event) {
         TrackOrderController.setSelectedOrder(selectedOrder);
-        SceneManager.switchScene("TrackOrderComponent.fxml");
+        if (CustomerServiceController.instance != null) {
+            CustomerServiceController.instance.showTrackOrder();
+        } else if (AdminServiceController.instance != null) {
+            AdminServiceController.instance.showTrackOrder();
+        } else {
+            SceneManager.switchScene("customerServicePage.fxml");
+        }
     }
 
     private void loadCarImage(ImageView imageView, String path) {

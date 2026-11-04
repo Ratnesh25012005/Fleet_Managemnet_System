@@ -92,7 +92,7 @@ public class PersonalPageController extends Controller {
             }
             if (ivTxtBirthday != null) ivTxtBirthday.setText("1996-05-18");
             if (ivTxtAbout != null) ivTxtAbout.setText("Fleet client account.");
-            if (ivTxtAddress != null) ivTxtAddress.setText("Bukit Jalil, Kuala Lumpur, Malaysia");
+            if (ivTxtAddress != null) ivTxtAddress.setText("SRM University-AP, Amaravati, Andhra Pradesh");
 
             loadDefaultAvatar();
         }

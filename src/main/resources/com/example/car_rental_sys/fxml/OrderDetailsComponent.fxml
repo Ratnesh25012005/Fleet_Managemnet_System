@@ -40,7 +40,7 @@
                 <Font name="System Bold" size="11.0" />
             </font>
         </Label>
-        <Label fx:id="carPrice" layoutX="241.0" layoutY="141.0" styleClass="lblPrimaryText" text="RM 9999" textFill="#1d2129">
+        <Label fx:id="carPrice" layoutX="241.0" layoutY="141.0" styleClass="lblPrimaryText" text="₹ 9999" textFill="#1d2129">
             <font>
                 <Font name="System Bold" size="12.0" />
             </font>
@@ -161,7 +161,7 @@
                 <Font size="11.0" />
             </font>
         </Label>
-        <Label fx:id="totalAmount" layoutX="228.0" layoutY="587.0" styleClass="lblSecondaryText" text="RM 49999" textFill="#4e5969">
+        <Label fx:id="totalAmount" layoutX="228.0" layoutY="587.0" styleClass="lblSecondaryText" text="₹ 49999" textFill="#4e5969">
             <font>
                 <Font size="11.0" />
             </font>
@@ -192,6 +192,6 @@
             <Image url="@../image/UI/target_Icon.png" />
         </ImageView>
         <ImageView fitHeight="20.0" fitWidth="20.0" layoutX="56.0" layoutY="277.0" pickOnBounds="true" preserveRatio="true" />
-        <Label fx:id="lblLocation" alignment="TOP_LEFT" layoutX="167.0" layoutY="270.0" prefHeight="54.0" prefWidth="132.0" styleClass="lblSecondaryText" text="Jalan Technology Park, Bukit Jalil" textFill="#4e5969" wrapText="true" />
+        <Label fx:id="lblLocation" alignment="TOP_LEFT" layoutX="167.0" layoutY="270.0" prefHeight="54.0" prefWidth="132.0" styleClass="lblSecondaryText" text="SRM University-AP, Amaravati" textFill="#4e5969" wrapText="true" />
     </Pane>
 </Pane>

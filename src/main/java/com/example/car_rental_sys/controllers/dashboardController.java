@@ -19,6 +19,9 @@ public class dashboardController extends Controller {
     @FXML
     private Pane browserPane;
 
+    private WebView webView;
+    private WebEngine engine;
+
     @FXML
     public void initialize() {
         instance = this;
@@ -28,16 +31,33 @@ public class dashboardController extends Controller {
     private void loadAuthenticDashboard() {
         if (browserPane == null) return;
 
-        WebView webView = new WebView();
+        webView = new WebView();
         webView.setPrefSize(1000, 750);
-        WebEngine engine = webView.getEngine();
+        engine = webView.getEngine();
         engine.setJavaScriptEnabled(true);
 
-        URL url = getClass().getResource("/com/example/car_rental_sys/html/dashboard/index.html");
+        changePage("dashboard");
+
+        browserPane.getChildren().setAll(webView);
+    }
+
+    public void changePage(String type) {
+        if (engine == null && webView != null) {
+            engine = webView.getEngine();
+        }
+        if (engine == null) return;
+
+        String pagePath = "income".equalsIgnoreCase(type)
+                ? "/com/example/car_rental_sys/html/incomeAnalysis/index.html"
+                : "/com/example/car_rental_sys/html/dashboard/index.html";
+
+        URL url = getClass().getResource(pagePath);
         if (url != null) {
             engine.load(url.toExternalForm());
         }
 
-        browserPane.getChildren().setAll(webView);
+        if (AdminServiceController.instance != null) {
+            AdminServiceController.instance.changeIcon("income".equalsIgnoreCase(type) ? "left" : "right");
+        }
     }
 }

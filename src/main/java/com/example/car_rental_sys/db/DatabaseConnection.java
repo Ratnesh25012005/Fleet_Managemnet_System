@@ -1,5 +1,6 @@
 package com.example.car_rental_sys.db;
 
+import com.example.car_rental_sys.util.EnvConfig;
 import java.io.IOException;
 import java.io.InputStream;
 import java.sql.Connection;
@@ -64,10 +65,10 @@ public class DatabaseConnection {
                 return;
             }
             props.load(in);
-            this.driver = props.getProperty("db.driver", "com.mysql.cj.jdbc.Driver");
-            this.url = props.getProperty("db.url");
-            this.username = props.getProperty("db.username");
-            this.password = props.getProperty("db.password");
+            this.driver = EnvConfig.get("DB_DRIVER", props.getProperty("db.driver", "com.mysql.cj.jdbc.Driver"));
+            this.url = EnvConfig.get("DB_URL", props.getProperty("db.url"));
+            this.username = EnvConfig.get("DB_USERNAME", props.getProperty("db.username"));
+            this.password = EnvConfig.get("DB_PASSWORD", props.getProperty("db.password"));
         } catch (IOException e) {
             LOGGER.log(Level.SEVERE, "Failed to load database configuration file: " + CONFIG_FILE, e);
             throw new RuntimeException("Database configuration error", e);

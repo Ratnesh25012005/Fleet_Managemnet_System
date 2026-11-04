@@ -99,7 +99,7 @@ public class VehicleCard extends Pane {
         lblCarName.setLayoutY(182);
         lblCarName.setStyle("-fx-text-fill: #4e5969; -fx-font-size: 12px; -fx-font-weight: bold;");
 
-        Label lblCarPrice = new Label("RM" + (vehiclePrice != null ? vehiclePrice : "850") + "/Day");
+        Label lblCarPrice = new Label("₹" + (vehiclePrice != null ? vehiclePrice : "850") + "/Day");
         lblCarPrice.setLayoutX(12);
         lblCarPrice.setLayoutY(200);
         lblCarPrice.setStyle("-fx-text-fill: #86909c; -fx-font-size: 10px; -fx-font-weight: bold;");

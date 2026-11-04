@@ -170,10 +170,10 @@ public class PaymentController extends Controller {
         long daysDiff = Math.max(1, (hoursDiff + 23) / 24);
 
         if (modelText != null) modelText.setText(brand + " " + model);
-        if (priceText != null) priceText.setText("$" + dailyRate.toPlainString() + "/D");
-        if (price != null) price.setText("$" + dailyRate.divide(new BigDecimal("24"), 2, RoundingMode.HALF_UP) + "/H");
+        if (priceText != null) priceText.setText("₹" + dailyRate.toPlainString() + "/D");
+        if (price != null) price.setText("₹" + dailyRate.divide(new BigDecimal("24"), 2, RoundingMode.HALF_UP) + "/H");
         if (duration != null) duration.setText(hoursDiff + " Hours (" + daysDiff + " Days)");
-        if (discount != null) discount.setText("-$20.00");
+        if (discount != null) discount.setText("-₹20.00");
         if (tax != null) tax.setText("6%");
 
         BigDecimal base = dailyRate.multiply(BigDecimal.valueOf(daysDiff));
@@ -184,7 +184,7 @@ public class PaymentController extends Controller {
         }
 
         if (totalPrice != null) {
-            totalPrice.setText("$" + calculatedTotal.setScale(2, RoundingMode.HALF_UP).toPlainString());
+            totalPrice.setText("₹" + calculatedTotal.setScale(2, RoundingMode.HALF_UP).toPlainString());
         }
 
         String pStr = com.example.car_rental_sys.ToolsLib.DateTools.timeStampToDateTime(pTs);
