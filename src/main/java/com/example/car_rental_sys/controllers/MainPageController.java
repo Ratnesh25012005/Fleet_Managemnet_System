@@ -1,5 +1,8 @@
 package com.example.car_rental_sys.controllers;
 
+import com.example.car_rental_sys.concurrency.AsyncExecutor;
+import com.example.car_rental_sys.service.GeoLocationService;
+import com.example.car_rental_sys.service.ServiceFactory;
 import com.example.car_rental_sys.StatusContainer;
 import com.example.car_rental_sys.ToolsLib.DataTools;
 import com.example.car_rental_sys.ToolsLib.DateTools;
@@ -99,6 +102,23 @@ public class MainPageController extends Controller {
 
         if (StatusContainer.pickUpLocation != null && locationText != null) {
             locationText.setText(StatusContainer.pickUpLocation);
+        } else if (locationText != null) {
+            // Live external REST API integration (IP-API Geolocation)
+            AsyncExecutor.getInstance().execute(() -> {
+                try {
+                    GeoLocationService.GeoLocation loc = ServiceFactory.getInstance().getGeoLocationService().fetchCurrentLocation();
+                    if (loc != null && loc.success()) {
+                        String detected = loc.city() + " (SRM AP Hub)";
+                        Platform.runLater(() -> {
+                            if (StatusContainer.pickUpLocation == null) {
+                                StatusContainer.pickUpLocation = detected;
+                                StatusContainer.locationChose = detected;
+                                locationText.setText(detected);
+                            }
+                        });
+                    }
+                } catch (Exception ignored) {}
+            });
         }
     }
 
