@@ -3,7 +3,9 @@ package com.example.car_rental_sys.controllers;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
 
@@ -48,22 +50,33 @@ public class AdminServiceController extends Controller {
     @FXML
     private ImageView toRightBtn;
 
+    private boolean ifDashboard = true;
+
     @FXML
     public void initialize() {
         instance = this;
         showDashboardPage();
 
-        if (toRightPane != null) {
-            toRightPane.setOnMouseClicked(event -> toggleContainers());
+        if (toRightPane != null || toRightBtn != null) {
+            javafx.event.EventHandler<MouseEvent> handler = event -> {
+                ifDashboard = !ifDashboard;
+                if (dashboardController.instance != null) {
+                    dashboardController.instance.changePage(ifDashboard ? "dashboard" : "income");
+                }
+            };
+            if (toRightPane != null) toRightPane.setOnMouseClicked(handler);
+            if (toRightBtn != null) toRightBtn.setOnMouseClicked(handler);
         }
     }
 
-    private void toggleContainers() {
-        if (dashboardContainer != null && hugeContainer != null) {
-            boolean showDash = !dashboardContainer.isVisible();
-            dashboardContainer.setVisible(showDash);
-            hugeContainer.setVisible(!showDash);
-        }
+    public void changeIcon(String type) {
+        if (toRightBtn == null) return;
+        String iconName = "left".equalsIgnoreCase(type) ? "left.png" : "right.png";
+        try (java.io.InputStream stream = getClass().getResourceAsStream("/com/example/car_rental_sys/image/UI/" + iconName)) {
+            if (stream != null) {
+                toRightBtn.setImage(new Image(stream));
+            }
+        } catch (Exception ignored) {}
     }
 
     public void showDashboardPage() {

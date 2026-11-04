@@ -48,6 +48,9 @@ public class EditVehiclePageController extends Controller {
     private ComboBox<String> cmbCarBrand;
 
     @FXML
+    private Label lblEditVeh;
+
+    @FXML
     private Pane imgPane;
 
     @FXML

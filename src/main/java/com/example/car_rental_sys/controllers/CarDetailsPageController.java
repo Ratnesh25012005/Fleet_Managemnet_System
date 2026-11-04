@@ -35,7 +35,6 @@ import javafx.scene.text.FontWeight;
 import javafx.scene.text.TextAlignment;
 import javafx.scene.transform.Rotate;
 import javafx.scene.transform.Translate;
-import javafx.scene.web.WebView;
 import javafx.util.Duration;
 
 import java.net.URL;
@@ -68,7 +67,7 @@ public class CarDetailsPageController extends Controller {
     private ImageView keyTipsImageView;
 
     @FXML
-    private WebView webview;
+    private Pane radarPane;
 
     @FXML
     private ScrollPane commentScrollPane;
@@ -332,21 +331,14 @@ public class CarDetailsPageController extends Controller {
     }
 
     private void initRadarChart() {
-        if (webview == null) return;
-        webview.setVisible(false);
-
-        Pane parent = (Pane) webview.getParent();
-        if (parent == null) return;
-
-        parent.getChildren().removeIf(node -> "nativeRadarCanvas".equals(node.getId()));
+        if (radarPane == null) return;
+        radarPane.getChildren().clear();
 
         double[] radar = RADAR_DATA.getOrDefault(StatusContainer.currentCarChose, new double[]{3.8, 4.2, 4.3, 4.2, 3.8, 3.1});
         Canvas canvas = drawRadarCanvas(397, 311, radar);
         canvas.setId("nativeRadarCanvas");
-        canvas.setLayoutX(webview.getLayoutX());
-        canvas.setLayoutY(webview.getLayoutY());
 
-        parent.getChildren().add(canvas);
+        radarPane.getChildren().add(canvas);
     }
 
     private Canvas drawRadarCanvas(double width, double height, double[] values) {
