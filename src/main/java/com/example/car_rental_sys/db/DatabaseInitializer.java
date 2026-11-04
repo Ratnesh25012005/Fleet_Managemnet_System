@@ -158,9 +158,9 @@ public final class DatabaseInitializer {
     private static void ensureDriverUser(Connection conn) {
         String driverPass = "driver123";
         String driverHash = com.example.car_rental_sys.util.PasswordUtil.hashPassword(driverPass);
-        String sqlUser = "INSERT INTO `users` (`user_id`, `username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
-                         "VALUES (2, 'driver', ?, 'driver@fleetms.com', '+91 98765 00002', 'David Davis', 'DRIVER', 'ACTIVE') " +
-                         "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE'";
+        String sqlUser = "INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
+                         "VALUES ('driver', ?, 'driver@fleetms.com', '+91 98765 00002', 'David Davis', 'DRIVER', 'ACTIVE') " +
+                         "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE', `role` = 'DRIVER'";
         try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
             pstmt.setString(1, driverHash);
             pstmt.setString(2, driverHash);
@@ -170,20 +170,24 @@ public final class DatabaseInitializer {
             LOGGER.log(Level.WARNING, "Note verifying driver account: {0}", e.getMessage());
         }
 
-        String sqlDriver = "INSERT INTO `drivers` (`driver_id`, `user_id`, `license_number`, `experience_years`, `rating`, `status`) " +
-                           "VALUES (1, 2, 'DL-AP-2024-8899', 5, 4.95, 'AVAILABLE') " +
-                           "ON DUPLICATE KEY UPDATE `rating` = 4.95, `status` = 'AVAILABLE'";
-        try (Statement stmt = conn.createStatement()) {
-            stmt.executeUpdate(sqlDriver);
+        try (Statement stmt = conn.createStatement();
+             java.sql.ResultSet rs = stmt.executeQuery("SELECT user_id FROM users WHERE username = 'driver'")) {
+            if (rs.next()) {
+                int driverUid = rs.getInt(1);
+                String sqlDriver = "INSERT INTO `drivers` (`user_id`, `license_number`, `experience_years`, `rating`, `status`) " +
+                                   "VALUES (" + driverUid + ", 'DL-AP-2024-8899', 5, 4.95, 'AVAILABLE') " +
+                                   "ON DUPLICATE KEY UPDATE `rating` = 4.95, `status` = 'AVAILABLE'";
+                stmt.executeUpdate(sqlDriver);
+            }
         } catch (Exception ignored) {}
     }
 
     private static void ensureCustomerUser(Connection conn) {
         String customerPass = "customer123";
         String customerHash = com.example.car_rental_sys.util.PasswordUtil.hashPassword(customerPass);
-        String sqlUser = "INSERT INTO `users` (`user_id`, `username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
-                         "VALUES (3, 'customer', ?, 'customer@fleetms.com', '+91 98765 00003', 'Alexander Wright', 'CUSTOMER', 'ACTIVE') " +
-                         "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE'";
+        String sqlUser = "INSERT INTO `users` (`username`, `password_hash`, `email`, `phone`, `full_name`, `role`, `status`) " +
+                         "VALUES ('customer', ?, 'customer@fleetms.com', '+91 98765 00003', 'Alexander Wright', 'CUSTOMER', 'ACTIVE') " +
+                         "ON DUPLICATE KEY UPDATE `password_hash` = ?, `status` = 'ACTIVE', `role` = 'CUSTOMER'";
         try (java.sql.PreparedStatement pstmt = conn.prepareStatement(sqlUser)) {
             pstmt.setString(1, customerHash);
             pstmt.setString(2, customerHash);

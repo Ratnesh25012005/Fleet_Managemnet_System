@@ -6,6 +6,7 @@
   <title>Driver Mission Control - Fleet Navigation</title>
   <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
   <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="./googleMapKey.js"></script>
   <style>
     * {
       box-sizing: border-box;
@@ -186,11 +187,10 @@
           attributionControl: false
         });
 
-        // Dark Matter tiles for slick automotive cockpit look
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
-          maxZoom: 19,
-          subdomains: 'abcd',
-          timeout: 4000
+        // High-performance clean automotive dark canvas (No watermarks, No API key required)
+        L.tileLayer('https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Dark_Gray_Base/MapServer/tile/{z}/{y}/{x}', {
+          maxZoom: 16,
+          attribution: 'Esri, Garmin, OpenStreetMap'
         }).addTo(map);
 
         // Custom pulsing marker icons

@@ -30,3 +30,8 @@ dist/
 .DS_Store
 Thumbs.db
 ehthumbs.db
+
+# Environment & Secret files
+.env
+*.env
+!.env.example
