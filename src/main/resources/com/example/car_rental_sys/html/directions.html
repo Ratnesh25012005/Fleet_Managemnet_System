@@ -1,78 +1,258 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <script src="./googleMapKey.js"></script>
-    <style>
-        #iframe1 {
-            width: 700px;
-            height: 835px;
-            border: none;
-        }
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Driver Mission Control - Fleet Navigation</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    }
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background-color: #1a1e24;
+    }
+    #map {
+      width: 100%;
+      height: 100%;
+      background: #1a1e24;
+    }
 
-        body {
-            overflow: hidden;
-        }
-    </style>
+    /* Floating Route Card */
+    .route-card {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      z-index: 1000;
+      background: rgba(22, 27, 34, 0.94);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 14px 18px;
+      color: #ffffff;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.45);
+      width: 320px;
+    }
+    .route-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+    .route-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #722ed1;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+    }
+    .eta-badge {
+      background: #00b42a;
+      color: #ffffff;
+      font-size: 11px;
+      font-weight: bold;
+      padding: 3px 8px;
+      border-radius: 6px;
+    }
+    .route-point {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12.5px;
+      margin-top: 6px;
+      color: #e5e6eb;
+    }
+    .point-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+    .dot-start {
+      background: #165dff;
+      box-shadow: 0 0 8px #165dff;
+    }
+    .dot-end {
+      background: #f53f3f;
+      box-shadow: 0 0 8px #f53f3f;
+    }
+    .route-divider {
+      width: 2px;
+      height: 14px;
+      background: rgba(255, 255, 255, 0.2);
+      margin-left: 4px;
+    }
+    .route-stats {
+      margin-top: 12px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #86909c;
+    }
+    .route-stats strong {
+      color: #ffffff;
+    }
+
+    /* Fallback Vector Map if Leaflet CDN is unavailable */
+    #fallback-map {
+      display: none;
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      background: #192231;
+    }
+  </style>
 </head>
-
 <body>
-    <iframe id="iframe1" referrerpolicy="no-referrer-when-downgrade" src="" allowfullscreen>
-    </iframe>
-    <!-- <button id="btn1">Click me</button> -->
 
-    <script>
-        let ifr1 = document.getElementById("iframe1");
-        let key = googleMapKey;
-        let mode = "directions";
-        let parameter = "&origin=Asia+Pacific+University+of+Technology+"
-            + "&destination=Endah+Regal+Condominium"
-            + "&language=en"
-            + "&mode=driving"
-        // notice : no space and no brackets
+  <div id="map"></div>
 
-        let url = "https://www.google.com/maps/embed/v1/" + mode + "?key=" + key + parameter;
-        console.log(url);
-        ifr1.src = url;
+  <!-- Offline / Fallback Vector SVG Map -->
+  <div id="fallback-map">
+    <svg width="100%" height="100%">
+      <defs>
+        <pattern id="grid" width="60" height="60" patternUnits="userSpaceOnUse">
+          <path d="M 60 0 L 0 0 0 60" fill="none" stroke="#253245" stroke-width="0.6"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#grid)" />
+      <!-- Krishna River -->
+      <path d="M-50,220 Q300,160 750,240" stroke="#102033" stroke-width="32" fill="none" stroke-linecap="round"/>
+      <!-- Highway Route Line -->
+      <path d="M120,480 Q320,340 550,180" stroke="#165dff" stroke-width="6" fill="none" stroke-dasharray="8 4"/>
+      <!-- Origin & Destination Markers -->
+      <circle cx="120" cy="480" r="10" fill="#165dff" stroke="#ffffff" stroke-width="3"/>
+      <circle cx="550" cy="180" r="10" fill="#f53f3f" stroke="#ffffff" stroke-width="3"/>
+      <text x="140" y="485" fill="#ffffff" font-size="13" font-weight="bold">SRM University-AP (Origin)</text>
+      <text x="400" y="160" fill="#ffffff" font-size="13" font-weight="bold">Vijayawada BZA Hub (Destination)</text>
+    </svg>
+  </div>
 
-        // document.getElementById("btn1").addEventListener("click", function () {
-        //     changeDirections("Endah+Regal+Condominium", "Asia+Pacific+University+of+Technology");
-        // });
+  <!-- Floating Active Route Card -->
+  <div class="route-card">
+    <div class="route-header">
+      <span class="route-title">Live Dispatch Route</span>
+      <span class="eta-badge" id="etaBadge">14 MINS</span>
+    </div>
+    <div class="route-point">
+      <div class="point-dot dot-start"></div>
+      <div id="startLocationText">SRM University-AP, Amaravati</div>
+    </div>
+    <div class="route-divider"></div>
+    <div class="route-point">
+      <div class="point-dot dot-end"></div>
+      <div id="destLocationText">Vijayawada Junction (BZA Hub)</div>
+    </div>
+    <div class="route-stats">
+      <span>Distance: <strong id="statDistance">14.8 km</strong></span>
+      <span>Traffic: <strong style="color: #00b42a;">Clear Flow</strong></span>
+      <span>Status: <strong style="color: #165dff;">Active Trip</strong></span>
+    </div>
+  </div>
 
-        function changeDirections(start, end) {
-            start = start.replace(" ", "+");
-            end = end.replace(" ", "+");
-            let ifr1 = document.getElementById("iframe1");
-            let key = googleMapKey;
-            let mode = "directions";
-            let parameter = `&origin=${start}`
-                + `&destination=${end}`
-                + "&language=en"
-                + "&mode=driving"
-            // notice : no space and no brackets
+  <script>
+    let map = null;
+    let routeLine = null;
+    let markerStart = null;
+    let markerEnd = null;
 
-            let url = "https://www.google.com/maps/embed/v1/" + mode + "?key=" + key + parameter;
-            console.log(url);
-            ifr1.src = url;
+    // SRM University-AP coords
+    const SRM_AP = [16.4632, 80.5078];
+    // Vijayawada Railway Station / BZA coords
+    const VIJAYAWADA_BZA = [16.5175, 80.6200];
+
+    function initMap() {
+      try {
+        if (typeof L === 'undefined') {
+          showFallback();
+          return;
         }
-    </script>
+
+        map = L.map('map', {
+          center: [16.4900, 80.5640],
+          zoom: 12,
+          zoomControl: true,
+          attributionControl: false
+        });
+
+        // Dark Matter tiles for slick automotive cockpit look
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', {
+          maxZoom: 19,
+          subdomains: 'abcd',
+          timeout: 4000
+        }).addTo(map);
+
+        // Custom pulsing marker icons
+        const startIcon = L.divIcon({
+          className: 'custom-pin-start',
+          html: '<div style="background: #165dff; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 10px #165dff;"></div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+
+        const endIcon = L.divIcon({
+          className: 'custom-pin-end',
+          html: '<div style="background: #f53f3f; width: 14px; height: 14px; border-radius: 50%; border: 3px solid #ffffff; box-shadow: 0 0 10px #f53f3f;"></div>',
+          iconSize: [20, 20],
+          iconAnchor: [10, 10]
+        });
+
+        markerStart = L.marker(SRM_AP, { icon: startIcon }).addTo(map).bindPopup("<b>Pickup:</b> SRM University-AP, Amaravati");
+        markerEnd = L.marker(VIJAYAWADA_BZA, { icon: endIcon }).addTo(map).bindPopup("<b>Dropoff:</b> Vijayawada Central BZA Hub");
+
+        // Realistic roadway navigation waypoints connecting SRM AP to Vijayawada across Seed Access Rd & Prakasam Barrage
+        const routePoints = [
+          [16.4632, 80.5078], // SRM AP Campus
+          [16.4750, 80.5180], // Neerukonda Junction
+          [16.4980, 80.5400], // Amaravati Seed Access Road
+          [16.5100, 80.5850], // Undavalli Center
+          [16.5070, 80.6050], // Prakasam Barrage Approach
+          [16.5120, 80.6120], // Krishna River Crossing
+          [16.5175, 80.6200]  // Vijayawada BZA Hub
+        ];
+
+        routeLine = L.polyline(routePoints, {
+          color: '#165dff',
+          weight: 6,
+          opacity: 0.9,
+          lineJoin: 'round'
+        }).addTo(map);
+
+        // Smooth zoom to fit the active trip
+        map.fitBounds(routeLine.getBounds(), { padding: [60, 60] });
+
+      } catch (e) {
+        console.error("Leaflet load error, using vector fallback:", e);
+        showFallback();
+      }
+    }
+
+    function showFallback() {
+      const fb = document.getElementById("fallback-map");
+      if (fb) fb.style.display = "block";
+      const m = document.getElementById("map");
+      if (m) m.style.display = "none";
+    }
+
+    function changeDirections(start, end) {
+      const sElem = document.getElementById("startLocationText");
+      const dElem = document.getElementById("destLocationText");
+      if (sElem && start) sElem.innerText = start;
+      if (dElem && end) dElem.innerText = end;
+    }
+
+    window.addEventListener('DOMContentLoaded', initMap);
+  </script>
 </body>
-
 </html>
-
-<!-- 
-https://www.google.com/maps/embed/v1/directions
-  ?key=YOUR_API_KEY
-  &origin=Oslo+Norway
-  &destination=Telemark+Norway
-  &avoid=tolls|highways
-
-
-
-
-
- -->

@@ -1,13 +1,18 @@
 package com.example.car_rental_sys.controllers;
 
 import com.example.car_rental_sys.util.AlertHelper;
+import com.example.car_rental_sys.util.SceneManager;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
+
+import java.net.URL;
 
 /**
  * Controller for the Driver Mission Control & Active Trip Operations.
@@ -92,7 +97,41 @@ public class DriverMainPageController extends Controller {
     public void initialize() {
         driverMainPageInstance = this;
         showWorkplace();
+        initWebview();
+        initProcessTipEvent();
+        initInteractions();
         populateActiveTrip();
+    }
+
+    private void initWebview() {
+        if (webview == null) return;
+        WebEngine engine = webview.getEngine();
+        engine.setJavaScriptEnabled(true);
+        URL url = getClass().getResource("/com/example/car_rental_sys/html/directions.html");
+        if (url != null) {
+            engine.load(url.toExternalForm());
+        }
+    }
+
+    private void initProcessTipEvent() {
+        if (processImagePane != null) {
+            processImagePane.setStyle(processImagePane.getStyle() + "; -fx-cursor: hand;");
+            processImagePane.setOnMouseClicked(event -> {
+                SceneManager.switchScene("drivingModePage.fxml");
+            });
+        }
+    }
+
+    private void initInteractions() {
+        if (messagePane != null) {
+            messagePane.setOnMouseClicked(event -> SceneManager.switchScene("messagePage.fxml"));
+        }
+        if (phonePane != null) {
+            phonePane.setOnMouseClicked(this::phoneClick);
+        }
+        if (closeSideBarPane != null) {
+            closeSideBarPane.setOnMouseClicked(event -> SceneManager.switchScene("mainPage.fxml"));
+        }
     }
 
     public void showWorkplace() {
@@ -147,9 +186,9 @@ public class DriverMainPageController extends Controller {
     private void populateActiveTrip() {
         if (renterName != null) renterName.setText("Alexander Wright");
         if (renterPost != null) renterPost.setText("Gold VIP Client");
-        if (carNumberLabel != null) carNumberLabel.setText("WC 8888 D");
-        if (startLabel != null) startLabel.setText("KLIA International Terminal");
-        if (destinationLabel != null) destinationLabel.setText("Grand Hyatt Hotel KL");
+        if (carNumberLabel != null) carNumberLabel.setText("AP 39 FM 8899");
+        if (startLabel != null) startLabel.setText("SRM University-AP, Amaravati");
+        if (destinationLabel != null) destinationLabel.setText("Vijayawada Junction (BZA Hub)");
         if (seatsLabel != null) seatsLabel.setText("4 Seats");
         if (powerLabel != null) powerLabel.setText("6.2 L V8");
         if (speedLabel != null) speedLabel.setText("330 km/h");
@@ -158,7 +197,7 @@ public class DriverMainPageController extends Controller {
 
     @FXML
     private void phoneClick(MouseEvent event) {
-        AlertHelper.showInfo("Client Contact", "Customer Phone: +60 12-345 6789\nConnecting call via secure relay...");
+        AlertHelper.showInfo("Client Direct Contact", "Customer Phone: +91 98765 00003\nClient: Alexander Wright\nConnecting VoIP / WhatsApp dispatch relay...");
     }
 
     @FXML
@@ -168,4 +207,3 @@ public class DriverMainPageController extends Controller {
         }
     }
 }
-
