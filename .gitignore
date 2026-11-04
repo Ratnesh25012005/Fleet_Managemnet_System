@@ -33,5 +33,6 @@ ehthumbs.db
 
 # Environment & Secret files
 .env
+.env.*
 *.env
 !.env.example
