@@ -3,11 +3,13 @@ package com.example.car_rental_sys.ui_components;
 import com.example.car_rental_sys.ToolsLib.ImageTools;
 import com.example.car_rental_sys.controllers.AdminVehiclePageController;
 import com.example.car_rental_sys.controllers.EditVehiclePageController;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Pane;
+import javafx.scene.layout.StackPane;
 
 /**
  * Authentic Admin Vehicle Card component for OverviewVehiclePage.fxml.
@@ -23,6 +25,7 @@ public class VehicleCard extends Pane {
     private String seatNumber;
     private String gearType;
     private String carBrand;
+    private String imagePath;
 
     private Label lblEdit;
 
@@ -38,6 +41,10 @@ public class VehicleCard extends Pane {
     }
 
     public VehicleCard(String vehicleID, String vehicleName, String seatNumber, String vehiclePrice, String gearType, String gradientLight, String gradientDark, String carBrand) {
+        this(vehicleID, vehicleName, seatNumber, vehiclePrice, gearType, gradientLight, gradientDark, carBrand, null);
+    }
+
+    public VehicleCard(String vehicleID, String vehicleName, String seatNumber, String vehiclePrice, String gearType, String gradientLight, String gradientDark, String carBrand, String imagePath) {
         try {
             this.vehicleID = Integer.parseInt(vehicleID);
         } catch (Exception e) {
@@ -50,6 +57,7 @@ public class VehicleCard extends Pane {
         this.gradientLight = gradientLight != null ? gradientLight : "#1669e0";
         this.gradientDark = gradientDark != null ? gradientDark : "#0a1c38";
         this.carBrand = carBrand;
+        this.imagePath = imagePath;
         initVehicleCard();
     }
 
@@ -78,21 +86,22 @@ public class VehicleCard extends Pane {
         lblEdit.setLayoutY(6);
         lblEdit.setStyle("-fx-text-fill: #4080ff; -fx-font-size: 11px; -fx-font-weight: bold; -fx-cursor: hand;");
 
-        Pane pane = new Pane();
+        StackPane pane = new StackPane();
         pane.setPrefSize(233, 151);
         pane.setLayoutX(0);
         pane.setLayoutY(25);
         pane.setStyle("-fx-background-color: linear-gradient(to left," + this.gradientDark + "," + this.gradientLight + ");");
 
         ImageView carImage = new ImageView();
-        carImage.setFitHeight(151);
-        carImage.setFitWidth(233);
-        carImage.setLayoutX(0);
-        carImage.setLayoutY(0);
-        Image cImg = ImageTools.getImageObjFromPath("/com/example/car_rental_sys/image/cars/" + vehicleName + ".png");
+        carImage.setFitHeight(135);
+        carImage.setFitWidth(215);
+        carImage.setPreserveRatio(true);
+        carImage.setSmooth(true);
+        Image cImg = ImageTools.getCarImage(vehicleName, imagePath);
         if (cImg != null) carImage.setImage(cImg);
 
         pane.getChildren().add(carImage);
+        StackPane.setAlignment(carImage, Pos.CENTER);
 
         Label lblCarName = new Label(vehicleName != null ? vehicleName.replace("_", " ") : "Vehicle");
         lblCarName.setLayoutX(12);
@@ -120,4 +129,3 @@ public class VehicleCard extends Pane {
         }
     }
 }
-

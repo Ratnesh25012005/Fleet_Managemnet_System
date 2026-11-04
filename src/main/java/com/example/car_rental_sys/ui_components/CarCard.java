@@ -135,7 +135,21 @@ public class CarCard extends Pane {
     }
 
     private void addCarImage(String imageName) {
-        addImage("cars/" + imageName + ".png", 50, 50, 320, 216, "car");
+        String customPath = (vehicle != null && vehicle.getImagePath() != null) ? vehicle.getImagePath() : null;
+        Image img = ImageTools.getCarImage(imageName, customPath);
+
+        ImageView imageview = new ImageView();
+        imageview.setLayoutX(50);
+        imageview.setLayoutY(50);
+        imageview.setFitHeight(216);
+        imageview.setFitWidth(320);
+        imageview.setPreserveRatio(true);
+        imageview.setSmooth(true);
+        if (img != null) {
+            imageview.setImage(img);
+        }
+        this.getChildren().add(imageview);
+
         this.setStyle(this.getStyle() +
                 "-fx-background-color: " +
                 "linear-gradient(to left," + this.gradientDark + "," + this.gradientLight + ");");
@@ -157,4 +171,3 @@ public class CarCard extends Pane {
         FXTools.changeScene("carDetailsPage.fxml");
     }
 }
-
