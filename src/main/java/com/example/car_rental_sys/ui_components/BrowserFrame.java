@@ -2,6 +2,7 @@ package com.example.car_rental_sys.ui_components;
 
 import com.example.car_rental_sys.StatusContainer;
 import com.example.car_rental_sys.ToolsLib.ImageTools;
+import com.example.car_rental_sys.util.EnvConfig;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.application.Platform;
 import javafx.scene.Cursor;
@@ -51,6 +52,7 @@ public class BrowserFrame {
     private void initBrowser() {
         WebEngine engine = webView.getEngine();
         engine.setJavaScriptEnabled(true);
+        EnvConfig.injectGoogleMapsKey(engine);
 
         // Alert listener for selection and bridge events
         engine.setOnAlert(event -> {
