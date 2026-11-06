@@ -15,8 +15,7 @@ import java.net.URL;
 /**
  * Controller for Payment Success Confirmation Screen.
  * Plays car animation video via WebView, then auto-navigates to orders.
- * JSObject / window.invoke bridge is replaced with a Java-side PauseTransition
- * because jdk.jsobject was removed in JDK 26.
+ * Bidirectional JS-to-Java communication is supported via WebEngine alert callback.
  */
 public class PaySuccessPageController extends Controller {
 
@@ -36,33 +35,39 @@ public class PaySuccessPageController extends Controller {
 
         WebEngine engine = webview.getEngine();
 
-        // Load the pay-success HTML (plays video2.mp4 automatically)
+        // Listen for JavaScript alert commands from index.html (e.g. alert("CLOSE_PAY_SUCCESS"))
+        engine.setOnAlert(event -> {
+            if ("CLOSE_PAY_SUCCESS".equals(event.getData())) {
+                Platform.runLater(this::skipToOrders);
+            }
+        });
+
+        // Load the pay-success HTML (plays video2.mp4 smoothly)
         URL resource = getClass().getResource(
                 "/com/example/car_rental_sys/html/paySuccess/index.html");
 
         if (resource != null) {
             engine.load(resource.toExternalForm());
         } else {
-            // fallback: just navigate after 3s if resource is missing
+            // fallback: navigate after 3s if resource is missing
             scheduleAutoNav(3);
             return;
         }
 
-        // After video ends (~16s) the HTML shows a "Check Payment" button.
-        // The button calls window.invoke.world() which we can't bridge in JDK 26.
-        // Instead: after 20s auto-navigate to orders from Java side.
-        autoNavTimer = new PauseTransition(Duration.seconds(20));
+        // Auto-navigate to orders after video ends (~16s)
+        autoNavTimer = new PauseTransition(Duration.seconds(16));
         autoNavTimer.setOnFinished(e -> goToOrders());
         autoNavTimer.play();
 
-        // Also let user press SPACE / ENTER to skip immediately
+        // Let user press SPACE / ENTER / ESCAPE to skip immediately
         Platform.runLater(() -> {
             if (mainPane != null) {
                 mainPane.setFocusTraversable(true);
                 mainPane.requestFocus();
                 mainPane.setOnKeyPressed(event -> {
                     if (event.getCode() == KeyCode.SPACE
-                            || event.getCode() == KeyCode.ENTER) {
+                            || event.getCode() == KeyCode.ENTER
+                            || event.getCode() == KeyCode.ESCAPE) {
                         skipToOrders();
                     }
                 });

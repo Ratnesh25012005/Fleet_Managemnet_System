@@ -14,13 +14,15 @@
             background-color: #000000;
             -webkit-user-select: none;
             user-select: none;
-            font-family: sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            cursor: pointer;
         }
 
         video {
-            width: 100%;
-            height: 100%;
+            width: 100vw;
+            height: 100vh;
             object-fit: cover;
+            display: block;
         }
 
         #container {
@@ -32,71 +34,113 @@
             color: white;
             font-size: 22px;
             display: none;
+            z-index: 10;
         }
 
         img {
-            width: 100px;
-            height: 100px;
+            width: 90px;
+            height: 90px;
+            margin-bottom: 12px;
         }
 
         button {
             color: white;
             background-color: #3c7eff;
-            padding: 10px;
+            padding: 12px 28px;
             border: none;
-            border-radius: 5px;
-            margin-top: 10px;
-            font-size: 20px;
+            border-radius: 6px;
+            margin-top: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            box-shadow: 0 4px 15px rgba(60, 126, 255, 0.4);
+            cursor: pointer;
+            transition: all 0.2s ease;
         }
 
         button:hover {
-            background-color: #306fff;
-            cursor: pointer;
+            background-color: #2668f0;
+            transform: scale(1.04);
         }
 
-        p:hover {
-            cursor: default;
+        p {
+            margin: 8px 0;
+            letter-spacing: 0.5px;
         }
     </style>
 </head>
 
 <body>
-    <video id="successVideo" src="./video2.mp4" autoplay playsinline></video>
-    <script>
-        window.addEventListener('DOMContentLoaded', () => {
-            const video = document.getElementById('successVideo');
-            if (video) {
-                video.currentTime = 0;
-                video.play().catch(e => console.log('Autoplay handled:', e));
-            }
-        });
-
-        function buttonClickEvent() {
-            if (window.invoke && window.invoke.world) {
-                window.invoke.world();
-            }
-        }
-    </script>
+    <video id="successVideo" src="./video2.mp4" autoplay muted playsinline preload="auto"></video>
+    
     <div id="container">
         <img src="success.png" alt="success">
-        <p>Transaction completed</p>
-        <p>Your car is on the way !</p>
-        <button onclick="buttonClickEvent()">Check Payment</button>
+        <p style="font-size: 26px; font-weight: bold; color: #4ade80;">Transaction Completed</p>
+        <p style="color: #cbd5e1;">Your supercar is confirmed and ready for pickup!</p>
+        <button onclick="buttonClickEvent()">View My Orders &rarr;</button>
     </div>
 
     <script>
-        // Display after video (~16s)
-        setTimeout(() => {
-            const container = document.getElementById('container');
-            if (container) container.style.display = 'block';
-        }, 16000);
+        const video = document.getElementById('successVideo');
+        const container = document.getElementById('container');
 
         function stopVideo() {
-            const video = document.querySelector('video');
-            if (video) video.remove();
-            const container = document.getElementById('container');
-            if (container) container.style.display = 'block';
+            if (video) {
+                video.style.display = 'none';
+                try { video.pause(); } catch(e) {}
+            }
+            if (container) {
+                container.style.display = 'block';
+            }
         }
+
+        function buttonClickEvent() {
+            alert("CLOSE_PAY_SUCCESS");
+        }
+
+        if (video) {
+            video.muted = true;
+            
+            const attemptPlay = () => {
+                try {
+                    video.currentTime = 0;
+                } catch(e) {}
+                video.play().catch(e => {
+                    console.log('Autoplay retry with muted:', e);
+                    video.muted = true;
+                    video.play();
+                });
+            };
+
+            if (video.readyState >= 2) {
+                attemptPlay();
+            } else {
+                video.addEventListener('canplay', attemptPlay, { once: true });
+                video.addEventListener('loadeddata', attemptPlay, { once: true });
+            }
+
+            video.addEventListener('ended', () => {
+                stopVideo();
+            });
+
+            video.addEventListener('error', (e) => {
+                console.error('Video error, displaying fallback modal:', e);
+                stopVideo();
+            });
+        }
+
+        // Failsafe: After 15s reveal button if video hangs or finishes early
+        setTimeout(() => {
+            stopVideo();
+        }, 15000);
+
+        // Clicking anywhere when container is visible closes or buttonClickEvent
+        document.body.addEventListener('click', (e) => {
+            if (e.target.tagName !== 'BUTTON') {
+                if (container && container.style.display !== 'block') {
+                    stopVideo();
+                }
+            }
+        });
     </script>
 </body>
 
