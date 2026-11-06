@@ -134,7 +134,32 @@ public final class EnvConfig {
     }
 
     /**
-     * Synchronizes GOOGLE_MAPS_API_KEY from .env into googleMapKey.js if provided.
+     * Injects the GOOGLE_MAPS_API_KEY from .env into the WebEngine in-memory JavaScript scope.
+     * Prevents any secret leakage by avoiding writes to source files.
+     *
+     * @param engine the target JavaFX WebEngine instance
+     */
+    public static void injectGoogleMapsKey(javafx.scene.web.WebEngine engine) {
+        if (engine == null) return;
+        String key = get("GOOGLE_MAPS_API_KEY", "").trim();
+        if (key.isEmpty() || key.startsWith("your_")) return;
+
+        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                try {
+                    engine.executeScript(
+                        "window.googleMapKey = '" + key + "';" +
+                        "if (typeof googleMapKey === 'undefined' || !googleMapKey) { var googleMapKey = '" + key + "'; }"
+                    );
+                } catch (Exception ignored) {
+                }
+            }
+        });
+    }
+
+    /**
+     * Synchronizes GOOGLE_MAPS_API_KEY from .env strictly into target/classes runtime output.
+     * NEVER writes to src/ to prevent committing secrets to version control.
      */
     private static void syncGoogleMapsKey() {
         String gKey = get("GOOGLE_MAPS_API_KEY", "").trim();
@@ -143,19 +168,17 @@ public final class EnvConfig {
         }
 
         String jsContent = "let googleMapKey = \"" + gKey + "\";\n";
-        String[] targets = {
-                "Fleet_Managemnet_System/src/main/resources/com/example/car_rental_sys/html/googleMapKey.js",
-                "src/main/resources/com/example/car_rental_sys/html/googleMapKey.js",
+        String[] runtimeOnlyTargets = {
                 "Fleet_Managemnet_System/target/classes/com/example/car_rental_sys/html/googleMapKey.js",
                 "target/classes/com/example/car_rental_sys/html/googleMapKey.js"
         };
 
-        for (String targetPath : targets) {
+        for (String targetPath : runtimeOnlyTargets) {
             File f = new File(targetPath);
             if (f.getParentFile() != null && f.getParentFile().exists()) {
                 try (FileWriter writer = new FileWriter(f, StandardCharsets.UTF_8)) {
                     writer.write(jsContent);
-                    LOGGER.info("Synchronized GOOGLE_MAPS_API_KEY into: " + targetPath);
+                    LOGGER.info("Runtime-only sync of GOOGLE_MAPS_API_KEY into build output: " + targetPath);
                 } catch (Exception ignored) {
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.car_rental_sys.controllers;
 
 import com.example.car_rental_sys.util.AlertHelper;
+import com.example.car_rental_sys.util.EnvConfig;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -107,6 +108,7 @@ public class DriverMainPageController extends Controller {
         if (webview == null) return;
         WebEngine engine = webview.getEngine();
         engine.setJavaScriptEnabled(true);
+        EnvConfig.injectGoogleMapsKey(engine);
         URL url = getClass().getResource("/com/example/car_rental_sys/html/directions.html");
         if (url != null) {
             engine.load(url.toExternalForm());
