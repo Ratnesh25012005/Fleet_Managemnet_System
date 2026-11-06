@@ -52,7 +52,6 @@ public class BrowserFrame {
     private void initBrowser() {
         WebEngine engine = webView.getEngine();
         engine.setJavaScriptEnabled(true);
-        EnvConfig.injectGoogleMapsKey(engine);
 
         // Alert listener for selection and bridge events
         engine.setOnAlert(event -> {
