@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pay sccess</title>
+    <title>Pay success</title>
     <style>
         body {
             margin: 0;
@@ -61,10 +61,20 @@
 </head>
 
 <body>
-    <video src="./video2.mp4" autoplay></video>
+    <video id="successVideo" src="./video2.mp4" autoplay playsinline></video>
     <script>
+        window.addEventListener('DOMContentLoaded', () => {
+            const video = document.getElementById('successVideo');
+            if (video) {
+                video.currentTime = 0;
+                video.play().catch(e => console.log('Autoplay handled:', e));
+            }
+        });
+
         function buttonClickEvent() {
-            window.invoke.world();
+            if (window.invoke && window.invoke.world) {
+                window.invoke.world();
+            }
         }
     </script>
     <div id="container">
@@ -75,14 +85,17 @@
     </div>
 
     <script>
-        // 延迟16s
+        // Display after video (~16s)
         setTimeout(() => {
-            document.getElementById('container').style.display = 'block';
-        }, 16000)
+            const container = document.getElementById('container');
+            if (container) container.style.display = 'block';
+        }, 16000);
 
         function stopVideo() {
-            document.querySelector('video').remove();
-            document.getElementById('container').style.display = 'block';
+            const video = document.querySelector('video');
+            if (video) video.remove();
+            const container = document.getElementById('container');
+            if (container) container.style.display = 'block';
         }
     </script>
 </body>
