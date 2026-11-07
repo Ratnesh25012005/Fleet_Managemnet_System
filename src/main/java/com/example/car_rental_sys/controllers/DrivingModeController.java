@@ -73,6 +73,68 @@ public class DrivingModeController extends Controller {
     @FXML
     private Label timeLeftLabel;
 
+    // Interactive Cockpit Cards
+    @FXML
+    private Pane climateCardPane;
+    @FXML
+    private Pane climateIconBox;
+    @FXML
+    private ImageView climateIcon;
+    @FXML
+    private Label climateModeLabel;
+    @FXML
+    private Label climateTempLabel;
+
+    @FXML
+    private Pane seatCardPane;
+    @FXML
+    private Pane seatIconBox;
+    @FXML
+    private Label seatPresetLabel;
+    @FXML
+    private Label seatAngleLabel;
+
+    @FXML
+    private Pane ambientCardPane;
+    @FXML
+    private Pane ambientColorSwatch;
+    @FXML
+    private Label ambientModeLabel;
+    @FXML
+    private Label ambientColorNameLabel;
+
+    // Interactive Cockpit State
+    private int currentTemp = 24;
+    private boolean isCoolMode = true;
+
+    private int seatAngle = 36;
+    private int seatWarmerLevel = 0; // 0=off, 1=warm (orange), 2=hot (red)
+    private static final String[] PRESET_NAMES = {"SPORT", "COMFORT", "RELAX", "RECLINE"};
+    private static final int[] PRESET_ANGLES = {30, 36, 42, 48};
+    private int currentPresetIndex = 1; // COMFORT
+
+    private static class AmbientTheme {
+        final String name;
+        final String hex;
+        final String glowRgba;
+
+        AmbientTheme(String name, String hex, String glowRgba) {
+            this.name = name;
+            this.hex = hex;
+            this.glowRgba = glowRgba;
+        }
+    }
+
+    private static final AmbientTheme[] AMBIENT_THEMES = new AmbientTheme[] {
+        new AmbientTheme("Ice Blue", "#0061ef", "rgba(0, 97, 239, 0.45)"),
+        new AmbientTheme("Emerald", "#00e676", "rgba(0, 230, 118, 0.45)"),
+        new AmbientTheme("Amethyst", "#a855f7", "rgba(168, 85, 247, 0.45)"),
+        new AmbientTheme("Amber", "#ff9100", "rgba(255, 145, 0, 0.45)"),
+        new AmbientTheme("Crimson", "#ff1744", "rgba(255, 23, 68, 0.45)"),
+        new AmbientTheme("Pure White", "#e2e8f0", "rgba(226, 232, 240, 0.45)")
+    };
+    private int currentAmbientIndex = 0;
+
     @FXML
     public void initialize() {
         StatusContainer.currentPageController = this;
@@ -80,6 +142,7 @@ public class DrivingModeController extends Controller {
         if (timeLeftLabel != null) timeLeftLabel.setText("28 mins");
         updateProgressBar(0.0);
         initCockpitMap();
+        initInteractiveCards();
     }
 
     private void initCockpitMap() {
@@ -228,5 +291,157 @@ public class DrivingModeController extends Controller {
     @FXML
     private void backToSettingPage(MouseEvent event) {
         SceneManager.switchScene("SettingPage.fxml");
+    }
+
+    // ==========================================
+    // Interactive Cockpit Cards Logic
+    // ==========================================
+
+    @FXML
+    private void tempUpClicked(MouseEvent event) {
+        if (event != null) event.consume();
+        if (currentTemp < 30) {
+            currentTemp++;
+            updateClimateUI();
+        }
+    }
+
+    @FXML
+    private void tempDownClicked(MouseEvent event) {
+        if (event != null) event.consume();
+        if (currentTemp > 16) {
+            currentTemp--;
+            updateClimateUI();
+        }
+    }
+
+    @FXML
+    private void climateIconBoxClicked(MouseEvent event) {
+        if (event != null) event.consume();
+        isCoolMode = !isCoolMode;
+        updateClimateUI();
+    }
+
+    private void updateClimateUI() {
+        if (climateTempLabel != null) {
+            climateTempLabel.setText(currentTemp + " ℃");
+        }
+        if (climateModeLabel != null) {
+            climateModeLabel.setText(isCoolMode ? "A/C AUTO" : "A/C HEAT");
+            climateModeLabel.setTextFill(javafx.scene.paint.Color.web(isCoolMode ? "#00d2ff" : "#ff9100"));
+        }
+        if (climateIconBox != null) {
+            String bg = isCoolMode ? "#1a3b47" : "#4a331a";
+            climateIconBox.setStyle("-fx-background-color: " + bg + "; -fx-background-radius: 15; -fx-cursor: hand;");
+        }
+    }
+
+    @FXML
+    private void seatUpClicked(MouseEvent event) {
+        if (event != null) event.consume();
+        if (seatAngle > 26) {
+            seatAngle -= 2;
+            updateSeatAngleDisplay();
+        }
+    }
+
+    @FXML
+    private void seatDownClicked(MouseEvent event) {
+        if (event != null) event.consume();
+        if (seatAngle < 52) {
+            seatAngle += 2;
+            updateSeatAngleDisplay();
+        }
+    }
+
+    @FXML
+    private void seatCardClicked(MouseEvent event) {
+        currentPresetIndex = (currentPresetIndex + 1) % PRESET_ANGLES.length;
+        seatAngle = PRESET_ANGLES[currentPresetIndex];
+        updateSeatAngleDisplay();
+    }
+
+    @FXML
+    private void seatWarmerClicked(MouseEvent event) {
+        if (event != null) event.consume();
+        seatWarmerLevel = (seatWarmerLevel + 1) % 3;
+        updateSeatWarmerUI();
+    }
+
+    private void updateSeatAngleDisplay() {
+        if (seatAngleLabel != null) {
+            seatAngleLabel.setText(seatAngle + " °");
+        }
+        if (seatPresetLabel != null) {
+            String preset = "CUSTOM";
+            for (int i = 0; i < PRESET_ANGLES.length; i++) {
+                if (PRESET_ANGLES[i] == seatAngle) {
+                    preset = PRESET_NAMES[i];
+                    currentPresetIndex = i;
+                    break;
+                }
+            }
+            seatPresetLabel.setText(preset);
+            seatPresetLabel.setTextFill(javafx.scene.paint.Color.web("CUSTOM".equals(preset) ? "#aaaaaa" : "#ffb84d"));
+        }
+    }
+
+    private void updateSeatWarmerUI() {
+        if (seatIconBox != null) {
+            if (seatWarmerLevel == 0) {
+                seatIconBox.setStyle("-fx-background-color: #434b53; -fx-background-radius: 15; -fx-cursor: hand;");
+            } else if (seatWarmerLevel == 1) {
+                seatIconBox.setStyle("-fx-background-color: #633e14; -fx-background-radius: 15; -fx-cursor: hand; -fx-border-color: #ff9100; -fx-border-radius: 15; -fx-border-width: 1.5;");
+            } else {
+                seatIconBox.setStyle("-fx-background-color: #6b1f1f; -fx-background-radius: 15; -fx-cursor: hand; -fx-border-color: #ff3344; -fx-border-radius: 15; -fx-border-width: 1.5;");
+            }
+        }
+    }
+
+    @FXML
+    private void ambientCardClicked(MouseEvent event) {
+        currentAmbientIndex = (currentAmbientIndex + 1) % AMBIENT_THEMES.length;
+        updateAmbientUI();
+    }
+
+    private void updateAmbientUI() {
+        AmbientTheme theme = AMBIENT_THEMES[currentAmbientIndex];
+        if (ambientColorNameLabel != null) {
+            ambientColorNameLabel.setText(theme.name);
+        }
+        if (ambientColorSwatch != null) {
+            ambientColorSwatch.setStyle("-fx-background-color: " + theme.hex + "; -fx-background-radius: 15; -fx-effect: dropshadow(three-pass-box, " + theme.glowRgba + ", 16, 0.2, 0, 0);");
+        }
+        if (ambientModeLabel != null) {
+            ambientModeLabel.setTextFill(javafx.scene.paint.Color.web(theme.hex));
+        }
+
+        // Dynamically tint card borders to match the selected ambient lighting theme!
+        String cardBorder = "-fx-background-color: #292d32; -fx-background-radius: 30; -fx-border-color: " + theme.glowRgba + "; -fx-border-radius: 30; -fx-border-width: 1.2;";
+        if (climateCardPane != null) climateCardPane.setStyle(cardBorder);
+        if (seatCardPane != null) seatCardPane.setStyle(cardBorder + " -fx-cursor: hand;");
+        if (ambientCardPane != null) ambientCardPane.setStyle(cardBorder + " -fx-cursor: hand;");
+    }
+
+    private void initInteractiveCards() {
+        updateClimateUI();
+        updateSeatAngleDisplay();
+        updateSeatWarmerUI();
+        updateAmbientUI();
+
+        if (climateCardPane != null) {
+            climateCardPane.setOnScroll(scrollEvent -> {
+                if (scrollEvent.getDeltaY() > 0) tempUpClicked(null);
+                else if (scrollEvent.getDeltaY() < 0) tempDownClicked(null);
+                scrollEvent.consume();
+            });
+        }
+        if (seatCardPane != null) {
+            seatCardPane.setOnScroll(scrollEvent -> {
+                if (scrollEvent.getDeltaY() > 0) seatUpClicked(null);
+                else if (scrollEvent.getDeltaY() < 0) seatDownClicked(null);
+                scrollEvent.consume();
+            });
+        }
     }
 }
