@@ -95,8 +95,24 @@ public class DriverMainPageController extends Controller {
     private Label carNumberLabel;
 
     @FXML
+    private Pane topLeftBar;
+
+    @FXML
+    private Pane topRightBar;
+
+    @FXML
+    private ImageView topLogo;
+
+    @FXML
+    private ImageView topClose;
+
+    private double dragXOffset = 0;
+    private double dragYOffset = 0;
+
+    @FXML
     public void initialize() {
         driverMainPageInstance = this;
+        setupHeaderDrag();
         showWorkplace();
         initWebview();
         initProcessTipEvent();
@@ -108,14 +124,75 @@ public class DriverMainPageController extends Controller {
         if (webview == null) return;
         WebEngine engine = webview.getEngine();
         engine.setJavaScriptEnabled(true);
-        EnvConfig.injectGoogleMapsKey(engine);
-        URL url = getClass().getResource("/com/example/car_rental_sys/html/directions.html");
-        if (url != null) {
-            engine.load(url.toExternalForm());
+
+        engine.setOnAlert(event -> {
+            String message = event.getData();
+            if ("OPEN_DRIVE_MODE".equals(message)) {
+                Platform.runLater(() -> SceneManager.switchScene("drivingModePage.fxml"));
+            }
+        });
+
+        double startLat = 16.4632;
+        double startLng = 80.5078;
+        String currentLoc = "SRM University-AP, Amaravati";
+
+        var cached = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().getCachedLocation();
+        if (cached != null && cached.success() && cached.latitude() != 0 && cached.longitude() != 0) {
+            currentLoc = cached.city() + ", " + cached.regionName();
+            startLat = cached.latitude();
+            startLng = cached.longitude();
+        }
+
+        final double destLat = 16.5175;
+        final double destLng = 80.6200;
+        final String destination = "Vijayawada Junction (BZA Hub)";
+
+        if (startLabel != null) startLabel.setText(currentLoc);
+        if (destinationLabel != null) destinationLabel.setText(destination);
+
+        loadDirectionsUrl(engine, startLat, startLng, destLat, destLng, currentLoc, destination);
+
+        // If location was not yet cached at startup, fetch in background and reload safely via engine.load()
+        if (cached == null) {
+            java.util.concurrent.CompletableFuture.runAsync(() -> {
+                try {
+                    var geo = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().fetchCurrentLocation();
+                    if (geo != null && geo.success() && geo.latitude() != 0 && geo.longitude() != 0) {
+                        final String liveLoc = geo.city() + ", " + geo.regionName();
+                        final double liveLat = geo.latitude();
+                        final double liveLng = geo.longitude();
+
+                        Platform.runLater(() -> {
+                            if (startLabel != null) startLabel.setText(liveLoc);
+                            loadDirectionsUrl(engine, liveLat, liveLng, destLat, destLng, liveLoc, destination);
+                        });
+                    }
+                } catch (Exception ignored) {}
+            });
+        }
+    }
+
+    private void loadDirectionsUrl(WebEngine engine, double sLat, double sLng, double dLat, double dLng, String sName, String dName) {
+        URL resource = getClass().getResource("/com/example/car_rental_sys/html/directions.html");
+        if (resource != null) {
+            String url = resource.toExternalForm() + String.format(
+                    java.util.Locale.US,
+                    "?startLat=%.4f&startLng=%.4f&destLat=%.4f&destLng=%.4f&startName=%s&destName=%s",
+                    sLat, sLng, dLat, dLng,
+                    java.net.URLEncoder.encode(sName, java.nio.charset.StandardCharsets.UTF_8),
+                    java.net.URLEncoder.encode(dName, java.nio.charset.StandardCharsets.UTF_8)
+            );
+            engine.load(url);
         }
     }
 
     private void initProcessTipEvent() {
+        if (processTipPane != null) {
+            processTipPane.setStyle(processTipPane.getStyle() + "; -fx-cursor: hand;");
+            processTipPane.setOnMouseClicked(event -> {
+                SceneManager.switchScene("drivingModePage.fxml");
+            });
+        }
         if (processImagePane != null) {
             processImagePane.setStyle(processImagePane.getStyle() + "; -fx-cursor: hand;");
             processImagePane.setOnMouseClicked(event -> {
@@ -207,5 +284,61 @@ public class DriverMainPageController extends Controller {
         if (sidePane != null) {
             sidePane.setVisible(!sidePane.isVisible());
         }
+    }
+
+    @FXML
+    private void logoClicked(MouseEvent event) {
+        SceneManager.switchScene("mainPage.fxml");
+    }
+
+    @FXML
+    private void closeIconClicked(MouseEvent event) {
+        Platform.exit();
+        System.exit(0);
+    }
+
+    @FXML
+    private void closeHover(MouseEvent event) {
+        setImageFromClasspath(topClose, "/com/example/car_rental_sys/image/UI/closeIconHover.png");
+    }
+
+    @FXML
+    private void closeNormal(MouseEvent event) {
+        setImageFromClasspath(topClose, "/com/example/car_rental_sys/image/UI/closeIconBlack.png");
+    }
+
+    private void setImageFromClasspath(ImageView imageView, String resourcePath) {
+        if (imageView != null) {
+            try (java.io.InputStream stream = getClass().getResourceAsStream(resourcePath)) {
+                if (stream != null) {
+                    imageView.setImage(new javafx.scene.image.Image(stream));
+                }
+            } catch (Exception ignored) {
+            }
+        }
+    }
+
+    private void setupHeaderDrag() {
+        setupDragOn(topLeftBar);
+        setupDragOn(topRightBar);
+    }
+
+    private void setupDragOn(Pane pane) {
+        if (pane == null) return;
+        pane.setOnMousePressed(event -> {
+            javafx.stage.Stage stage = SceneManager.getPrimaryStage();
+            if (stage != null) {
+                dragXOffset = stage.getX() - event.getScreenX();
+                dragYOffset = stage.getY() - event.getScreenY();
+            }
+        });
+
+        pane.setOnMouseDragged(event -> {
+            javafx.stage.Stage stage = SceneManager.getPrimaryStage();
+            if (stage != null) {
+                stage.setX(event.getScreenX() + dragXOffset);
+                stage.setY(event.getScreenY() + dragYOffset);
+            }
+        });
     }
 }

@@ -78,7 +78,6 @@ public class LocationPickerModal {
         WebView webView = new WebView();
         webView.setPrefSize(800, 555);
         WebEngine engine = webView.getEngine();
-        EnvConfig.injectGoogleMapsKey(engine);
 
         // Listen for JavaScript selection via alert
         engine.setOnAlert(event -> {

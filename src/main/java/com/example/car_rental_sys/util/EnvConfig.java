@@ -134,30 +134,6 @@ public final class EnvConfig {
     }
 
     /**
-     * Injects the GOOGLE_MAPS_API_KEY from .env into the WebEngine in-memory JavaScript scope.
-     * Prevents any secret leakage by avoiding writes to source files.
-     *
-     * @param engine the target JavaFX WebEngine instance
-     */
-    public static void injectGoogleMapsKey(javafx.scene.web.WebEngine engine) {
-        if (engine == null) return;
-        String key = get("GOOGLE_MAPS_API_KEY", "").trim();
-        if (key.isEmpty() || key.startsWith("your_")) return;
-
-        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
-            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
-                try {
-                    engine.executeScript(
-                        "window.googleMapKey = '" + key + "';" +
-                        "if (typeof googleMapKey === 'undefined' || !googleMapKey) { var googleMapKey = '" + key + "'; }"
-                    );
-                } catch (Exception ignored) {
-                }
-            }
-        });
-    }
-
-    /**
      * Synchronizes GOOGLE_MAPS_API_KEY from .env strictly into target/classes runtime output.
      * NEVER writes to src/ to prevent committing secrets to version control.
      */
