@@ -95,28 +95,28 @@
          <String fx:value="sidebarIconActive" />
          <String fx:value="sidebarIconNormal" />
       </styleClass></Pane>
-   <Pane fx:id="sideIconHome" layoutX="35.0" layoutY="320.0" onMouseClicked="#backToDriverMainPage" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30;" styleClass="sidebarIconNormal">
+   <Pane fx:id="sideIconHome" layoutX="35.0" layoutY="320.0" onMouseClicked="#backToDriverMainPage" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30; -fx-cursor: hand;" styleClass="sidebarIconNormal">
       <children>
          <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="15.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../image/UI/home.png" />
             </image></ImageView>
       </children></Pane>
-   <Pane fx:id="sideIconVolume" layoutX="35.0" layoutY="420.0" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30;" styleClass="sidebarIconNormal">
+   <Pane fx:id="sideIconVolume" layoutX="35.0" layoutY="420.0" onMouseClicked="#finishDeliveryClicked" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30; -fx-cursor: hand;" styleClass="sidebarIconNormal">
       <children>
          <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="15.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../image/UI/orderFinish.png" />
             </image></ImageView>
       </children></Pane>
-   <Pane fx:id="sideIconPhone" layoutX="35.0" layoutY="520.0" onMouseClicked="#phoneIconClicked" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30;" styleClass="sidebarIconNormal">
+   <Pane fx:id="sideIconPhone" layoutX="35.0" layoutY="520.0" onMouseClicked="#phoneIconClicked" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30; -fx-cursor: hand;" styleClass="sidebarIconNormal">
       <children>
          <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="15.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
             <image>
                <Image url="@../image/UI/phone.png" />
             </image></ImageView>
       </children></Pane>
-   <Pane fx:id="sideIconSetting" layoutX="39.0" layoutY="620.0" onMouseClicked="#backToSettingPage" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30;" styleClass="sidebarIconNormal">
+   <Pane fx:id="sideIconSetting" layoutX="39.0" layoutY="620.0" onMouseClicked="#backToSettingPage" prefHeight="60.0" prefWidth="60.0" style="-fx-background-color: #292d32; -fx-background-radius: 30; -fx-cursor: hand;" styleClass="sidebarIconNormal">
       <children>
          <ImageView fitHeight="30.0" fitWidth="30.0" layoutX="15.0" layoutY="15.0" pickOnBounds="true" preserveRatio="true">
             <image>

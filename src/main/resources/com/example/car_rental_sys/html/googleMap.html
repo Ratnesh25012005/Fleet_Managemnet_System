@@ -403,13 +403,13 @@
         maxZoom: 20,
         maxNativeZoom: 19,
         tileSize: 256,
-        updateWhenIdle: true,       // Only fetch tiles when panning pauses to prevent network flood
-        updateWhenZooming: false,
-        keepBuffer: 2,              // Light 2-tile buffer (~16 tiles total, preventing 500+ tile drop)
+        updateWhenIdle: false,
+        updateInterval: 100,
+        keepBuffer: 6,
         crossOrigin: true
       });
 
-      // Resilient tile auto-retry with graceful OpenStreetMap fallback
+      // Resilient tile auto-retry with high-availability CartoDB fallback (avoids OSM 403 blocks)
       layer.on('tileerror', function(error) {
         const tile = error.tile;
         const retryCount = (tile._retries || 0) + 1;
@@ -419,10 +419,9 @@
           setTimeout(() => {
             const sub = ['0', '1', '2', '3'][Math.floor(Math.random() * 4)];
             tile.src = `https://mt${sub}.google.com/vt/lyrs=${lyr}&x=${error.coords.x}&y=${error.coords.y}&z=${error.coords.z}&_r=${retryCount}`;
-          }, 300 * retryCount);
+          }, 250 * retryCount);
         } else if (lyr === 'm') {
-          // If Google server dropped tile after retries, instantly fallback to OSM for that square
-          tile.src = `https://tile.openstreetmap.org/${error.coords.z}/${error.coords.x}/${error.coords.y}.png`;
+          tile.src = `https://a.basemaps.cartocdn.com/rastertiles/voyager/${error.coords.z}/${error.coords.x}/${error.coords.y}.png`;
         }
       });
 
@@ -445,6 +444,9 @@
       L.control.zoom({ position: 'bottomright' }).addTo(map);
 
       currentTileLayer = buildGoogleTileLayer(currentLyr).addTo(map);
+
+      setTimeout(() => { if (map) map.invalidateSize(false); }, 150);
+      setTimeout(() => { if (map) map.invalidateSize(false); }, 400);
 
       // Custom high-contrast marker icon
       const customPin = L.divIcon({
@@ -544,6 +546,7 @@
       currentMarker.setLatLng([lat, lng]);
       updateSelection(chipName);
       updatePopup(chipName, fullAddress);
+      setTimeout(() => { if (map) map.invalidateSize(false); }, 60);
     }
 
     function searchNominatim(query, autoSelectFirst = false) {

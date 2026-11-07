@@ -1,22 +1,37 @@
 package com.example.car_rental_sys.controllers;
 
+import com.example.car_rental_sys.StatusContainer;
+import com.example.car_rental_sys.ToolsLib.ImageTools;
+import com.example.car_rental_sys.model.DeliveryOrder;
+import com.example.car_rental_sys.service.DeliveryOrderManager;
+import com.example.car_rental_sys.ui_components.MessageFrame;
+import com.example.car_rental_sys.ui_components.MessageFrameType;
+import com.example.car_rental_sys.ui_components.OrderCard;
 import com.example.car_rental_sys.util.AlertHelper;
-import com.example.car_rental_sys.util.EnvConfig;
+import com.example.car_rental_sys.util.PlatformTools;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
 import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
 import javafx.scene.web.WebView;
 
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Locale;
 
 /**
- * Controller for the Driver Mission Control & Active Trip Operations.
+ * Controller for the Driver Mission Control & Active Delivery Operations.
  */
 public class DriverMainPageController extends Controller {
 
@@ -109,15 +124,42 @@ public class DriverMainPageController extends Controller {
     private double dragXOffset = 0;
     private double dragYOffset = 0;
 
+    private DeliveryOrder currentSelectedOrder = null;
+    private final List<OrderCard> currentOrderCards = new ArrayList<>();
+    private volatile boolean isInitialMapLoaded = false;
+
     @FXML
     public void initialize() {
         driverMainPageInstance = this;
+        StatusContainer.currentPageController = this;
+
         setupHeaderDrag();
         showWorkplace();
-        initWebview();
         initProcessTipEvent();
         initInteractions();
-        populateActiveTrip();
+
+        // 1. Determine active mission or initial selected order
+        DeliveryOrder activeOrder = DeliveryOrderManager.getInstance().getActiveDispatchOrder();
+        if (activeOrder == null && StatusContainer.activeDeliveryOrder != null) {
+            activeOrder = StatusContainer.activeDeliveryOrder;
+        }
+
+        if (activeOrder != null) {
+            currentSelectedOrder = activeOrder;
+            initWebview();
+            showActiveDispatchMode(activeOrder);
+        } else {
+            List<DeliveryOrder> orders = DeliveryOrderManager.getInstance().getAvailableOrders();
+            if (orders.isEmpty()) {
+                DeliveryOrderManager.getInstance().resetAll();
+                orders = DeliveryOrderManager.getInstance().getAvailableOrders();
+            }
+            if (!orders.isEmpty()) {
+                currentSelectedOrder = orders.get(0);
+            }
+            initWebview();
+            showOrderSelectionMode();
+        }
     }
 
     private void initWebview() {
@@ -132,69 +174,179 @@ public class DriverMainPageController extends Controller {
             }
         });
 
+        // Set isInitialMapLoaded strictly without executing scripts during page transition
+        engine.getLoadWorker().stateProperty().addListener((obs, oldState, newState) -> {
+            if (newState == javafx.concurrent.Worker.State.SUCCEEDED) {
+                isInitialMapLoaded = true;
+            }
+        });
+
         double startLat = 16.4632;
         double startLng = 80.5078;
         String currentLoc = "SRM University-AP, Amaravati";
+        double destLat = 16.5175;
+        double destLng = 80.6200;
+        String destination = "Vijayawada Junction (BZA Hub)";
 
-        var cached = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().getCachedLocation();
-        if (cached != null && cached.success() && cached.latitude() != 0 && cached.longitude() != 0) {
-            currentLoc = cached.city() + ", " + cached.regionName();
-            startLat = cached.latitude();
-            startLng = cached.longitude();
+        if (currentSelectedOrder != null) {
+            startLat = currentSelectedOrder.getStartLat();
+            startLng = currentSelectedOrder.getStartLng();
+            currentLoc = currentSelectedOrder.getStartLocation();
+            destLat = currentSelectedOrder.getDestLat();
+            destLng = currentSelectedOrder.getDestLng();
+            destination = currentSelectedOrder.getDestLocation();
         }
-
-        final double destLat = 16.5175;
-        final double destLng = 80.6200;
-        final String destination = "Vijayawada Junction (BZA Hub)";
-
-        if (startLabel != null) startLabel.setText(currentLoc);
-        if (destinationLabel != null) destinationLabel.setText(destination);
 
         loadDirectionsUrl(engine, startLat, startLng, destLat, destLng, currentLoc, destination);
-
-        // If location was not yet cached at startup, fetch in background and reload safely via engine.load()
-        if (cached == null) {
-            java.util.concurrent.CompletableFuture.runAsync(() -> {
-                try {
-                    var geo = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().fetchCurrentLocation();
-                    if (geo != null && geo.success() && geo.latitude() != 0 && geo.longitude() != 0) {
-                        final String liveLoc = geo.city() + ", " + geo.regionName();
-                        final double liveLat = geo.latitude();
-                        final double liveLng = geo.longitude();
-
-                        Platform.runLater(() -> {
-                            if (startLabel != null) startLabel.setText(liveLoc);
-                            loadDirectionsUrl(engine, liveLat, liveLng, destLat, destLng, liveLoc, destination);
-                        });
-                    }
-                } catch (Exception ignored) {}
-            });
-        }
     }
 
     private void loadDirectionsUrl(WebEngine engine, double sLat, double sLng, double dLat, double dLng, String sName, String dName) {
         URL resource = getClass().getResource("/com/example/car_rental_sys/html/directions.html");
         if (resource != null) {
             String url = resource.toExternalForm() + String.format(
-                    java.util.Locale.US,
+                    Locale.US,
                     "?startLat=%.4f&startLng=%.4f&destLat=%.4f&destLng=%.4f&startName=%s&destName=%s",
                     sLat, sLng, dLat, dLng,
-                    java.net.URLEncoder.encode(sName, java.nio.charset.StandardCharsets.UTF_8),
-                    java.net.URLEncoder.encode(dName, java.nio.charset.StandardCharsets.UTF_8)
+                    URLEncoder.encode(sName, StandardCharsets.UTF_8),
+                    URLEncoder.encode(dName, StandardCharsets.UTF_8)
             );
             engine.load(url);
         }
     }
 
+    private void updateMapRoute(double sLat, double sLng, double dLat, double dLng, String sName, String dName) {
+        if (webview == null) return;
+        WebEngine engine = webview.getEngine();
+        loadDirectionsUrl(engine, sLat, sLng, dLat, dLng, sName, dName);
+    }
+
+    public void showOrderSelectionMode() {
+        if (processTipPane != null) processTipPane.setVisible(false);
+        if (scrollPane != null) {
+            scrollPane.setVisible(true);
+            refreshOrderCards();
+        }
+    }
+
+    public void refreshOrderCards() {
+        if (scrollPane == null) return;
+        currentOrderCards.clear();
+
+        List<DeliveryOrder> orders = DeliveryOrderManager.getInstance().getAvailableOrders();
+        if (orders.isEmpty()) {
+            DeliveryOrderManager.getInstance().resetAll();
+            orders = DeliveryOrderManager.getInstance().getAvailableOrders();
+        }
+
+        if (currentSelectedOrder == null && !orders.isEmpty()) {
+            currentSelectedOrder = orders.get(0);
+        }
+
+        HBox container = new HBox(16);
+        container.setPadding(new Insets(10, 16, 10, 16));
+        container.setAlignment(Pos.CENTER_LEFT);
+        container.setStyle("-fx-background-color: transparent;");
+
+        for (DeliveryOrder order : orders) {
+            OrderCard card = new OrderCard(order, this::selectOrder, this::confirmOrderAcceptance, this::dismissOrder);
+            if (currentSelectedOrder != null && card.getOrder().getOrderId() == currentSelectedOrder.getOrderId()) {
+                card.setSelected(true);
+            }
+            currentOrderCards.add(card);
+            container.getChildren().add(card);
+        }
+
+        scrollPane.setContent(container);
+        scrollPane.setFitToHeight(true);
+        scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.AS_NEEDED);
+        scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
+
+        if (currentSelectedOrder != null) {
+            updateSidebarInfo(currentSelectedOrder);
+        }
+    }
+
+    public void selectOrder(DeliveryOrder order) {
+        if (order == null) return;
+        this.currentSelectedOrder = order;
+
+        for (OrderCard card : currentOrderCards) {
+            card.setSelected(card.getOrder().getOrderId() == order.getOrderId());
+        }
+
+        updateSidebarInfo(order);
+
+        updateMapRoute(order.getStartLat(), order.getStartLng(), order.getDestLat(), order.getDestLng(),
+                order.getStartLocation(), order.getDestLocation());
+    }
+
+    public void confirmOrderAcceptance(DeliveryOrder order) {
+        String msg = "Do you want to accept " + order.getRenterName() + "'s order?";
+        MessageFrame confirmFrame = new MessageFrame(MessageFrameType.CONFIRM, msg, "Confirm Notification");
+        confirmFrame.setSuccessCallbackFunc((i) -> {
+            DeliveryOrderManager.getInstance().acceptOrder(order);
+            StatusContainer.currentContinueOrderID = order.getOrderId();
+            StatusContainer.activeDeliveryOrder = order;
+            showActiveDispatchMode(order);
+            new MessageFrame(MessageFrameType.SUCCESS, "Order accepted successfully!").show();
+            return null;
+        });
+        confirmFrame.setFailedCallbackFunc((i) -> {
+            confirmFrame.close();
+            return null;
+        });
+        confirmFrame.show();
+    }
+
+    public void dismissOrder(DeliveryOrder order) {
+        DeliveryOrderManager.getInstance().dismissOrder(order.getOrderId());
+        if (currentSelectedOrder != null && currentSelectedOrder.getOrderId() == order.getOrderId()) {
+            currentSelectedOrder = null;
+        }
+        refreshOrderCards();
+    }
+
+    public void showActiveDispatchMode(DeliveryOrder order) {
+        if (order == null) return;
+        this.currentSelectedOrder = order;
+
+        if (scrollPane != null) scrollPane.setVisible(false);
+        if (processTipPane != null) {
+            processTipPane.setVisible(true);
+            processTipPane.toFront();
+        }
+        if (processTipLabel != null) {
+            processTipLabel.setText("Trip in progress: Heading to Pickup");
+        }
+
+        updateSidebarInfo(order);
+
+        updateMapRoute(order.getStartLat(), order.getStartLng(), order.getDestLat(), order.getDestLng(),
+                order.getStartLocation(), order.getDestLocation());
+    }
+
+    private void updateSidebarInfo(DeliveryOrder order) {
+        if (renterName != null) renterName.setText(order.getRenterName());
+        if (renterPost != null) renterPost.setText(order.getRenterRole());
+        if (carNumberLabel != null) carNumberLabel.setText(order.getCarNumber());
+        if (seatsLabel != null) seatsLabel.setText(order.getSeats());
+        if (powerLabel != null) powerLabel.setText(order.getEngine());
+        if (speedLabel != null) speedLabel.setText(order.getTopSpeed());
+        if (startLabel != null) startLabel.setText(order.getStartLocation());
+        if (destinationLabel != null) destinationLabel.setText(order.getDestLocation());
+
+        setImageFromClasspath(carImageView, "/com/example/car_rental_sys/image/cars/" + order.getCarModel() + ".png");
+        setImageFromClasspath(renterAvatar, order.getRenterAvatar());
+        ImageTools.setImageShapeToCircle(renterAvatar);
+    }
+
     private void initProcessTipEvent() {
         if (processTipPane != null) {
-            processTipPane.setStyle(processTipPane.getStyle() + "; -fx-cursor: hand;");
             processTipPane.setOnMouseClicked(event -> {
                 SceneManager.switchScene("drivingModePage.fxml");
             });
         }
         if (processImagePane != null) {
-            processImagePane.setStyle(processImagePane.getStyle() + "; -fx-cursor: hand;");
             processImagePane.setOnMouseClicked(event -> {
                 SceneManager.switchScene("drivingModePage.fxml");
             });
@@ -203,7 +355,7 @@ public class DriverMainPageController extends Controller {
 
     private void initInteractions() {
         if (messagePane != null) {
-            messagePane.setOnMouseClicked(event -> SceneManager.switchScene("messagePage.fxml"));
+            messagePane.setOnMouseClicked(this::messageClick);
         }
         if (phonePane != null) {
             phonePane.setOnMouseClicked(this::phoneClick);
@@ -262,21 +414,19 @@ public class DriverMainPageController extends Controller {
         }
     }
 
-    private void populateActiveTrip() {
-        if (renterName != null) renterName.setText("Alexander Wright");
-        if (renterPost != null) renterPost.setText("Gold VIP Client");
-        if (carNumberLabel != null) carNumberLabel.setText("AP 39 FM 8899");
-        if (startLabel != null) startLabel.setText("SRM University-AP, Amaravati");
-        if (destinationLabel != null) destinationLabel.setText("Vijayawada Junction (BZA Hub)");
-        if (seatsLabel != null) seatsLabel.setText("4 Seats");
-        if (powerLabel != null) powerLabel.setText("6.2 L V8");
-        if (speedLabel != null) speedLabel.setText("330 km/h");
-        if (processTipLabel != null) processTipLabel.setText("Trip in progress: Heading to Pickup");
+    @FXML
+    private void messageClick(MouseEvent event) {
+        String clientName = (currentSelectedOrder != null) ? currentSelectedOrder.getRenterName() : "SAZAL GOREY";
+        String clientPhone = (currentSelectedOrder != null) ? currentSelectedOrder.getRenterPhone() : "+91 93463 89758";
+        // Launch WhatsApp Message chat directly
+        PlatformTools.openWhatsAppMessage(clientPhone, clientName);
     }
 
     @FXML
     private void phoneClick(MouseEvent event) {
-        AlertHelper.showInfo("Client Direct Contact", "Customer Phone: +91 98765 00003\nClient: Alexander Wright\nConnecting VoIP / WhatsApp dispatch relay...");
+        String clientPhone = (currentSelectedOrder != null) ? currentSelectedOrder.getRenterPhone() : "+91 93463 89758";
+        // Way 1: Launch Windows Phone Link / cellular telephony dialer (tel:)
+        PlatformTools.openDialer(clientPhone);
     }
 
     @FXML
@@ -308,7 +458,7 @@ public class DriverMainPageController extends Controller {
     }
 
     private void setImageFromClasspath(ImageView imageView, String resourcePath) {
-        if (imageView != null) {
+        if (imageView != null && resourcePath != null) {
             try (java.io.InputStream stream = getClass().getResourceAsStream(resourcePath)) {
                 if (stream != null) {
                     imageView.setImage(new javafx.scene.image.Image(stream));

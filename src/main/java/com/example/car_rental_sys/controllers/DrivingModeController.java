@@ -1,6 +1,12 @@
 package com.example.car_rental_sys.controllers;
 
+import com.example.car_rental_sys.StatusContainer;
+import com.example.car_rental_sys.model.DeliveryOrder;
+import com.example.car_rental_sys.service.DeliveryOrderManager;
+import com.example.car_rental_sys.ui_components.MessageFrame;
+import com.example.car_rental_sys.ui_components.MessageFrameType;
 import com.example.car_rental_sys.util.AlertHelper;
+import com.example.car_rental_sys.util.PlatformTools;
 import com.example.car_rental_sys.util.SceneManager;
 import javafx.application.Platform;
 import javafx.fxml.FXML;
@@ -69,6 +75,7 @@ public class DrivingModeController extends Controller {
 
     @FXML
     public void initialize() {
+        StatusContainer.currentPageController = this;
         if (distanceLeftLabel != null) distanceLeftLabel.setText("21.6 km left");
         if (timeLeftLabel != null) timeLeftLabel.setText("28 mins");
         updateProgressBar(0.0);
@@ -87,20 +94,35 @@ public class DrivingModeController extends Controller {
         WebEngine engine = cockpitWebView.getEngine();
         engine.setJavaScriptEnabled(true);
 
+        DeliveryOrder activeOrder = DeliveryOrderManager.getInstance().getActiveDispatchOrder();
+        if (activeOrder == null && StatusContainer.activeDeliveryOrder != null) {
+            activeOrder = StatusContainer.activeDeliveryOrder;
+        }
+
         double startLat = 16.4632;
         double startLng = 80.5078;
         String currentLoc = "SRM University-AP, Amaravati";
+        double destLat = 16.5175;
+        double destLng = 80.6200;
+        String destination = "Vijayawada Junction (BZA Hub)";
 
-        var cached = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().getCachedLocation();
-        if (cached != null && cached.success() && cached.latitude() != 0 && cached.longitude() != 0) {
-            currentLoc = cached.city() + ", " + cached.regionName();
-            startLat = cached.latitude();
-            startLng = cached.longitude();
+        if (activeOrder != null) {
+            startLat = activeOrder.getStartLat();
+            startLng = activeOrder.getStartLng();
+            currentLoc = activeOrder.getStartLocation();
+            destLat = activeOrder.getDestLat();
+            destLng = activeOrder.getDestLng();
+            destination = activeOrder.getDestLocation();
+        } else {
+            var cached = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().getCachedLocation();
+            if (cached != null && cached.success() && cached.latitude() != 0 && cached.longitude() != 0) {
+                currentLoc = cached.city() + ", " + cached.regionName();
+                startLat = cached.latitude();
+                startLng = cached.longitude();
+            }
         }
 
-        final double destLat = 16.5175;
-        final double destLng = 80.6200;
-        final String destination = "Vijayawada Junction (BZA Hub)";
+        final String finalDest = destination;
 
         // Telemetry bridge listener from in-map car drive events
         engine.setOnAlert(event -> {
@@ -128,26 +150,12 @@ public class DrivingModeController extends Controller {
                     if (distanceLeftLabel != null) distanceLeftLabel.setText("0 km left");
                     if (timeLeftLabel != null) timeLeftLabel.setText("Arrived");
                     updateProgressBar(1.0);
-                    AlertHelper.showInfo("Destination Reached", "You have arrived at the passenger pickup point:\n" + destination);
+                    AlertHelper.showInfo("Destination Reached", "You have arrived at the passenger pickup point:\n" + finalDest);
                 });
             }
         });
 
         loadCockpitUrl(engine, startLat, startLng, destLat, destLng, currentLoc, destination);
-
-        // Fetch live GPS in background if not already cached
-        if (cached == null) {
-            java.util.concurrent.CompletableFuture.runAsync(() -> {
-                try {
-                    var geo = com.example.car_rental_sys.service.ServiceFactory.getInstance().getGeoLocationService().fetchCurrentLocation();
-                    if (geo != null && geo.success() && geo.latitude() != 0 && geo.longitude() != 0) {
-                        Platform.runLater(() -> {
-                            loadCockpitUrl(engine, geo.latitude(), geo.longitude(), destLat, destLng, geo.city(), destination);
-                        });
-                    }
-                } catch (Exception ignored) {}
-            });
-        }
     }
 
     private void loadCockpitUrl(WebEngine engine, double sLat, double sLng, double dLat, double dLng, String sName, String dName) {
@@ -192,7 +200,28 @@ public class DrivingModeController extends Controller {
 
     @FXML
     private void phoneIconClicked(MouseEvent event) {
-        AlertHelper.showInfo("Fleet Dispatch", "Connecting to Fleet Operations Dispatch Center...");
+        DeliveryOrder activeOrder = DeliveryOrderManager.getInstance().getActiveDispatchOrder();
+        String clientPhone = (activeOrder != null) ? activeOrder.getRenterPhone() : "+91 93463 89758";
+        // Way 1: Launch Windows Phone Link / cellular dialer (tel:)
+        PlatformTools.openDialer(clientPhone);
+    }
+
+    @FXML
+    private void finishDeliveryClicked(MouseEvent event) {
+        MessageFrame messageFrame = new MessageFrame(MessageFrameType.CONFIRM, "Are you sure delivered this car?", "Confirm Notification");
+        messageFrame.setSuccessCallbackFunc((i) -> {
+            DeliveryOrderManager.getInstance().completeActiveDelivery();
+            StatusContainer.currentContinueOrderID = -1;
+            StatusContainer.activeDeliveryOrder = null;
+            messageFrame.close();
+            SceneManager.switchScene("driverServicePage.fxml");
+            return null;
+        });
+        messageFrame.setFailedCallbackFunc((i) -> {
+            messageFrame.close();
+            return null;
+        });
+        messageFrame.show();
     }
 
     @FXML
