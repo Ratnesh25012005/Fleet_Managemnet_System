@@ -18,6 +18,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Pane;
 import javafx.scene.web.WebEngine;
@@ -134,6 +135,7 @@ public class DriverMainPageController extends Controller {
         StatusContainer.currentPageController = this;
 
         setupHeaderDrag();
+        setupHorizontalScroll();
         showWorkplace();
         initProcessTipEvent();
         initInteractions();
@@ -466,6 +468,28 @@ public class DriverMainPageController extends Controller {
             } catch (Exception ignored) {
             }
         }
+    }
+
+    private void setupHorizontalScroll() {
+        if (scrollPane == null) return;
+        scrollPane.addEventFilter(ScrollEvent.SCROLL, event -> {
+            if (event.getDeltaY() != 0 && event.getDeltaX() == 0) {
+                double delta = -event.getDeltaY();
+                double contentWidth = (scrollPane.getContent() != null)
+                        ? scrollPane.getContent().getBoundsInLocal().getWidth()
+                        : 0;
+                double viewWidth = scrollPane.getViewportBounds().getWidth();
+                double scrollable = contentWidth - viewWidth;
+                if (scrollable > 0) {
+                    double step = (delta * 2.5) / scrollable;
+                    scrollPane.setHvalue(Math.max(0.0, Math.min(1.0, scrollPane.getHvalue() + step)));
+                } else {
+                    double step = delta > 0 ? 0.08 : -0.08;
+                    scrollPane.setHvalue(Math.max(0.0, Math.min(1.0, scrollPane.getHvalue() + step)));
+                }
+                event.consume();
+            }
+        });
     }
 
     private void setupHeaderDrag() {
