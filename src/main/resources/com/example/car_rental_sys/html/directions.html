@@ -367,9 +367,9 @@
         maxZoom: 20,
         maxNativeZoom: 19,
         tileSize: 256,
-        updateWhenIdle: true,
-        updateWhenZooming: false,
-        keepBuffer: 2,
+        updateWhenIdle: false,
+        updateInterval: 100,
+        keepBuffer: 6,
         crossOrigin: true
       });
 
@@ -382,9 +382,9 @@
           setTimeout(() => {
             const sub = ['0', '1', '2', '3'][Math.floor(Math.random() * 4)];
             tile.src = `https://mt${sub}.google.com/vt/lyrs=${lyr}&x=${error.coords.x}&y=${error.coords.y}&z=${error.coords.z}&_r=${retryCount}`;
-          }, 300 * retryCount);
+          }, 250 * retryCount);
         } else if (lyr === 'm') {
-          tile.src = `https://tile.openstreetmap.org/${error.coords.z}/${error.coords.x}/${error.coords.y}.png`;
+          tile.src = `https://a.basemaps.cartocdn.com/rastertiles/voyager/${error.coords.z}/${error.coords.x}/${error.coords.y}.png`;
         }
       });
 

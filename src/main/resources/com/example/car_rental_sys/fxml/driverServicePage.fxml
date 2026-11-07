@@ -18,9 +18,9 @@
 
    <Pane fx:id="workplacePane" layoutX="280.0" prefHeight="832.0" prefWidth="1000.0">
       <WebView fx:id="webview" prefHeight="832.0" prefWidth="700.0" />
-      <ScrollPane fx:id="scrollPane" layoutY="682.0" prefHeight="150.0" prefWidth="695.0" style="-fx-background-color: transparent;" />
-      <Pane fx:id="processTipPane" layoutX="346.0" layoutY="64.0" prefHeight="66.0" prefWidth="340.0" style="-fx-background-color: white; -fx-background-radius: 12; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.18), 12, 0, 0, 3);">
-         <VBox layoutX="18.0" layoutY="12.0" prefWidth="240.0" spacing="3.0">
+      <ScrollPane fx:id="scrollPane" layoutY="662.0" prefHeight="168.0" prefWidth="700.0" style="-fx-background-color: transparent; -fx-background: transparent;" />
+      <Pane fx:id="processTipPane" layoutX="330.0" layoutY="64.0" prefHeight="66.0" prefWidth="354.0" style="-fx-background-color: white; -fx-background-radius: 14; -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.18), 12, 0, 0, 3); -fx-cursor: hand;">
+         <VBox layoutX="16.0" layoutY="13.0" prefWidth="270.0" spacing="2.0">
             <Label text="ACTIVE DISPATCH MISSION" textFill="#9d5bfe">
                <font>
                   <Font name="System Bold" size="10.0" />
@@ -32,7 +32,7 @@
                </font>
             </Label>
          </VBox>
-         <Pane fx:id="processImagePane" layoutX="276.0" layoutY="11.0" prefHeight="44.0" prefWidth="44.0" style="-fx-background-color: #722ED1; -fx-background-radius: 22; -fx-cursor: hand;">
+         <Pane fx:id="processImagePane" layoutX="296.0" layoutY="11.0" prefHeight="44.0" prefWidth="44.0" style="-fx-background-color: #722ED1; -fx-background-radius: 22; -fx-cursor: hand;">
             <ImageView fitHeight="24.0" fitWidth="24.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@../image/UI/car.png" />
             </ImageView>
@@ -52,12 +52,12 @@
                <Font size="14.0" />
             </font>
          </Label>
-         <Pane fx:id="messagePane" layoutX="33.0" layoutY="161.0" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: #7EB712; -fx-background-radius: 15;">
+         <Pane fx:id="messagePane" layoutX="33.0" layoutY="161.0" onMouseClicked="#messageClick" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: #7EB712; -fx-background-radius: 15; -fx-cursor: hand;">
             <ImageView fitHeight="150.0" fitWidth="30.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@../image/UI/sendMessage.png" />
             </ImageView>
          </Pane>
-         <Pane fx:id="phonePane" layoutX="123.0" layoutY="161.0" onMouseClicked="#phoneClick" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: #165DFF; -fx-background-radius: 15;">
+         <Pane fx:id="phonePane" layoutX="123.0" layoutY="161.0" onMouseClicked="#phoneClick" prefHeight="50.0" prefWidth="50.0" style="-fx-background-color: #165DFF; -fx-background-radius: 15; -fx-cursor: hand;">
             <ImageView fitHeight="150.0" fitWidth="30.0" layoutX="10.0" layoutY="10.0" pickOnBounds="true" preserveRatio="true">
                <Image url="@../image/UI/phoneCall.png" />
             </ImageView>
