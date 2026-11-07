@@ -211,6 +211,7 @@ public class DrivingModeController extends Controller {
         MessageFrame messageFrame = new MessageFrame(MessageFrameType.CONFIRM, "Are you sure delivered this car?", "Confirm Notification");
         messageFrame.setSuccessCallbackFunc((i) -> {
             DeliveryOrderManager.getInstance().completeActiveDelivery();
+            MusicPlayerController.stopPlayback();
             StatusContainer.currentContinueOrderID = -1;
             StatusContainer.activeDeliveryOrder = null;
             messageFrame.close();
