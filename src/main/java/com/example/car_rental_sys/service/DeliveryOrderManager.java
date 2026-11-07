@@ -48,16 +48,16 @@ public class DeliveryOrderManager {
         String name1 = EnvConfig.get("TEST_CLIENT_NAME_1", "SAZAL GOREY");
         String phone1 = EnvConfig.get("TEST_CLIENT_PHONE_1", "+91 93463 89758");
 
-        String name2 = EnvConfig.get("TEST_CLIENT_NAME_2", "Robert Garcia");
+        String name2 = EnvConfig.get("TEST_CLIENT_NAME_2", "Arjun Rao");
         String phone2 = EnvConfig.get("TEST_CLIENT_PHONE_2", "+91 98765 00002");
 
-        String name3 = EnvConfig.get("TEST_CLIENT_NAME_3", "Alexander Wright");
+        String name3 = EnvConfig.get("TEST_CLIENT_NAME_3", "Priya Patel");
         String phone3 = EnvConfig.get("TEST_CLIENT_PHONE_3", "+91 98765 00003");
 
-        String name4 = EnvConfig.get("TEST_CLIENT_NAME_4", "David Davis");
+        String name4 = EnvConfig.get("TEST_CLIENT_NAME_4", "Rajesh Kumar");
         String phone4 = EnvConfig.get("TEST_CLIENT_PHONE_4", "+91 98765 00004");
 
-        String name5 = EnvConfig.get("TEST_CLIENT_NAME_5", "Sophia Loren");
+        String name5 = EnvConfig.get("TEST_CLIENT_NAME_5", "Ananya Reddy");
         String phone5 = EnvConfig.get("TEST_CLIENT_PHONE_5", "+91 98765 00005");
 
         // 1. Porsche 718 (Blue)
